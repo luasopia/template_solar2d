@@ -155,3 +155,13 @@ function getdir(url)
     end
     return here
 end
+
+--201/05/14 : library를 쉽게 불러오는 import()함수. 가정들:
+-- (1) library는 main/lib 폴더에 개별 폴더로 존재한다.
+-- (2) library폴더와 그 안의 lua파일의 이름이 같다.
+-- 예를 드렁 main/lib/blink/blink.lua 파일이 있다고 가정하면
+-- import 'blink' 라고 하면 된다
+local liburl = _luasopia.root .. '.lib.'
+function import(libname)
+    return _req(liburl..libname..'.'..libname)
+end

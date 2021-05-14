@@ -215,7 +215,7 @@ if _Gideros then -- gideros
     
     function Display:hide() self.__bd:setVisible(false); return self end
     function Display:show() self.__bd:setVisible(true); return self end
-    --function Display:visible(v) self.__bd:setVisible(v); return self end
+    function Display:setvisible(v) self.__bd:setVisible(v); return self end
 
     function Display:tint(r,g,b)
         self.__bd:setColorTransform(r, g ,b)
@@ -323,6 +323,7 @@ elseif _Corona then -- if coronaSDK
 
     function Display:hide() self.__bd.isVisible = false; return self end
     function Display:show() self.__bd.isVisible = true; return self end
+    function Display:setvisible(v) self.__bd.isVisible = v;return self end
     
     --function Display:visible(v) self.__bd.isVisible = v; return self end
 
@@ -361,19 +362,19 @@ end -- elseif _Corona then
 -- (set method는 혼동을 줄이기위해서 아래의 두 개만으로 정리)
 Display.x = Display.setx
 Display.y = Display.sety
-Display.r = Display.setrot
-Display.s = Display.setscale
-Display.a = Display.setalpha
-Display.xs = Display.setxscale
-Display.ys = Display.setyscale
+Display.rot = Display.setrot
+Display.scale = Display.setscale
+Display.alpha = Display.setalpha
+Display.xscale = Display.setxscale
+Display.yscale = Display.setyscale
 
 Display.xy = Display.setxy
-Display.xyr = Display.setxyrot
+Display.xyrot = Display.setxyrot
 Display.anchor = Display.setanchor
 
 --2021/04/22 :get메서드의 축명함수들 추가
-Display.getr = Display.getrot
-Display.gets = Display.getscale
-Display.geta = Display.getalpha
-Display.getxs = Display.getxscale
-Display.getys = Display.getyscale
+--Display.getr = Display.getrot
+--Display.gets = Display.getscale
+--Display.geta = Display.getalpha
+--Display.getxs = Display.getxscale
+--Display.getys = Display.getyscale

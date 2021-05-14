@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------
 -- 2019/12/27: 작성 시작 : 60프레임, 화면 1080x1920 기준으로
 -- 2020/02/16: init.lua를 luasopia/init.lua로 옮김
+-- 2021/05/13: main 폴더를 기본폴더로 구조를 변경(require 'luasopia.init'를 없앰)
 --------------------------------------------------------------------------------
 -- Lua 고유의 전역변수들만 남기고 특정SDK의 전역변수들을 tbl로 이동
 --------------------------------------------------------------------------------
@@ -74,6 +75,20 @@ if gideros then -- in the case of using Gideros
     -- _Gideros.stage:addChild(screen.__bd)
     _Gideros.stage:addChild(_luasopia.baselayer.__bd)
 
+    _luasopia.loglayer = {
+        __bd = _Gideros.Sprite.new(),
+        add = function(self, child) return self.__bd:addChild(child.__bd) end,
+        --2020/03/15 isobj(_loglayer, Group)==true 이려면 아래 두 개 필요
+        --__clsid__ = Group.__id__,
+
+        isvisible = function(self) return self.__bd:isVisible() end,
+        hide = function(self) self.__bd:setVisible(false); return self end,
+        show = function(self) self.__bd:setVisible(true); return self end,
+    }
+    _luasopia.loglayer:hide() -- 처음에는 숨겨놓는다.
+    _Gideros.stage:addChild(_luasopia.loglayer.__bd)
+
+
 
 
 elseif coronabaselib then -- in the case of using CoronaSDK
@@ -116,6 +131,16 @@ elseif coronabaselib then -- in the case of using CoronaSDK
         add = function(self, child) return self.__bd:insert(child.__bd) end,
     }
 
+    _luasopia.loglayer = {
+        __bd = _Corona.display.newGroup(),
+        add = function(self, child) return self.__bd:insert(child.__bd) end,
+        --2020/03/15 isobj(_loglayer, Group)가 true가 되려면 아래 두 개 필요
+        --__clsid__ = Group.__id__
+        isvisible = function(self) return self.__bd.isVisible end,
+        hide = function(self) self.__bd.isVisible = false; return self end,
+        show = function(self) self.__bd.isVisible = true; return self end
+    }
+    _luasopia.loglayer:hide()
 
 elseif love then-- in the case of using LOVE2d
 
@@ -153,10 +178,10 @@ require 'luasopia.core.b02_disp_move'
 require 'luasopia.core.b03_disp_shift'
 require 'luasopia.core.b04_disp_touch'
 require 'luasopia.core.b05_disp_tap'
-require 'luasopia.core.b06_disp_blink' -- 2020/07/01
+--require 'luasopia.core.b06_disp_blink' -- 2020/07/01, 2021/05/14 lib로 분리됨
 require 'luasopia.core.b07_disp_path'
 require 'luasopia.core.b08_disp_fllw'
-require 'luasopia.core.b09_disp_wave' -- 2020/07/01
+-- require 'luasopia.core.b09_disp_wave' -- 2020/07/01, 2021/05/14 lib로 분리됨
 require 'luasopia.core.b10_disp_coll'
 
 require 'luasopia.core.c01_group'
@@ -202,29 +227,12 @@ require 'luasopia.widget.progressbar'
 
 function printf(str, ...)
 
+    if not _luasopia.loglayer:isvisible() then
+        _luasopia.loglayer:show()
+    end
+
     if not _luasopia.logf then
-
-        if _Gideros then
-
-            _luasopia.loglayer = {
-                __bd = _Gideros.Sprite.new(),
-                add = function(self, child) return self.__bd:addChild(child.__bd) end,
-                --2020/03/15 isobj(_loglayer, Group)==true 이려면 아래 두 개 필요
-                __clsid__ = Group.__id__,
-            }
-            _Gideros.stage:addChild(_luasopia.loglayer.__bd)
-
-        elseif _Corona then
-            _luasopia.loglayer = {
-                __bd = _Corona.display.newGroup(),
-                add = function(self, child) return self.__bd:insert(child.__bd) end,
-                --2020/03/15 isobj(_loglayer, Group)가 true가 되려면 아래 두 개 필요
-                __clsid__ = Group.__id__
-            }
-        end
-
         _luasopia.logf = _req 'luasopia.core.d02_logf'
-
     end
 
     _luasopia.logf(str,...)
@@ -237,6 +245,10 @@ function setdebug(args)
     _luasopia.debug = true
     --if args.loglines then logf.setNumLines(args.loglines) end
     
+    if not _luasopia.loglayer:isvisible() then
+        _luasopia.loglayer:show()
+    end
+
     -- 2020/05/30: added
     printf("(content)width:%d, height:%d", _luasopia.width, _luasopia.height)
     printf("(device)width:%d, height:%d", _luasopia.devicewidth, _luasopia.deviceheight)
@@ -272,12 +284,12 @@ function setdebug(args)
             local width = grid.width or 2
 
             for x = xgap, screen.width, xgap do
-                Line(x, 0, x, screen.height, {width=width, color=color}, _luasopia.loglayer)
+                Line(x, 0, x, screen.height, {width=width, color=color}):addto(_luasopia.loglayer)
                 _luasopia.dcdobj = _luasopia.dcdobj + 1
             end
 
             for y = ygap, screen.height, ygap do
-                Line(0, y, screen.width, y, {width=width, color=color}, _luasopia.loglayer)
+                Line(0, y, screen.width, y, {width=width, color=color}):addto(_luasopia.loglayer)
                 _luasopia.dcdobj = _luasopia.dcdobj + 1
             end
 

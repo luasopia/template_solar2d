@@ -8,56 +8,43 @@ local int = math.floor
 -- tr = {time, x,...
 --		loops(=1), -- 반복 회수, INF이면 무한반복
 --		onend = function(self) ... end, --모든 tr이 종료될 때 실행되는 함수
---		{time(필수), x, y, angle, xscale, yscale, scale, alpha},
---		{time(필수), x, y, angle, xscale, yscale, scale, alpha},
+--		{time(필수), x, y, rot, xscale, yscale, scale, alpha},
+--		{time(필수), x, y, rot, xscale, yscale, scale, alpha},
 --		...
 -- }
 ----------------------------------------------------------------------------------
 local function calcTr(self, shr)
+
     local tr = {}
     local fc = int(shr.time/tmgapf)+1
     tr.fcnt = fc -- final count
     tr.cnt = 0
     if shr.x then tr.dx = (shr.x-self:getx())/fc end
     if shr.y then tr.dy = (shr.y-self:gety())/fc end
-    
-    local rot = shr.r or shr.rot
-    if rot then tr.dr = (rot-self:getr())/fc end
-    
-    local scale = shr.s or shr.scale
-    if scale then tr.ds = (scale-self:gets())/fc end
-    
-    local alpha = shr.a or shr.alpha
-    if alpha then tr.da = (alpha-self:geta())/fc end
+    if shr.rot then tr.dr = (shr.rot-self:getrot())/fc end
+    if shr.scale then tr.ds = (shr.scale-self:getscale())/fc end
+    if shr.alpha then tr.da = (shr.alpha-self:getalpha())/fc end
 
-    local xs = shr.xs or shr.xscale
-    if xs then tr.dxs = (xs-self:getxs())/fc end
+    local xs = shr.xscale
+    if xs then tr.dxs = (xs-self:getxscale())/fc end
 
-    local ys = shr.ys or shr.yscale
-    if ys then tr.dys = (ys-self:getys())/fc end
+    local ys = shr.yscale
+    if ys then tr.dys = (ys-self:getyscale())/fc end
 
     tr.dest = shr
     tr.__to = shr.__to
     tr.__to1 = shr.__to1
     return tr
+
 end
 
 function Display:__playTr() -- tr == self.__trInfo
+
     local tr = self.__tr
     tr.cnt = tr.cnt + 1
     if tr.cnt == tr.fcnt then
 
         self:set(tr.dest)
-        --[[
-        if tr.dest.x then self:x(tr.dest.x) end
-        if tr.dest.y then self:y(tr.dest.y) end
-        if tr.dest.r then self:r(tr.dest.r) end
-        if tr.dest.scale then self:scale(tr.dest.scale) end
-        if tr.dest.xscale then self:xscale(tr.dest.xscale) end
-        if tr.dest.yscale then self:yscale(tr.dest.yscale) end
-        if tr.dest.alpha then self:alpha(tr.dest.alpha) end
-        --]]
-
 
         if tr.__to1 then
 
@@ -83,16 +70,18 @@ function Display:__playTr() -- tr == self.__trInfo
 
         if tr.dx then self:x(self:getx()+tr.dx) end
         if tr.dy then self:y(self:gety()+tr.dy) end
-        if tr.dr then self:r(self:getr()+tr.dr) end
+        if tr.dr then self:rot(self:getrot()+tr.dr) end
         if tr.ds then self:scale(self:getscale()+tr.ds) end
         if tr.dxs then self:xscale(self:getxscale()+tr.dxs) end
         if tr.dys then self:yscale(self:getyscale()+tr.dys) end
         if tr.da then self:alpha(self:getalpha()+tr.da) end
     
     end
+
 end
 
 local function makeTr(self, sh)
+
     sh.loops = sh.loops or 1
     sh.__cnt = 0
 
@@ -112,16 +101,21 @@ local function makeTr(self, sh)
     if lastk>1 then sh[lastk].__to1 = sh[1] end
 
     return tr
+
 end
 
 -- 외부 사용자 함수
 function Display:shift(sh)
+
     self.__sh = sh
     self.__tr = makeTr(self, sh)
     return self
+
 end
 
 function Display:stopshift()
+
     self.__tr=nil
     return self
+    
 end
