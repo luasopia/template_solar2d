@@ -166,23 +166,16 @@ _luasopia.dcdobj = 1
 -- 2021/05/12: luasopia 프로젝트를 root폴더 안에서 작성하기로 변경함
 _luasopia.root = 'main'
 --------------------------------------------------------------------------------
+-- load luasopia core files
 
--- load luasopia core/library files
 require 'luasopia.core.a01_class'
 require 'luasopia.core.a02_timer'
 require 'luasopia.core.a03_util'
 require 'luasopia.core.a04_color'
 
 require 'luasopia.core.b01_disp'
-require 'luasopia.core.b02_disp_move'
-require 'luasopia.core.b03_disp_shift'
 require 'luasopia.core.b04_disp_touch'
 require 'luasopia.core.b05_disp_tap'
---require 'luasopia.core.b06_disp_blink' -- 2020/07/01, 2021/05/14 lib로 분리됨
-require 'luasopia.core.b07_disp_path'
-require 'luasopia.core.b08_disp_fllw'
--- require 'luasopia.core.b09_disp_wave' -- 2020/07/01, 2021/05/14 lib로 분리됨
-require 'luasopia.core.b10_disp_coll'
 
 require 'luasopia.core.c01_group'
 require 'luasopia.core.c02_image'
@@ -191,35 +184,49 @@ require 'luasopia.core.c04_getsheet'
 require 'luasopia.core.c05_sprite'
 
 require 'luasopia.core.d01_text'
-
 require 'luasopia.core.e01_getshape'
 require 'luasopia.core.e02_shape'
-require 'luasopia.core.e03_rect' -- screen 객체 생성
-require 'luasopia.core.e04_polygon'
-require 'luasopia.core.e05_circle'
-require 'luasopia.core.e06_star'
-require 'luasopia.core.e07_heart'
-require 'luasopia.core.e08_square'
-
 require 'luasopia.core.e30_line' -- required refactoring
 
 require 'luasopia.core.f01_sound'
 
-require 'luasopia.core.g01_scene'-- scene0생성(이후 scene0.__stg__에 객체가 생성)
+-------------------------------------------------------------------------------
+-- shapes
 
-local enterframedbg = require 'luasopia.core.z01_enterframe' -- 맨 마지막에 로딩해야 한다
+require 'luasopia.shape.rect' -- screen 객체 생성
+require 'luasopia.shape.polygon'
+require 'luasopia.shape.circle'
+require 'luasopia.shape.star'
+require 'luasopia.shape.heart'
+require 'luasopia.shape.square'
 
+-------------------------------------------------------------------------------
+-- standard library
 
+require 'luasopia.lib.move'
+require 'luasopia.lib.shift'
 
+require 'luasopia.lib.blink' -- 2020/07/01, 2021/05/14 lib로 분리됨
+require 'luasopia.lib.wavescale' -- 2020/07/01, 2021/05/14 lib로 분리됨
+require 'luasopia.lib.path'
+require 'luasopia.lib.track' -- 2021/05/14 lib로 분리됨
+require 'luasopia.lib.ishit'
 
-
---require 'luasopia.lib.blink'
 require 'luasopia.lib.Path' -- 2020/06/13 added
 require 'luasopia.lib.Tail' -- 2020/06/18 added
 require 'luasopia.lib.maketile' -- 2020/06/24 added
 
+-------------------------------------------------------------------------------
+-- widget
+
 require 'luasopia.widget.button'
 require 'luasopia.widget.progressbar'
+
+-------------------------------------------------------------------------------
+
+require 'luasopia.core.g01_scene'-- scene0생성(이후 scene0.__stg__에 객체가 생성)
+local enterframedbg = require 'luasopia.core.z01_enterframe' -- 맨 마지막에 로딩해야 한다
+
 
 
 -- 2021/05/13 전역 printf()함수 정의
@@ -232,7 +239,7 @@ function printf(str, ...)
     end
 
     if not _luasopia.logf then
-        _luasopia.logf = _req 'luasopia.core.d02_logf'
+        _luasopia.logf = _req 'luasopia.lib.logf'
     end
 
     _luasopia.logf(str,...)

@@ -59,10 +59,8 @@ Dp.dalpha = Dp.setdalpha
 Dp.dxscale = Dp.setdxscale
 Dp.dyscale = Dp.setdyscale
 
-Dp.getdr = Dp.getdrot
-Dp.getds = Dp.getdscale
-Dp.getda = Dp.getdalpha
-Dp.getdxs =  Dp.getdxscale
-Dp.getdys = Dp.getdyscale
-
-
+--Dp.getdr = Dp.getdrot
+--Dp.getds = Dp.getdscale
+--Dp.getda = Dp.getdalpha
+--Dp.getdxs =  Dp.getdxscale
+--Dp.getdys = Dp.getdyscale

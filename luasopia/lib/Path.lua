@@ -2,7 +2,32 @@
 --------------------------------------------------------------------------------
 local sqrt, atan2 = math.sqrt, math.atan2
 local R2D = 180/math.pi
+local Disp = Display
 --------------------------------------------------------------------------------
+
+local function upd(self)
+
+    self._frmc = self._frmc + 1
+    local pt = self._pth[self._frmc]
+    --self:set{x=pt.sx, y=pt.sy, r=pt.rot, s=pt.z}
+    self:set{x=pt.sx, y=pt.sy, r=pt.rot, s=pt.z}
+    if pt.rm then return true end
+
+end
+
+function Disp:followpath(path)
+
+    self._frmc = 0 -- frame count
+    self._pth = path
+    self:addupdate( upd )
+    return self
+    
+end
+
+--------------------------------------------------------------------------------
+-- Path class
+--------------------------------------------------------------------------------
+
 local function add(pt1, pt2)
     return {
         x = pt1.x + pt2.x,
@@ -45,7 +70,7 @@ local function dist(pt1, pt2)
     return sqrt(dx*dx+dy*dy+dz*dz)
 end
 ------------------------------------------------------------
-local Path = class() -- Hermite Spline3
+Path = class() -- Hermite Spline3
 ------------------------------------------------------------
 --[[
 function Path.wh(w, h)
@@ -168,4 +193,4 @@ function Path:init(ptsr, speed, opt)
     pt.sy = pt.y*height
 end
 --------------------------------------------------------------------------------
-lib.Path = Path
+--lib.Path = Path
