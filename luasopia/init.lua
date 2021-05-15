@@ -164,7 +164,7 @@ _luasopia.dcdobj = 1
 
 --------------------------------------------------------------------------------
 -- 2021/05/12: luasopia 프로젝트를 root폴더 안에서 작성하기로 변경함
-_luasopia.root = 'main'
+_luasopia.root = 'root'
 --------------------------------------------------------------------------------
 -- load luasopia core files
 
@@ -212,8 +212,7 @@ require 'luasopia.lib.path'
 require 'luasopia.lib.track' -- 2021/05/14 lib로 분리됨
 require 'luasopia.lib.ishit'
 
-require 'luasopia.lib.Path' -- 2020/06/13 added
-require 'luasopia.lib.Tail' -- 2020/06/18 added
+require 'luasopia.lib.tail' -- 2020/06/18 added
 require 'luasopia.lib.maketile' -- 2020/06/24 added
 
 -------------------------------------------------------------------------------
