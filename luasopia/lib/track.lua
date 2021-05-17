@@ -36,7 +36,7 @@ function Disp:follow(target,opt) -- oncotact
     opt = opt or {}
     self._pdx = opt.initdx or 0
     self._pdy = opt.initdy or 0
-    self._lspd = (opt.speed or 1)*20 -- 선속도
+    self._lspd = (opt.speed or 1)*20 -- 선속도 (따라가는 속도)
     self._rspd = opt.rotspeed or 0.9 -- 0.8<rs<1,(각속도) 작을수록 회전이 빠르다.
 
     -- self:addupdate(upd)

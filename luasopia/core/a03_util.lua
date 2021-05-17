@@ -153,7 +153,8 @@ function getdir(url)
         k = k+1
         folder_1 = folder
     end
-    return here
+    --return here
+    return function(url) return here..url end
 end
 
 --201/05/14 : library를 쉽게 불러오는 import()함수. 가정들:

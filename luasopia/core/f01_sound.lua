@@ -1,4 +1,5 @@
 -- local tIn = table.insert
+local rooturl = _luasopia.root .. '/' -- 2021/05/12
 
 Sound = class()
 
@@ -8,7 +9,7 @@ if _Gideros then -- 2020/02/10
 
     -- The Sound class lets you load and play WAV, MP3, MOD, XM, S3M and IT sound files.
     function Sound:init(url, volume)
-        self.__bd = Sndnew(url, volume)
+        self.__bd = Sndnew(rooturl..url, volume)
         self.__vol = volume or 1
     end
 
@@ -80,15 +81,16 @@ elseif _Corona then -- 2020/02/09
     local setvol = _Corona.audio.setVolume
 
     function Sound:init(url, volume)
+
         local isWav = string.find(url, '.wav')
         if isWav then -- wav파일이면 loadSound()함수를 사용
             self.__bd = wavs[url]
             if self.__bd == nil then
-                self.__bd = loadsnd(url); print(url..' loaded')
+                self.__bd = loadsnd(rooturl..url) --; print(url..' loaded')
                 wavs[url] = self.__bd
             end
         else -- mp3는 loadStream함수를 사용. wavs에 저장도 안한다.
-            self.__bd = loadstrm(url)
+            self.__bd = loadstrm(rooturl..url)
         end
         --self.__loops = loops or 0 -- dafault는 한 번 플레이됨
         self.__vol = volume or 1 -- 초기 볼륨은 1(가장크게) 이다.

@@ -12,8 +12,8 @@ function Dp:__playd()
     if d.dscale then self:scale(self:getscale() + d.dscale) end
     if d.dalpha then self:alpha(self:getalpha() + d.dalpha) end
 
-    if d.dxscale then self:xs(self:getxscale() + d.dxscale) end
-    if d.dyscale then self:ys(self:getyscale() + d.dyscale) end
+    if d.dxscale then self:xscale(self:getxscale() + d.dxscale) end
+    if d.dyscale then self:yscale(self:getyscale() + d.dyscale) end
 end
 
 function Dp:move(arg) self.__d = arg; return self end

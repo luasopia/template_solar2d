@@ -203,11 +203,11 @@ require 'luasopia.shape.square'
 -------------------------------------------------------------------------------
 -- standard library
 
-require 'luasopia.lib.move'
-require 'luasopia.lib.shift'
+require 'luasopia.lib.01_move'
+require 'luasopia.lib.02_shift'
 
-require 'luasopia.lib.blink' -- 2020/07/01, 2021/05/14 lib로 분리됨
-require 'luasopia.lib.wavescale' -- 2020/07/01, 2021/05/14 lib로 분리됨
+require 'luasopia.lib.04_blink' -- 2020/07/01, 2021/05/14 lib로 분리됨
+require 'luasopia.lib.05_wavescale' -- 2020/07/01, 2021/05/14 lib로 분리됨
 require 'luasopia.lib.path'
 require 'luasopia.lib.track' -- 2021/05/14 lib로 분리됨
 require 'luasopia.lib.ishit'
@@ -238,7 +238,7 @@ function printf(str, ...)
     end
 
     if not _luasopia.logf then
-        _luasopia.logf = _req 'luasopia.lib.logf'
+        _luasopia.logf = _req 'luasopia.lib.03_logf'
     end
 
     _luasopia.logf(str,...)

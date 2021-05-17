@@ -1,7 +1,7 @@
 local Group, Image = Group, Image
 local x0, y0, endx, endy = screen.x0, screen.y0, screen.endx, screen.endy
 local cx, cy = screen.centerx, screen.centery
-local tblin = table.insert
+local tins = table.insert
 --------------------------------------------------------------------------------
 local function update(self)
 
@@ -112,10 +112,10 @@ function lib.maketile(url)
             local img = Image(url):addto(tile):xy(xk,yk)
             img.rowk, img.colk = rowk, colk
             
-            table.insert(tile._rows[rowk], img)
+            tins(tile._rows[rowk], img)
             
             tile._cols[colk] = tile._cols[colk] or {x=xk}
-            tblin(tile._cols[colk], img)
+            tins(tile._cols[colk], img)
         end
     end
 
