@@ -2,8 +2,8 @@ local Disp = Display
 local dtobj = Disp._dtobj -- Display Tagged OBJect
 local emptyt = {} -- empty table
 local tin = table.insert
-local INF = math.huge
-local abs = math.abs
+local INF, abs, sqrt = math.huge, math.abs, math.sqrt
+
 
 --2020/03/03 추가
 function Disp:tag(name)
@@ -22,10 +22,12 @@ end
 
 --------------------------------------------------------------------------------
 -- 2021/05/09 분리축이론(SAT)를 이용한 충돌판정 구현
--- polygon  : __cpg__ ={x1,y1,len1, x2,y2,len2. ...}
+-- 객체의 모양은 다음과 같은 내부필드로 구분한다.
+-- polygon  : __cpg__ = {x1,y1,len1, x2,y2,len2. ...}
+--            여기서 lenk는 (xk_1, yk_1)->(xk, yk) 벡터의 길이
 -- circle   : __ccc__ = r
--- line     : __cln__ = {x1,y1, x2,y2, len}
 -- point    : __cpt__ = {x, y}
+-- line     : __cln__ = {x1,y1, x2,y2, len}
 --------------------------------------------------------------------------------
 
 -- 2021/05/09: 꼭지점의 전역좌표(gpts)와 각 변의 단위법선벡터(vecs)를 계산
@@ -65,7 +67,7 @@ end
 
 -- 2021/05/11: 원에 대해서 폴리곤을 고려한 벡터생성
 -- 원의 중심과 가장 가까운 꼭지점을 잇는 벡터를 생성한다
-local function gvec_circ(circ, polygpts)
+local function gvec_circ(circ, pgpts)
     
     local gpts, vecs = {}, {}
 
@@ -73,12 +75,13 @@ local function gvec_circ(circ, polygpts)
     local gx, gy = circ:getglobalxy()
     tin(gpts, gx)
     tin(gpts, gy)
+    tin(gpts, circ.__ccc__)
 
     -- 가장 가까운 꼭지점을 찾는다
     local cx, cy
     local dmin = INF
-    for k=1, #polygpts, 2 do
-        local px, py = polygpts[k], polygpts[k+1]
+    for k=1, #pgpts, 2 do
+        local px, py = pgpts[k], pgpts[k+1]
         local d = (gx-px)*(gx-px) + (gy-px)*(gy-px)
         if d<dmin then
             dmin = d
@@ -86,14 +89,16 @@ local function gvec_circ(circ, polygpts)
         end
     end
     -- 원중점에서 꼭지점을 향하는 단위벡터를 저장
-    tin(vecs, (cx-gx)/dmin)
-    tin(vecs, (cy-gy)/dmin)
+    local dx, dy = cx-gx, cy-gy
+    local len = sqrt(dx*dx+dy*dy)
+    tin(vecs, dx/len)
+    tin(vecs, dy/len)
     --print(vecs[7], vecs[8])
 
     return gpts, vecs
 end
 
--- 2021/05/09 법선벡터(vecs1)방향으로 점들(gpts1, gpts2)을 프로젝션한후
+-- 2021/05/09 법선벡터(vecs)방향으로 점들(gpts1, gpts2)을 프로젝션한후
 -- 두 투영선이 겹쳐지지 않으면 false를 바로 반환
 local function proj_pg2pg(vecs, gpts, gpts2)
 
@@ -126,6 +131,44 @@ local function proj_pg2pg(vecs, gpts, gpts2)
 
 end
 
+-- 2021/05/18 법선벡터(vecs)방향으로 점들(gpts, gcc)을 프로젝션한후
+-- 두 투영선이 겹쳐지지 않으면 false를 바로 반환
+-- gpt:폴리곤 꼭지점의 전역좌표들, gcc={cx,cy,r}: circle center의 전역좌표와 반지름
+local function proj_pg2cc(vecs, pgpts, ccpt)
+
+    for k=1,#vecs,2 do
+
+        local vx, vy = vecs[k], vecs[k+1]
+        local min1, max1, min2, max2 = INF, -INF, INF, -INF
+
+        for i=1, #pgpts, 2 do
+            local prj1 = vx*pgpts[i] + vy*pgpts[i+1] -- vx*px + vy*py
+            if min1>prj1 then min1 = prj1 end
+            if max1<prj1 then max1 = prj1 end
+            -- print(prj1)
+        end
+
+        -- 원의 투영은 중심점을 투영한 값에서 반지름(r)을 더하고 빼면 된다.
+        local prj2 = vx*ccpt[1] + vy*ccpt[2]
+        local r = ccpt[3]
+        min2 = prj2 - r
+        max2 = prj2 + r
+        -- print(prj2)
+
+        local c1, c2 = (max1+min1)/2, (max2+min2)/2
+        local d1, d2 = (max1-min1)/2, (max2-min2)/2
+
+        if abs(c1-c2)>d1+d2 then return false end
+    end
+
+    return true
+
+end
+
+-------------------------------------------------------------------------------
+-- 2021/05/09 폴리곤-폴리곤의 충돌판정 작성
+-- 2021/05/18 폴리곤-원/원-폴리곤/원-원 들의 충돌판정 작성
+-------------------------------------------------------------------------------
 function Disp:ishit(obj)
     -- (1) 모든 꼭지점의 전역좌표값을 먼저 구해서 저장한다.
     -- print(self.__cpg__, obj.__cpg__)
@@ -137,20 +180,31 @@ function Disp:ishit(obj)
         local gpts2, vecs2 = gvec_poly(obj)
         return proj_pg2pg(vecs1, gpts1, gpts2) and proj_pg2pg(vecs2, gpts2, gpts1)
 
+
     --(2b) 원(self)과 폴리곤(obj)일 경우
     elseif self.__ccc__ and obj.__cpg__ then
 
-        local gpts1, vecs1 = gvec_poly(obj)
-        local gpts2, vecs2 = gvec_circ(self, gpts1)
-        
+        local pgpts, pgvecs = gvec_poly(obj)
+        local ccpt, ccvec = gvec_circ(self, pgpts)
+
+        return proj_pg2cc(pgvecs, pgpts, ccpt) and proj_pg2cc(ccvec, pgpts, ccpt)
 
     --(2a) 폴리곤(Rect포함)과 원일 경우
     elseif self.__cpg__ and obj.__ccc__ then
 
+        local pgpts, pgvecs = gvec_poly(self)
+        local ccpt, ccvec = gvec_circ(obj, pgpts)
+        return proj_pg2cc(pgvecs, pgpts, ccpt) and proj_pg2cc(ccvec, pgpts, ccpt)
+
     
     --(3) 둘 다 원일 경우
-    elseif self.__ccc___ and self.__ccc__ then
-
+    elseif self.__ccc__ and obj.__ccc__ then
+        -- print('ishit')
+        local gcx1, gcy1 = self:getglobalxy()
+        local gcx2, gcy2 = obj:getglobalxy()
+        local dx, dy = gcx1-gcx2, gcy1-gcy2
+        local len = sqrt(dx*dx+dy*dy)
+        return len <= self.__ccc__ + obj.__ccc__
     end
 
 end
@@ -161,7 +215,7 @@ end
 --[[
 --2021/05/08 : gpts는 apex의 전역좌표값들의 집합
 -- gpts점들로 구성된 convex의 내부에 (gx,gy)가 포함된다면 true를 반환
-local function isin(gpts, gx, gy)
+local function isptin(gpts, gx, gy)
 
     local x0, y0 = gpts[1]-gx, gpts[2]-gy
 

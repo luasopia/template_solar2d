@@ -127,4 +127,8 @@ function Circle:setradius(r)
 end
 
 --2021/05/11
+function Circle:getradius()
+    return self.__r__
+end
+
 Circle.radius = Circle.setradius

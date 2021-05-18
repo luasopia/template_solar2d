@@ -147,14 +147,13 @@ function Tail:initxy(x, y)
 end
 
 
-function Tail:xyr(x, y, r)
+function Tail:xyrot(x, y, r)
     self._fx, self._fy = x, y
     return self
 end
 
 function Tail:x(x) self._fx = x;return self end
 function Tail:y(x) self._fy = y;return self end
-function Tail:r(r) return self end
 function Tail:rot(r) return self end
 
 function Tail:getxy() return self._fx, self._fy end
