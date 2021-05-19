@@ -1,16 +1,14 @@
--- print('core.dobj')
 --------------------------------------------------------------------------------
 local tIn = table.insert
 local tRm = table.remove
 local tmgapf = 1000/_luasopia.fps
 local int = math.floor
 local Timer = Timer
-local timers = Timer._tmrs -- 2020/06/24:Disp:remove()함수 내에서 직접 접근
+local timers = Timer.__tmrs -- 2020/06/24:Disp:remove()함수 내에서 직접 접근
 --local baselayer = _luasopia.baselayer
 local lsp = _luasopia
 local cx, cy = lsp.centerx, lsp.centery
 --------------------------------------------------------------------------------
--- ref : https://luasopia.blogspot.com/p/blog-page.html
 -- 2020/02/06: 모든 set함수는 self를 반환하도록 수정됨
 -- 향후: 내부코드는 속도를 조금이라도 높이기 위해서 self.__bd객체를 직접 접근한다
 ----------------------------------------------------------------------------------
@@ -29,7 +27,7 @@ local dtobj = Display._dtobj -- Display Tagged OBJect
 -- 따라서 updateAll()함수의 구조가 (위의 함수와 비교해서) 매우 간단해 짐
 Display.updateAll = function()
     for _, obj in pairs(dobjs) do --for k = #dobjs,1,-1 do local obj = dobjs[k]
-        obj:__upd()
+        obj:__upd__()
     end
 end
 
@@ -55,22 +53,22 @@ function Display:init()
     self:xy(cx, cy)
 
     self.__bd.__obj = self -- body에 원객체를 등록 (_Grp의 __del함수에서 사용)
-    self.__al = self.__al or 1 -- only for coronaSDK (for storing alpha)
+    self.__al = self.__al or 1 -- only for coronaSDK (for storing al.pha)
 
     dobjs[self] = self
-    self._iupds = {} -- 내부 update함수들을 저장
+    self.__iupds = {} -- 내부 update함수들을 저장
 end
 
 -- This function is called in every frames
-function Display:__upd()
+function Display:__upd__()
     
     if self.touch and self.__tch==nil then self:__touchon() end
     if self.tap and self.__tap==nil then self:__tapon() end
 
-    if self._noupd then return end -- self._noupd==true이면 갱신 금지------------
+    if self.__noupd then return end -- self.__noupd==true이면 갱신 금지------------
 
-    if self.__d then self:__playd() end  -- move{}
-    if self.__tr then self:__playTr() end -- shift{}
+    if self.__mv then self:__playmv__() end  -- move{}
+    if self.__tr then self:__playtr__() end -- shift{}
     
     -- 2020/02/16 call user update if exists
     if self.update and self:update() then
@@ -78,7 +76,7 @@ function Display:__upd()
     end
 
     --2020/07/01 내부갱신함수들이 있다면 호출
-    for _, fn in pairs(self._iupds) do
+    for _, fn in pairs(self.__iupds) do
         if fn(self) then return self:remove() end
     end
 
@@ -106,13 +104,13 @@ end
 
 
 function Display:resumeupdate()
-    self._noupd = false
+    self.__noupd = false
     --타이머도 다시 시작해야 한다.(2020/07/01)
     return self
 end
 
 function Display:stopupdate()
-    self._noupd = true
+    self.__noupd = true
     --타이머도 다 멈추어야 한다.(2020/07/01)
     return self
 end
@@ -129,9 +127,9 @@ function Display:isremoved() return self.__bd==nil end
 --2020/06/12
 function Display:getparent() return self.__pr end
 
---2020/07/01 : handle Internal UPDateS (_iupds)
+--2020/07/01 : handle Internal UPDateS (__iupds)
 function Display:addupdate( fn )
-    self._iupds[fn] = fn
+    self.__iupds[fn] = fn
 end
 
 --2020/08/27: added
@@ -285,16 +283,6 @@ elseif _Corona then -- if coronaSDK
         t = arg.a or arg.alpha; if t then self.__al, self.__bd.alpha = t, t end
         t = arg.xs or arg.xscale; if t then self.__bd.xScale = t end
         t = arg.ys or arg.yscale; if t then self.__bd.yScale = t end
-        --[[
-        -- 2020/03/08: 추가
-        if arg.dx then self.__d = self.__d or {};self.__d.dx = arg.dx end
-        if arg.dy then self.__d = self.__d or {};self.__d.dy = arg.dy end
-        t = arg.dr or arg.drot; if t then self.__d = self.__d or {};self.__d.dr = t end
-        t = arg.da or arg.dalpha; if t then self.__d = self.__d or {};self.__d.da = t end
-        t = arg.ds or arg.dscale; if t then self.__d = self.__d or {};self.__d.ds = t end
-        t = arg.dxs or arg.dxscale; if t then self.__d = self.__d or {};self.__d.dxs = t end
-        t = arg.dys or arg.dyscale; if t then self.__d = self.__d or {};self.__d.dys = t end
-        --]]
         return self
     end
 

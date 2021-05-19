@@ -23,17 +23,17 @@ end
 --------------------------------------------------------------------------------
 -- 2021/05/09 분리축이론(SAT)를 이용한 충돌판정 구현
 -- 객체의 모양은 다음과 같은 내부필드로 구분한다.
--- polygon  : __cpg__ = {x1,y1,len1, x2,y2,len2. ...}
+-- polygon  : __cpg = {x1,y1,len1, x2,y2,len2. ...}
 --            여기서 lenk는 (xk_1, yk_1)->(xk, yk) 벡터의 길이
--- circle   : __ccc__ = r
--- point    : __cpt__ = {x, y}
--- line     : __cln__ = {x1,y1, x2,y2, len}
+-- circle   : __ccc = r
+-- point    : __cpt = {x, y}
+-- line     : __cln = {x1,y1, x2,y2, len}, len은 선분의 길이
 --------------------------------------------------------------------------------
 
 -- 2021/05/09: 꼭지점의 전역좌표(gpts)와 각 변의 단위법선벡터(vecs)를 계산
 local function gvec_poly(self)
 
-    local pts = self.__cpg__
+    local pts = self.__cpg
     local gpts, vecs = {}, {}
 
     -- 첫 번째 점을 따로 저장한다
@@ -75,22 +75,24 @@ local function gvec_circ(circ, pgpts)
     local gx, gy = circ:getglobalxy()
     tin(gpts, gx)
     tin(gpts, gy)
-    tin(gpts, circ.__ccc__)
+    tin(gpts, circ.__ccc)
 
-    -- 가장 가까운 꼭지점을 찾는다
+    -- 원의 중심점에서 가장 가까운 꼭지점을 찾는다
     local cx, cy
-    local dmin = INF
+    local dmin2 = INF
     for k=1, #pgpts, 2 do
         local px, py = pgpts[k], pgpts[k+1]
-        local d = (gx-px)*(gx-px) + (gy-px)*(gy-px)
-        if d<dmin then
-            dmin = d
+        local dx, dy = px-gx, py-gy
+        local d = dx*dx + dy*dy
+        if d<dmin2 then
+            dmin2 = d
             cx, cy = px, py
         end
     end
-    -- 원중점에서 꼭지점을 향하는 단위벡터를 저장
+
+    -- 원의 중심점에서 꼭지점을 향하는 *단위*벡터를 저장
     local dx, dy = cx-gx, cy-gy
-    local len = sqrt(dx*dx+dy*dy)
+    local len = sqrt(dmin2)
     tin(vecs, dx/len)
     tin(vecs, dy/len)
     --print(vecs[7], vecs[8])
@@ -171,10 +173,10 @@ end
 -------------------------------------------------------------------------------
 function Disp:ishit(obj)
     -- (1) 모든 꼭지점의 전역좌표값을 먼저 구해서 저장한다.
-    -- print(self.__cpg__, obj.__cpg__)
+    -- print(self.__cpg, obj.__cpg)
     
     --(1) 둘 다 폴리곤(Rect포함)일 경우
-    if self.__cpg__ and obj.__cpg__ then
+    if self.__cpg and obj.__cpg then
 
         local gpts1, vecs1 = gvec_poly(self)
         local gpts2, vecs2 = gvec_poly(obj)
@@ -182,7 +184,7 @@ function Disp:ishit(obj)
 
 
     --(2b) 원(self)과 폴리곤(obj)일 경우
-    elseif self.__ccc__ and obj.__cpg__ then
+    elseif self.__ccc and obj.__cpg then
 
         local pgpts, pgvecs = gvec_poly(obj)
         local ccpt, ccvec = gvec_circ(self, pgpts)
@@ -190,7 +192,7 @@ function Disp:ishit(obj)
         return proj_pg2cc(pgvecs, pgpts, ccpt) and proj_pg2cc(ccvec, pgpts, ccpt)
 
     --(2a) 폴리곤(Rect포함)과 원일 경우
-    elseif self.__cpg__ and obj.__ccc__ then
+    elseif self.__cpg and obj.__ccc then
 
         local pgpts, pgvecs = gvec_poly(self)
         local ccpt, ccvec = gvec_circ(obj, pgpts)
@@ -198,13 +200,13 @@ function Disp:ishit(obj)
 
     
     --(3) 둘 다 원일 경우
-    elseif self.__ccc__ and obj.__ccc__ then
+    elseif self.__ccc and obj.__ccc then
         -- print('ishit')
         local gcx1, gcy1 = self:getglobalxy()
         local gcx2, gcy2 = obj:getglobalxy()
         local dx, dy = gcx1-gcx2, gcy1-gcy2
         local len = sqrt(dx*dx+dy*dy)
-        return len <= self.__ccc__ + obj.__ccc__
+        return len <= self.__ccc + obj.__ccc
     end
 
 end

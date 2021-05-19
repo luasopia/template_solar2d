@@ -6,7 +6,7 @@ local nilfunc = function() end
 --[[
 --2020/02/15 class 테이블에 __id__ 필드를 추가하고
 -- 어떤 테이블이 class 자체인지 rawget()함수를 이용하여 검사한다
-local function _isobj(t) return type(t)=='table' and t.__clsid__ end
+local function _isobj(t) return type(t)=='table' and t.__clsid end
 local function _iscls(t) return type(t)=='table' and rawget(t,'__id__') end
 
 -- 어떤 객체가 클래스의 객체인지를 판단하는 (전역)함수
@@ -18,7 +18,7 @@ end
 -- 어떤 객체가 클래스의 객체인지를 판단하는 (전역)함수
 -- 2020/06/10 : 수정
 function isobj(obj, cls)
-	return type(obj)=='table' and obj.__clsid__ == cls.__id__
+	return type(obj)=='table' and obj.__clsid == cls.__id__
 end
 
 -- function isnum(v) return type(v)=='number' end
@@ -37,9 +37,9 @@ local Object = {
 local clsid = 0
 
 local function constructor(cls, ...)
-	--local obj = setmetatable({ __clsid__ = true }, { __index = cls })
+	--local obj = setmetatable({ __clsid = true }, { __index = cls })
 	-- 2020/06/10: (2*) 때문에 아래와 같이 metatable을 cls로 설정 가능
-	local obj = setmetatable({ __clsid__ = cls.__id__ }, cls) -- (*1)
+	local obj = setmetatable({ __clsid = cls.__id__ }, cls) -- (*1)
 	cls.init(obj, ...)
 	return obj
 end
@@ -51,7 +51,7 @@ class = function(baseClass)
 	-- init=nilfunc 으로 지정해서 만약 사용자 생성자가 없어도
 	-- super.init이 자동 실행되는 것을 막는다.
 	-- 따라서 자식클래스는 **반드시 생성자를 만들어야 한다**
-	-- 부모생성자를 호출하려면 자식생성자 안에서 parentCls.init(self,...) 라고 호출
+	-- 부모생성자를 호출하려면 자식생성자 안에서 ParentClass.init(self,...) 라고 호출
 	-- 단, remove 은 빈함수로 지정하지 않았으므로
 	-- 자식의 소멸자가 없으면 **부모의 소멸자가 자동호출된다.**
 	------------------------------------------------------------------------
@@ -79,7 +79,7 @@ end
 
 --[[
 local function constructor(cls, ...)
-	local obj = setmetatable({ __clsid__ = true }, { __index = cls })
+	local obj = setmetatable({ __clsid = true }, { __index = cls })
 	cls.init(obj, ...)
 	return obj
 end

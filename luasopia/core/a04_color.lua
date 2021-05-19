@@ -22,6 +22,7 @@ if _Gideros then
 elseif _Corona then
     
     function Color:init(r, g, b, a)
+
         if isobj(r,Color) then
             self.__r, self.__g, self.__b = r.__r, r.__g, r.__b
             self.r, self.g, self.b = r.r, r.g, r.b
@@ -32,6 +33,7 @@ elseif _Corona then
             -- self.rgb = {self.r, self.g, self.b}
             self.a = a or 1
         end
+        
     end
 
 end

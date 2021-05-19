@@ -2,8 +2,8 @@
 
 local Dp = Display
 
-function Dp:__playd()
-    local d = self.__d
+function Dp:__playmv__()
+    local d = self.__mv
     local t
     --print(self:getAlpha())
     if d.dx then self:x(self:getx() + d.dx) end
@@ -16,35 +16,35 @@ function Dp:__playd()
     if d.dyscale then self:yscale(self:getyscale() + d.dyscale) end
 end
 
-function Dp:move(arg) self.__d = arg; return self end
-function Dp:stopmove() self.__d = nil; return self end
+function Dp:move(arg) self.__mv = arg; return self end
+function Dp:stopmove() self.__mv = nil; return self end
 
 --------------------------------------------------------------------------------
 -- 2020/02/18, 2021/04/27 : modified as follows
 --------------------------------------------------------------------------------
-function Dp:setdx(d) self.__d=self.__d or {}; self.__d.dx=d; return self end
-function Dp:setdy(d) self.__d=self.__d or {}; self.__d.dy=d; return self end
-function Dp:setdrot(d) self.__d=self.__d or {}; self.__d.drot = d; return self end
-function Dp:setdscale(d) self.__d = self.__d or {}; self.__d.dscale = d; return self end
-function Dp:setdalpha(d) self.__d = self.__d or {}; self.__d.dalpha = d; return self end
-function Dp:setdxscale(d) self.__d=self.__d or {}; self.__d.dxscale = d; return self end
-function Dp:setdyscale(d) self.__d=self.__d or {}; self.__d.dyscale = d; return self end
-function Dp:setdxdy(dx,dy) self.__d=self.__d or {}; self.__d.dx,self.__d.dy=dx,dy; return self end
+function Dp:setdx(d) self.__mv=self.__mv or {}; self.__mv.dx=d; return self end
+function Dp:setdy(d) self.__mv=self.__mv or {}; self.__mv.dy=d; return self end
+function Dp:setdrot(d) self.__mv=self.__mv or {}; self.__mv.drot = d; return self end
+function Dp:setdscale(d) self.__mv = self.__mv or {}; self.__mv.dscale = d; return self end
+function Dp:setdalpha(d) self.__mv = self.__mv or {}; self.__mv.dalpha = d; return self end
+function Dp:setdxscale(d) self.__mv=self.__mv or {}; self.__mv.dxscale = d; return self end
+function Dp:setdyscale(d) self.__mv=self.__mv or {}; self.__mv.dyscale = d; return self end
+function Dp:setdxdy(dx,dy) self.__mv=self.__mv or {}; self.__mv.dx,self.__mv.dy=dx,dy; return self end
 
 --------------------------------------------------------------------------------
 -- 2020/02/25 : add getd() methods
 --------------------------------------------------------------------------------
-function Dp:getdx() if self.__d==nil then return 0 else return self.__d.dx or 0 end end
-function Dp:getdy() if self.__d==nil then return 0 else return self.__d.dy or 0 end end
-function Dp:getdrot() if self.__d==nil then return 0 else return self.__d.drot or 0 end end
-function Dp:getdscale() if self.__d==nil then return 0 else return self.__d.dscale or 0 end end
-function Dp:getdalpha() if self.__d==nil then return 0 else return self.__d.dalpha or 0 end end
-function Dp:getdxscale() if self.__d==nil then return 0 else return self.__d.dxscale or 0 end end
-function Dp:getdyscale() if self.__d==nil then return 0 else return self.__d.dyscale or 0 end end
+function Dp:getdx() if self.__mv==nil then return 0 else return self.__mv.dx or 0 end end
+function Dp:getdy() if self.__mv==nil then return 0 else return self.__mv.dy or 0 end end
+function Dp:getdrot() if self.__mv==nil then return 0 else return self.__mv.drot or 0 end end
+function Dp:getdscale() if self.__mv==nil then return 0 else return self.__mv.dscale or 0 end end
+function Dp:getdalpha() if self.__mv==nil then return 0 else return self.__mv.dalpha or 0 end end
+function Dp:getdxscale() if self.__mv==nil then return 0 else return self.__mv.dxscale or 0 end end
+function Dp:getdyscale() if self.__mv==nil then return 0 else return self.__mv.dyscale or 0 end end
 
 function Dp:getdxdy()
-    if self.__d==nil then return 0, 0
-    else return (self.__d.dx or 0), (self.__d.dy or 0) end
+    if self.__mv==nil then return 0, 0
+    else return (self.__mv.dx or 0), (self.__mv.dy or 0) end
 end
 
 --------------------------------------------------------------------------------

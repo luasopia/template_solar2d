@@ -40,7 +40,7 @@ function Disp:follow(target,opt) -- oncotact
     self._rspd = opt.rotspeed or 0.9 -- 0.8<rs<1,(각속도) 작을수록 회전이 빠르다.
 
     -- self:addupdate(upd)
-    self._iupds[upd] = upd
+    self.__iupds[upd] = upd
 end
 
 --------------------------------------------------------------------------------

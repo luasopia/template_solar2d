@@ -79,7 +79,7 @@ if gideros then -- in the case of using Gideros
         __bd = _Gideros.Sprite.new(),
         add = function(self, child) return self.__bd:addChild(child.__bd) end,
         --2020/03/15 isobj(_loglayer, Group)==true 이려면 아래 두 개 필요
-        --__clsid__ = Group.__id__,
+        --__clsid = Group.__id__,
 
         isvisible = function(self) return self.__bd:isVisible() end,
         hide = function(self) self.__bd:setVisible(false); return self end,
@@ -135,7 +135,7 @@ elseif coronabaselib then -- in the case of using CoronaSDK
         __bd = _Corona.display.newGroup(),
         add = function(self, child) return self.__bd:insert(child.__bd) end,
         --2020/03/15 isobj(_loglayer, Group)가 true가 되려면 아래 두 개 필요
-        --__clsid__ = Group.__id__
+        --__clsid = Group.__id__
         isvisible = function(self) return self.__bd.isVisible end,
         hide = function(self) self.__bd.isVisible = false; return self end,
         show = function(self) self.__bd.isVisible = true; return self end

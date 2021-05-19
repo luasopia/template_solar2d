@@ -26,8 +26,8 @@ local tmgapf = 1000/_luasopia.fps
 --------------------------------------------------------------------------------
 Timer = class()
 -- private static member variable
-Timer._tmrs = {}
-local timers = Timer._tmrs
+Timer.__tmrs = {}
+local timers = Timer.__tmrs
 -- local ntmrs = 0
 --------------------------------------------------------------------------------
 -- 타이머객체의 삭제는 이 함수안에서만 이루어지도록 해야 한다.(그래야 덜 꼬임)
@@ -83,7 +83,7 @@ end
 ------------------------------------------------------------------------------------------
 function Timer.removeAll()
 	for _, tmr in pairs(timers) do
-		 tmr:remove()
+		tmr:remove()
 	end
 end
 

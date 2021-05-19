@@ -38,7 +38,7 @@ local function calcTr(self, shr)
 
 end
 
-function Display:__playTr() -- tr == self.__trInfo
+function Display:__playtr__() -- tr == self.__trInfo
 
     local tr = self.__tr
     tr.cnt = tr.cnt + 1

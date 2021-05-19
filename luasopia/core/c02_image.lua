@@ -35,7 +35,7 @@ if _Gideros then
       --2021/05/09 : add info for collision box
       local w, h = self.__bd:getWidth(true), self.__bd:getHeight(true)
       local hw, hh = w/2, h/2
-      self.__cpg__ = {-hw,-hh,1/h,  hw,-hh,1/w,  hw,hh,1/h,  -hw,hh,1/w}
+      self.__cpg = {-hw,-hh,1/h,  hw,-hh,1/w,  hw,hh,1/h,  -hw,hh,1/w}
       self.__w__, self.__h__ = w, h
       --------------------------
 
@@ -82,7 +82,7 @@ elseif _Corona then
     -- anchor/scale이 변경될 때 self.__cpts__를 조정해줄 필요가 없다
     local w, h = self.__bd.width, self.__bd.height
     local hw, hh = w/2, h/2
-    self.__cpg__ = {-hw,-hh,1/h,  hw,-hh,1/w,  hw,hh,1/h,  -hw,hh,1/w}
+    self.__cpg = {-hw,-hh,1/h,  hw,-hh,1/w,  hw,hh,1/h,  -hw,hh,1/w}
     self.__w__, self.__h__ = w, h
     --------------------------
 

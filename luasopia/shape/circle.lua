@@ -76,7 +76,7 @@ if _Gideros then
     function Circle:anchor(ax, ay)
         self._apx = setap(ax)
         self._apy = setap(ay)
-        self:_re_pts1(mkpts(self.__r__, self._npts, self._apx, self._apy))
+        self:_re_pts1(mkpts(self.__rds, self._npts, self._apx, self._apy))
         return self
     end
 
@@ -98,7 +98,7 @@ elseif _Corona then
 
     function Circle:anchor(ax, ay)
         self._apx, self._apy = ax, ay
-        self:_re_pts1(mkpts(self.__r__, self._npts, self._apx, self._apy))
+        self:_re_pts1(mkpts(self.__rds, self._npts, self._apx, self._apy))
         return self
     end
 
@@ -107,9 +107,9 @@ end
 --------------------------------------------------------------------------------
 
 function Circle:init(radius, opt)
-    self.__r__ = radius
+    self.__rds = radius
     self._apx, self._apy = 0.5, 0.5 -- AnchorPointX, AnchorPointY
-    self.__ccc__ = radius
+    self.__ccc = radius
     return Shape.init(self, mkpts(radius, 0.5, 0.5), opt)
 end
 
@@ -120,15 +120,15 @@ end
 
 --2020/06/23
 function Circle:setradius(r)
-    self.__r__ = r
-    self.__ccc__ = r
+    self.__rds = r
+    self.__ccc = r
     self:_re_pts1( mkpts(r, self._apx, self._apy) )
     return self
 end
 
 --2021/05/11
 function Circle:getradius()
-    return self.__r__
+    return self.__rds
 end
 
 Circle.radius = Circle.setradius
