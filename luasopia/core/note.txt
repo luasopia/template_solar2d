@@ -8,4 +8,3 @@
         __gettable, __newindex, __settable, __gc,
         __add,  __sub, __mul, __div, __pow, __unm, __lt, __le, __concat,
         __mod
-

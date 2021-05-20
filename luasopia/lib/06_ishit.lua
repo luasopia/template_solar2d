@@ -100,6 +100,9 @@ local function gvec_circ(circ, pgpts)
     return gpts, vecs
 end
 
+-------------------------------------------------------------------------------
+-- projection functions
+-------------------------------------------------------------------------------
 -- 2021/05/09 법선벡터(vecs)방향으로 점들(gpts1, gpts2)을 프로젝션한후
 -- 두 투영선이 겹쳐지지 않으면 false를 바로 반환
 local function proj_pg2pg(vecs, gpts, gpts2)
