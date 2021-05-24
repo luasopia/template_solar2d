@@ -61,9 +61,9 @@ if _Gideros then
     end
 
     function Star:anchor(ax, ay)
-        self._apx = setap(ax)
-        self._apy = setap(ay)
-        local pts = mkpts(self._rds, self._npts, self._irt, self._apx, self._apy)
+        self.__apx = setap(ax)
+        self.__apy = setap(ay)
+        local pts = mkpts(self.__rds, self.__npts, self.__irt, self.__apx, self.__apy)
         self:_re_pts1(pts)
         return self
     end
@@ -100,8 +100,8 @@ elseif _Corona then
     end
 
     function Star:anchor(ax, ay)
-        self._apx, self._apy = ax, ay
-        local pts = mkpts(self._rds, self._npts, self._irt, self._apx, self._apy)
+        self.__apx, self.__apy = ax, ay
+        local pts = mkpts(self.__rds, self.__npts, self.__irt, self.__apx, self.__apy)
         self:_re_pts1(pts)
         return self
     end
@@ -111,32 +111,33 @@ end
 --------------------------------------------------------------------------------
 function Star:init(radius, opt)
     opt = opt or {}
-    self._rds, self._npts = radius, opt.points or 5
-    self._irt = opt.ratio or inratio0
-    self._apx, self._apy = 0.5, 0.5 -- AnchorPointX, AnchorPointY
-    return Shape.init(self, mkpts(radius, self._npts, self._irt, 0.5, 0.5), opt)
+    self.__rds, self.__npts = radius, opt.points or 5
+    self.__irt = opt.ratio or inratio0
+    self.__apx, self.__apy = 0.5, 0.5 -- AnchorPointX, AnchorPointY
+    self.__ccc = radius
+    return Shape.init(self, mkpts(radius, self.__npts, self.__irt, 0.5, 0.5), opt)
 end
 
 
 function Star:getanchor()
-    return self._apx, self._apy
+    return self.__apx, self.__apy
 end
 
 --2020/06/23
 function Star:radius(r)
-    self._rds = r
-    self:_re_pts1( mkpts(r, self._npts, self._irt, self._apx, self._apy) )
+    self.__rds = r
+    self:_re_pts1( mkpts(r, self.__npts, self.__irt, self.__apx, self.__apy) )
     return self
 end
 
 function Star:points(n)
-    self._npts = n
-    self:_re_pts1( mkpts(self._rds, n, self._irt, self._apx, self._apy) )
+    self.__npts = n
+    self:_re_pts1( mkpts(self.__rds, n, self.__irt, self.__apx, self.__apy) )
     return self
 end
 
 function Star:ratio(rt)
-    self._irt = rt
-    self:_re_pts1( mkpts(self._rds, self._npts, rt, self._apx, self._apy) )
+    self.__irt = rt
+    self:_re_pts1( mkpts(self.__rds, self.__npts, rt, self.__apx, self.__apy) )
     return self
 end

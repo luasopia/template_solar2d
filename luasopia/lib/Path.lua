@@ -19,7 +19,7 @@ function Disp:followpath(path)
 
     self._frmc = 0 -- frame count
     self._pth = path
-    self:addupdate( upd )
+    self:__addupd__( upd )
     return self
     
 end

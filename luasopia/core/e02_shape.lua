@@ -1,9 +1,81 @@
+--------------------------------------------------------------------------------
+-- 2020/06/15 created, 2020/06/23 refactored
+--[[----------------------------------------------------------------------------
+점들 (x1,y1)-(x2,y2)- ... -(xn,yn)-(x1,y1) 을 연결한 폐곡면을 그린다.
+(주의) 아래 pts에서는 x1,y1 부터 ** xn,yn 까지만 ** 저장되어 있어야 한다.
+pts = {x1,y1, x2,y2, ..., xn,yn } 
+opt = {
+    sw -- (required) strokewidth
+    sc -- (required) strokecolor
+    fc -- (required) fillcolor
+}
+The anchor point is located at the origin (0,0) point.
+------------------------------------------------------------------------------]]
+if _Gideros then
+--------------------------------------------------------------------------------
+    local GShape = _Gideros.Shape
+
+    function _luasopia.mkshape(pts, opt)
+
+        local xs, ys = pts[1], pts[2]
+        local s = GShape.new()
+
+        s:setLineStyle(opt.sw, opt.sc.hex, opt.sc.a) -- width, color, alpha
+        s:setFillStyle(GShape.SOLID, opt.fc.hex, opt.fc.a)
+        
+        s:beginPath()
+        s:moveTo(xs, ys) -- starting at upmost point
+        for k=1,#pts,2 do s:lineTo(pts[k], pts[k+1]) end
+        s:lineTo(xs, ys) -- ending at the (first) starting point
+        s:endPath()
+        -- gideros의 shape는 자동으로 원점(0,0)이 anchor point가 된다
+        --s:setPosition(self.__apx or 0, self.__apy or 0)
+        ------------------------------------------------------------------------
+        return s
+    end
+    
+--------------------------------------------------------------------------------
+elseif _Corona then
+--------------------------------------------------------------------------------
+    
+    local newPoly = _Corona.display.newPolygon
+    
+    -- function Shp:init(pts, opt)
+    function _luasopia.mkshape(pts, opt)
+
+        local x, y = pts[1], pts[2]
+        local xmin,ymin,  xmax,ymax = x,y,  x,y
+        for k=3,#pts,2 do
+            x, y = pts[k], pts[k+1]
+            if x<xmin then xmin = x elseif x>xmax then xmax = x end
+            if y<ymin then ymin = y elseif y>ymax then ymax = y end
+        end
+        
+        local s = newPoly(0, 0, pts)
+        -- solar2d의 폴리곤은 자동으로 중심점에 anchor가 위치한다.
+        -- 그래서 아래와 같이 anchor point를 원점(0,0)으로 만든다.
+        s.anchorX = -xmin/(xmax-xmin) --(0-xmin)/(xmax-xmin)
+        s.anchorY = -ymin/(ymax-ymin) --(0-ymin)/(ymax-ymin)
+        
+        local sc = opt.sc
+        local fc = opt.fc
+        s.strokeWidth = opt.sw
+        s:setStrokeColor(sc.r, sc.g, sc.b, sc.a)
+        s:setFillColor(fc.r, fc.g, fc.b, fc.a)
+        ------------------------------------------------------------------------
+        return s
+    end
+    
+end -- elseif _Corona then
+
+
+--------------------------------------------------------------------------------
 -- 2020/06/15: first created
--- 2021/05/07: added __clr_add__() method 
+-- 2021/05/07: added __redraw__() method 
 --------------------------------------------------------------------------------
 local Rawshape = _luasopia.Rawshape
 local WHITE = Color.WHITE -- default stroke/fill color
-local getshp = _luasopia.getshape
+local mkshp = _luasopia.mkshape
 local Disp = Display
 --------------------------------------------------------------------------------
 Shape = class(Disp)
@@ -14,73 +86,72 @@ if _Gideros then
 
     newGrp = _Gideros.Sprite.new
 
-    function Shape:__add__(shp)
+    function Shape:__addshp__(shp)
+
         self.__bd:addChild(shp)
         return self
-    end
 
---[[
-    -- 여러 개의 shape들을 모두 지운다
-    function Shape:__clr__()
-        for k = self.__bd:getNumChildren(),1,-1 do
-            self.__bd:getChildAt(k):removeFromParent() -- 모든 차일드 삭제
-        end
     end
---]]
 
     -- 2021/05/07 : add clear and add in one method
-    function Shape:__clr_add__()
+    function Shape:__redraw__()
 
-        for k = self.__bd:getNumChildren(),1,-1 do
-            self.__bd:getChildAt(k):removeFromParent() -- 모든 차일드 삭제
+        --(1) 그룹 내의 모든 객체는 지운다(clear)
+        if self.__bd:getNumChildren() == 1 then -- shape이 딱 하나일 경우
+            self.__bd:getChildAt(1):removeFromParent()
+        else
+            for k = self.__bd:getNumChildren(),1,-1 do
+                self.__bd:getChildAt(k):removeFromParent() -- 모든 차일드 삭제
+            end
         end
 
-        local shp = getshp(self._pts, self._sopt)
+        --(2) 아래는 self:__addshp__(shp) 함수와 같다.
+        local shp = mkshp(self.__pts, self.__sopt)
         self.__bd:addChild(shp)
         return self
 
     end
-
-    -- shape이 딱 하나만 있는 경우
-    -- function Shape:__clr1__() self.__bd:getChildAt(1):removeFromParent() end
 --------------------------------------------------------------------------------
 elseif _Corona then
 
     newGrp = _Corona.display.newGroup
 
-    function Shape:__add__(shp)
+    function Shape:__addshp__(shp)
+
         self.__bd:insert(shp)
         return self
-    end
 
-    function Shape:__clr__()
-        for k = self.__bd.numChildren, 1, -1 do
-            self.__bd[k]:removeSelf() -- 차일드 각각의 소멸자 호출(즉시 삭제)
-          end    
     end
 
     -- 2021/05/07 : add clear and add in one method
-    function Shape:__clr_add__()
-        for k = self.__bd.numChildren, 1, -1 do
-            self.__bd[k]:removeSelf() -- 차일드 각각의 소멸자 호출(즉시 삭제)
-        end    
+    function Shape:__redraw__()
 
-        local shp = getshp(self._pts, self._sopt)
+        --(1) 그룹 내의 모든 객체는 지운다(clear)\
+        if self.__bd.numChildren == 1 then -- shape이 딱 하나일 경우
+            self.__bd[1]:removeSelf()
+        else
+            for k = self.__bd.numChildren, 1, -1 do
+                self.__bd[k]:removeSelf() -- 차일드 각각의 소멸자 호출(즉시 삭제)
+            end    
+        end
+
+        --(2) 아래는 self:__addshp__(shp) 함수와 같다.
+        local shp = mkshp(self.__pts, self.__sopt)
         self.__bd:insert(shp)
         return self
     end
 
-    -- shape이 딱 하나만 있는 경우
-    --function Shape:__clr1__()  self.__bd[1]:removeSelf()  end
 end
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 function Shape:init(pts, opt)
-    self._pts = pts
+
+    self.__pts = pts
+
     if opt == nil then
-        self._sopt = {sw=0, sc=WHITE, fc=WHITE}
+        self.__sopt = {sw=0, sc=WHITE, fc=WHITE}
     else
-        self._sopt = {
+        self.__sopt = {
             sw = opt.strokewidth or 0,
             sc = opt.strokecolor or WHITE,
             fc = opt.fill or opt.fillcolor or WHITE,
@@ -88,101 +159,72 @@ function Shape:init(pts, opt)
     end
 
     self.__bd = newGrp()
-    self:__add__( getshp(pts, self._sopt) )
+    self:__addshp__( mkshp(pts, self.__sopt) )
 
     return Disp.init(self)
+    
 end
 
-function Shape:_rdrw(pts, opt)
-    self._pts = pts
-    
-    if opt~=nil then 
-        local so = self._sopt
-        so.sw = opt.strokewidth or so.sw
-        so.sc = opt.strokecolor or so.sc
-        so.fc = opt.fill or opt.fillcolor or so.fc
-    end
-    
-    --self:__clr__()
-    --return self:__add__( getshp(pts, self._sopt) )
-    return self:__clr_add__()
-end
 
 -- pts만 새로 주어지는 경우 (shape객체가 하나만 있는 경우)
 function Shape:_re_pts1(pts)
-    self._pts = pts
+    self.__pts = pts
 
     --self:__clr__()
-    --return self:__add__( getshp(pts, self._sopt) )
-    return self:__clr_add__()
+    --return self:__addshp__( mkshp(pts, self.__sopt) )
+    return self:__redraw__()
 end
 
--- 옵션만 변경되는 경우 (shape객체가 하나만 있는 경우)
-function Shape:_re_opt1(pts, opt)
-
-    local so = self._sopt
-    so.sw = opt.strokewidth or so.sw
-    so.sc = opt.strokecolor or so.sc
-    so.fc = opt.fill or opt.fillcolor or so.fc
-    
-    --self:__clr__()
-    --return self:__add__( getshp(self._pts, so) )
-    return self:__clr_add__()
-end
-
--- pts와 opt 둘 다 변경되는 경우 (shape객체가 하나만 있는 경우)
--- pts 와 opt 둘 다 table이어야 한다.
-function Shape:_rdrw1(pts, opt)
-    self._pts = pts
-    
-    --if opt~=nil then 
-    local so = self._sopt
-    so.sw = opt.strokewidth or so.sw
-    so.sc = opt.strokecolor or so.sc
-    so.fc = opt.fill or opt.fillcolor or so.fc
-    --end
-    
-    --self:__clr__()
-    --return self:__add__( getshp(pts, self._sopt) )
-    return self:__clr_add__()
-end
 
 function Shape:fill(color)
-    self._sopt.fc = color
 
-    --self:__clr__()
-    --return self:__add__( getshp(self._pts, self._sopt) )
-    return self:__clr_add__()
+    self.__sopt.fc = color
+    return self:__redraw__()
+
 end
 
 
-function Shape:strokewidth(sw)
-    self._sopt.sw = sw
+function Shape:setstrokewidth(sw)
 
-    --self:__clr__()
-    --return self:__add__( getshp(self._pts, self._sopt) )
-    return self:__clr_add__()
+    self.__sopt.sw = sw
+    return self:__redraw__()
+
 end
 
-function Shape:strokecolor(color)
-    self._sopt.sc = color
 
-    --self:__clr__()
-    --return self:__add__( getshp(self._pts, self._sopt) )
-    return self:__clr_add__()
+function Shape:setstrokecolor(color)
+
+    self.__sopt.sc = color
+    return self:__redraw__()
+
 end
+
 
 function Shape:empty()
-    self._sopt.fc = Color(0,0,0,0)
 
-    --self:__clr__()
-    --return self:__add__( getshp(self._pts, self._sopt) )
-    return self:__clr_add__()
+    self.__sopt.fc = Color(0,0,0,0)
+    return self:__redraw__()
+
 end
 
 -- 2021/05/04에 추가
 
-Shape.setstrokewidth = Shape.strokewidth
-Shape.setstrokecolor = Shape.strokecolor
+Shape.strokewidth = Shape.setstrokewidth
+Shape.strokecolor = Shape.setstrokecolor
 
-Shape.fillcolor = Shape.fill
+Shape.fillcolor = Shape.fill -- 삭제예정
+
+
+--------------------------------------------------------------------------------
+-- 2020/06/13 Rawshape 클래스는 lib.Tail 클래스에서 사용됨
+--------------------------------------------------------------------------------
+
+local mkshp = _luasopia.mkshape
+local Disp = Display
+
+_luasopia.Rawshape = class(Disp)
+
+function _luasopia.Rawshape:init(pts, opt)
+    self.__bd = mkshp(pts, opt)
+    return Disp.init(self)
+end

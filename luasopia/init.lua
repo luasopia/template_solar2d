@@ -184,7 +184,6 @@ require 'luasopia.core.c04_getsheet'
 require 'luasopia.core.c05_sprite'
 
 require 'luasopia.core.d01_text'
-require 'luasopia.core.e01_getshape'
 require 'luasopia.core.e02_shape'
 require 'luasopia.core.e30_line' -- required refactoring
 
@@ -229,7 +228,7 @@ local enterframedbg = require 'luasopia.core.z01_enterframe' -- 맨 마지막에
 
 
 -- 2021/05/13 전역 printf()함수 정의
--- printf()함수를 한 번도 호출하지 않는다면 _luasopia.loglayer가 생성되지 않는다.
+-- printf()함수를 한 번도 호출하지 않는다면 loglayer가 hide()로 유지된다
 
 function printf(str, ...)
 

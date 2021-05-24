@@ -43,6 +43,7 @@ function Text.setDefaultFontSize(size)
 end
 --------------------------------------------------------------------------------
 if _Gideros then -- for Gideros ###############################################
+--------------------------------------------------------------------------------
 
 	-- local fontcolor0 = 0xffffff
 	-- function Text.setdefaultcolor(r,g,b)
@@ -54,14 +55,14 @@ if _Gideros then -- for Gideros ###############################################
 	-- y축의 중점을 잡기 위한 setAnchorPoint(x,y) 에서 y값(보정값)
 	-- (corona에서는 자동으로 중점이 잡힌다.)
 	local apys = {[0]=-0.35, 0.15, 0.27, 0.34, 0.36, 0.4, 0.41}
---------------------------------------------------------------------------------
+
 	local function getya(str) -- 보정할 anchorY값을 구한다.
 		local nn = select(2, str:gsub('\n', '\n')) -- number of '\n' character
 		if nn>6 then return 0.41 end
 		return apys[nn] -- 1:-0.35,  2:0.15, 3:0.27, 4:0.34
 	end
 
-	function Text:__newtext()
+	function Text:__mktxt__()
 
 		local fonturl
 		if assert(isvalid(self.__fnm), errmsg()) then
@@ -85,17 +86,17 @@ if _Gideros then -- for Gideros ###############################################
 		self.__fsz = opt.fontsize or fontsize0 -- font size (fsz)
 		self.__fclr = opt.color or fontcolor0
 
-		self.__tbd = self:__newtext()
+		self.__tbd = self:__mktxt__()
 		self.__bd = _Gideros.Sprite.new()
 		self.__bd:addChild(self.__tbd)
 
 		return Disp.init(self)
 	end
 
-	function Text:font(fontname, size)
+	function Text:setfont(fontname, size)
 		self.__fnm = fontname -- fontname은 필수요소임
 		self.__fsz = size or self.__fsz -- size가 nil이면 기존크기로
-		self.__tbd = self:__newtext()
+		self.__tbd = self:__mktxt__()
 		self.__bd:removeChildAt(1)
 		self.__bd:addChild(self.__tbd)
 		return self
@@ -103,7 +104,7 @@ if _Gideros then -- for Gideros ###############################################
 
 
 	-- r, g, b는 0-255 범위의 정수
-	function Text:color(r,g,b)
+	function Text:setcolor(r,g,b)
 		-- self.__fclr = r*65536+g*256+b
 		self.__fclr = Color(r,g,b)
 		self.__tbd:setTextColor(self.__fclr.hex)
@@ -111,16 +112,16 @@ if _Gideros then -- for Gideros ###############################################
 	end
 
 	-- 2020/01/28 text가 변경되면 중심점도 다시 잡아야 한다.
-	function Text:string(str,...)
+	function Text:setstring(str,...)
 		self.__str = strf(str,...)
 		self.__tbd:setText(self.__str)
 		self.__tbd:setAnchorPoint(0.5, getya(self.__str))
 		return self
 	end
 
-	function Text:fontsize(v)
+	function Text:setfontsize(v)
 		self.__fsz = v
-		self.__tbd = self:__newtext()
+		self.__tbd = self:__mktxt__()
 		self.__bd:removeChildAt(1)
 		self.__bd:addChild(self.__tbd)
 		return self
@@ -135,7 +136,7 @@ if _Gideros then -- for Gideros ###############################################
 
 	function Text:getfontsize() return self.__fsz end
 
-	function Text:anchor(xa, ya)
+	function Text:setanchor(xa, ya)
 		self.__tbd:setAnchorPoint(xa,ya)
 		return self
 	end
@@ -145,7 +146,9 @@ if _Gideros then -- for Gideros ###############################################
 	function Text:getheight() return self.__tbd:getHeight()	end
 
 
-elseif _Corona then -- for Corona ########################################
+-------------------------------------------------------------------------------
+elseif _Corona then
+-------------------------------------------------------------------------------
 
 	-- local fontcolor0 = {1,1,1} -- white
 	function Text.setDefaultColor(r,g,b) fontcolor0={r/255,g/255,b/255} end
@@ -153,7 +156,7 @@ elseif _Corona then -- for Corona ########################################
 	local newText = _Corona.display.newText
 	local newGroup =  _Corona.display.newGroup
 
-	function Text:__newtext()
+	function Text:__mktxt__()
 		local fonturl
 		if assert(isvalid(self.__fnm), errmsg()) then
 			fonturl = strf(ttfurl, self.__fnm)
@@ -177,7 +180,7 @@ elseif _Corona then -- for Corona ########################################
 		self.__fsz = opt.fontsize or fontsize0 -- font size (fsz)
 		self.__fclr = opt.color or fontcolor0
 
-		self.__tbd = self:__newtext()
+		self.__tbd = self:__mktxt__()
 		self.__bd = newGroup()
 		self.__bd:insert(self.__tbd)
 
@@ -185,39 +188,39 @@ elseif _Corona then -- for Corona ########################################
 	end
 
 	
-	function Text:fontsize(v)
+	function Text:setfontsize(v)
 		self.__fsz = v
 		self.__tbd.size = v
 		return self
 	end
 	
 	
-	function Text:string(str,...)
+	function Text:setstring(str,...)
 		self.__str = strf(str,...)
 		self.__tbd.text = self.__str
 		return self
 	end
 	
-	-- r, g, b는 0-255 범위의 정수
-	function Text:color(r,g,b)
+	-- r, g, b는 0-255 범위의 정수, (r이 color객체일 수도 있음)
+	function Text:setcolor(r,g,b)
 		self.__fclr = Color(r,g,b) -- {r/255,g/255,b/255}
 		local fc = self.__fclr
 		self.__tbd:setFillColor(fc.r, fc.g, fc.b)
 		return self
 	end
 	
-	function Text:font(fontname, size)
+	function Text:setfont(fontname, size)
 		self.__fnm = fontname -- fontname은 필수요소임
 		self.__fsz = size or self.__fsz -- size가 nil이면 기존크기로
 		self.__tbd:removeSelf()
-		self.__tbd = self:__newtext()
+		self.__tbd = self:__mktxt__()
 		self.__bd:insert(self.__tbd)
 		return self
 	end
 
 	function Text:getfontsize() return self.__tbd.size end
 	
-	function Text:anchor(xa, ya)
+	function Text:setanchor(xa, ya)
 		self.__tbd.anchorX, self.__tbd.anchorY = xa, ya
 		return self
 	end
@@ -233,5 +236,12 @@ elseif _Corona then -- for Corona ########################################
 	
 end
 
-	--2020/11/06 added
-	function Text:getstring() return self.__str end
+--2020/11/06 added
+function Text:getstring() return self.__str end
+
+--2021/05/24 added
+Text.font = Text.setfont
+Text.fontsize = Text.setfontsize
+Text.color = Text.setcolor
+Text.string = Text.setstring
+Text.anchor = Text.setanchor

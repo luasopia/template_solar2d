@@ -102,10 +102,10 @@ function Timer:init(delay, func, loops, onEnd)
 	-- local args = args or {}
 	self.delay = delay
 	self.loops = loops or 1
+	self.count = 0
 	self.__fn = func
 	self.__tm = 0
 	self.__onend = onEnd
-	self.count = 0
 	timers[self]=self
 end
 

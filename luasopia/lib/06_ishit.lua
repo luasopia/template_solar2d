@@ -1,13 +1,12 @@
 local Disp = Display
 local dtobj = Disp._dtobj -- Display Tagged OBJect
 local emptyt = {} -- empty table
-local tin = table.insert
+local tins = table.insert
 local INF, abs, sqrt = math.huge, math.abs, math.sqrt
-
-
+-------------------------------------------------------------------------------
 --2020/03/03 추가
 function Disp:tag(name)
-    self._tag = name
+    self.__tag = name
     -- 2020/06/21 tagged객체는 아래와 같이 dtobj에 별도로 (중복) 저장
     if dtobj[name] == nil then dtobj[name] = {[self]=self}
     else dtobj[name][self] = self  end
@@ -39,8 +38,8 @@ local function gvec_poly(self)
     -- 첫 번째 점을 따로 저장한다
     local gx1, gy1 = self:getglobalxy(pts[1], pts[2])
     local len1 = pts[3] -- 이 점과 전 점간의 거리
-    tin(gpts, gx1)
-    tin(gpts, gy1)
+    tins(gpts, gx1)
+    tins(gpts, gy1)
 
     -- 점들을 순환하면서 단위벡터를 계산한다
     local gxk_1, gyk_1 = gx1, gy1  
@@ -48,18 +47,18 @@ local function gvec_poly(self)
         
         local gxk, gyk = self:getglobalxy(pts[k], pts[k+1])
         local lenk = pts[k+2] -- 이 점과 전 점간의 거리
-        tin(gpts, gxk)
-        tin(gpts, gyk)
+        tins(gpts, gxk)
+        tins(gpts, gyk)
     
         -- vector (k_1)->(k) 의 (도형 바깥 방향)법선벡터를 계산하여 저장
-        tin(vecs, (gyk-gyk_1)*lenk ) -- vxk
-        tin(vecs, (gxk_1-gxk)*lenk ) -- vyk
+        tins(vecs, (gyk-gyk_1)*lenk ) -- vxk
+        tins(vecs, (gxk_1-gxk)*lenk ) -- vyk
         --print(vxk, vyk)
 
         gxk_1, gyk_1 = gxk, gyk
     end
-    tin(vecs, (gy1-gyk_1)*len1) -- vxn
-    tin(vecs, (gxk_1-gx1)*len1) -- vyn
+    tins(vecs, (gy1-gyk_1)*len1) -- vxn
+    tins(vecs, (gxk_1-gx1)*len1) -- vyn
     --print(vecs[7], vecs[8])
 
     return gpts, vecs
@@ -73,9 +72,9 @@ local function gvec_circ(circ, pgpts)
 
     -- 원의 중심점을 따로 저장한다
     local gx, gy = circ:getglobalxy()
-    tin(gpts, gx)
-    tin(gpts, gy)
-    tin(gpts, circ.__ccc)
+    tins(gpts, gx)
+    tins(gpts, gy)
+    tins(gpts, circ.__ccc)
 
     -- 원의 중심점에서 가장 가까운 꼭지점을 찾는다
     local cx, cy
@@ -93,8 +92,8 @@ local function gvec_circ(circ, pgpts)
     -- 원의 중심점에서 꼭지점을 향하는 *단위*벡터를 저장
     local dx, dy = cx-gx, cy-gy
     local len = sqrt(dmin2)
-    tin(vecs, dx/len)
-    tin(vecs, dy/len)
+    tins(vecs, dx/len)
+    tins(vecs, dy/len)
     --print(vecs[7], vecs[8])
 
     return gpts, vecs
@@ -126,13 +125,62 @@ local function proj_pg2pg(vecs, gpts, gpts2)
             -- print(prj2)
         end
 
-        local c1, c2 = (max1+min1)/2, (max2+min2)/2
-        local d1, d2 = (max1-min1)/2, (max2-min2)/2
+        local c1, c2 = (max1+min1)/2, (max2+min2)/2 -- 중심점간의 길이
+        local d1, d2 = (max1-min1)/2, (max2-min2)/2 -- 겹치지 않을 최소 길이
 
-        if abs(c1-c2)>d1+d2 then return false end
+        
+        if abs(c1-c2)>d1+d2 then
+            return false
+        end
     end
 
     return true
+
+end
+
+-- obj2를 밀어내는 데 필요한 push벡터를 계산하여 반환
+-- overlap 길이가 가장 짧은 것의 법선벡터x겹친길이 벡터를 구한다.
+local function proj_pg2pg_push(vecs, gpts, gpts2)
+
+    local push = {}
+    local minol = INF -- minimum overlap
+
+    for k=1,#vecs,2 do
+
+        local vx, vy = vecs[k], vecs[k+1]
+        local min1, max1, min2, max2 = INF, -INF, INF, -INF
+
+        for i=1, #gpts, 2 do
+            local prj1 = vx*gpts[i] + vy*gpts[i+1] -- vx*px + vy*py
+            if min1>prj1 then min1 = prj1 end
+            if max1<prj1 then max1 = prj1 end
+            -- print(prj1)
+        end
+
+        for i=1, #gpts2, 2 do
+            local prj2 = vx*gpts2[i] + vy*gpts2[i+1]
+            if min2>prj2 then min2 = prj2 end
+            if max2<prj2 then max2 = prj2 end
+            -- print(prj2)
+        end
+
+        local c1, c2 = (max1+min1)/2, (max2+min2)/2
+        local d1, d2 = (max1-min1)/2, (max2-min2)/2
+
+        
+        if abs(c1-c2)>d1+d2 then
+            return false
+        -- 가장 짧게 겹치는 길이와 그 방향벡터를 구한다
+        else -- if abs(c1-c2)<=d1+d2 
+            local overlap = (d1+d2)-abs(c1-c2) -- 항상 음이 아닌 값임
+            if minol > overlap then
+                minol = overlap
+                push = {vx, vy, overlap}
+            end
+        end
+    end
+
+    return push
 
 end
 
@@ -184,6 +232,21 @@ function Disp:ishit(obj)
         local gpts1, vecs1 = gvec_poly(self)
         local gpts2, vecs2 = gvec_poly(obj)
         return proj_pg2pg(vecs1, gpts1, gpts2) and proj_pg2pg(vecs2, gpts2, gpts1)
+
+        --[[
+        local push1 = proj_pg2pg_push(vecs1, gpts1, gpts2)
+        local push2 = proj_pg2pg_push(vecs2, gpts2, gpts1)
+
+        if push1 and push2 then
+            if push1[3]<push2[3] then
+                return {push1[1]*push1[3], push1[2]*push1[3]}
+            else
+                return {-push2[1]*push2[3], -push2[2]*push2[3]}
+            end
+        else
+            return false
+        end
+        --]]
 
 
     --(2b) 원(self)과 폴리곤(obj)일 경우
@@ -253,15 +316,15 @@ function Disp:ishit0(obj)
 
     for k=1, #pts1, 2 do
         local gx, gy = self:getglobalxy(pts1[k], pts1[k+1])
-        tin(gpts1, gx)
-        tin(gpts1, gy)
+        tins(gpts1, gx)
+        tins(gpts1, gy)
     end
 
     -- (2) obj의 각 꼭지점이 self안에 포함되는지 체크
     for k=1, #pts2, 2 do
         local gx2, gy2 = obj:getglobalxy(pts2[k], pts2[k+1])
-        tin(gpts2, gx2)
-        tin(gpts2, gy2)
+        tins(gpts2, gx2)
+        tins(gpts2, gy2)
 
         if isin(gpts1, gx2, gy2) then return true end
     end

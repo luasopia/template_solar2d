@@ -39,7 +39,7 @@ function Disp:follow(target,opt) -- oncotact
     self._lspd = (opt.speed or 1)*20 -- 선속도 (따라가는 속도)
     self._rspd = opt.rotspeed or 0.9 -- 0.8<rs<1,(각속도) 작을수록 회전이 빠르다.
 
-    -- self:addupdate(upd)
+    -- self:__addupd__(upd)
     self.__iupds[upd] = upd
 end
 
@@ -81,5 +81,5 @@ function Disp:followtag(name, opt) -- oncotact
     self._lspd = (opt.speed or 1)*20 -- 선속도
     self._rspd = opt.rotspeed or 0.9 -- 0.8<rs<1,(각속도) 작을수록 회전이 빠르다.
 
-    self:addupdate(updtag)
+    self:__addupd__(updtag)
 end

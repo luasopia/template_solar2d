@@ -128,7 +128,7 @@ function Display:isremoved() return self.__bd==nil end
 function Display:getparent() return self.__pr end
 
 --2020/07/01 : handle Internal UPDateS (__iupds)
-function Display:addupdate( fn )
+function Display:__addupd__( fn )
     self.__iupds[fn] = fn
 end
 
@@ -240,11 +240,11 @@ if _Gideros then -- gideros
         if self.__tap then self:stoptap() end
 
         self.__bd:removeFromParent()
-        self.__bd = nil -- __del__()이 호출되었음을 표시한다.
+        self.__bd = nil -- remove()가 호출되어 삭제되었음을 이것으로 확인
 
         --2020/06/20 dobj[self]=self로 저장하기 때문에 삭제가 아래에서 바로 가능해짐
         dobjs[self] = nil
-        if self._tag ~=nil then dtobj[self._tag][self] = nil end
+        if self.__tag ~=nil then dtobj[self.__tag][self] = nil end
         -- ndobjs = ndobjs - 1
     end
 
@@ -331,7 +331,7 @@ elseif _Corona then -- if coronaSDK
         --2020/06/20 소멸자안에서 dobjs 테이블의 참조를 삭제한다
         dobjs[self] = nil
         -- ndobjs = ndobjs - 1
-        if self._tag ~=nil then dtobj[self._tag][self] = nil end
+        if self.__tag ~=nil then dtobj[self.__tag][self] = nil end
     end
 
     function Display:tint(r,g,b)
