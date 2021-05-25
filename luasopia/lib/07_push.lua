@@ -1,9 +1,10 @@
---------------------------------------------------------------------------------
--- 2021/05/08: created
---------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+-- 2021/05/25 created
+-------------------------------------------------------------------------------
 local Disp = Display
 local tins = table.insert
 local INF, abs, sqrt = math.huge, math.abs, math.sqrt
+-------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- 2021/05/09 분리축이론(SAT)를 이용한 충돌판정 구현
 -- 객체의 모양은 다음과 같은 내부필드로 구분한다.
@@ -13,9 +14,7 @@ local INF, abs, sqrt = math.huge, math.abs, math.sqrt
 -- point    : __cpt = {x, y}
 -- line     : __cln = {x1,y1, x2,y2, len}, len은 선분의 길이
 --------------------------------------------------------------------------------
-
 -- 2021/05/09: 꼭지점의 전역좌표(gpts)와 각 변의 단위법선벡터(vecs)를 계산
--- 2021/05/25: 충돌판정만 할 경우라도 반드시 *단위*법선벡터를 만들어야 한다.
 local function gvec_poly(self)
 
     local pts = self.__cpg
@@ -51,7 +50,7 @@ local function gvec_poly(self)
 end
 
 
--- 2021/05/11: 원에 대해서 폴리곤을 고려한 단위벡터 생성
+-- 2021/05/11: 원에 대해서 폴리곤을 고려한 벡터생성
 -- 원의 중심과 가장 가까운 꼭지점을 잇는 벡터를 생성한다
 local function gvec_circ(circ, pgpts)
     
@@ -76,11 +75,12 @@ local function gvec_circ(circ, pgpts)
         end
     end
 
-    -- 원의 중심점에서 꼭지점을 향하는 벡터를 저장
+    -- 원의 중심점에서 꼭지점을 향하는 *단위*벡터를 저장
     local dx, dy = cx-gx, cy-gy
     local len = sqrt(dmin2)
     tins(vecs, dx/len)
     tins(vecs, dy/len)
+    --print(vecs[7], vecs[8])
 
     return gpts, vecs
 end
@@ -88,9 +88,51 @@ end
 -------------------------------------------------------------------------------
 -- projection functions
 -------------------------------------------------------------------------------
+--[[
 -- 2021/05/09 법선벡터(vecs)방향으로 점들(gpts1, gpts2)을 프로젝션한후
 -- 두 투영선이 겹쳐지지 않으면 false를 바로 반환
+local function proj_pg2pg0(vecs, gpts, gpts2)
+
+    for k=1,#vecs,2 do
+
+        local vx, vy = vecs[k], vecs[k+1]
+        local min1, max1, min2, max2 = INF, -INF, INF, -INF
+
+        for i=1, #gpts, 2 do
+            local prj1 = vx*gpts[i] + vy*gpts[i+1] -- vx*px + vy*py
+            if min1>prj1 then min1 = prj1 end
+            if max1<prj1 then max1 = prj1 end
+            -- print(prj1)
+        end
+
+        for i=1, #gpts2, 2 do
+            local prj2 = vx*gpts2[i] + vy*gpts2[i+1]
+            if min2>prj2 then min2 = prj2 end
+            if max2<prj2 then max2 = prj2 end
+            -- print(prj2)
+        end
+
+        local c1, c2 = (max1+min1)/2, (max2+min2)/2 -- 중심점간의 길이
+        local d1, d2 = (max1-min1)/2, (max2-min2)/2 -- 겹치지 않을 최소 길이
+
+        
+        if abs(c1-c2)>d1+d2 then
+            return false
+        end
+    end
+
+    return true
+
+end
+--]]
+-- 2021/05/09 법선벡터(vecs)방향으로 점들(gpts1, gpts2)을 프로젝션한후
+-- 두 투영선이 겹쳐지지 않으면 false를 바로 반환. 모두 겹친다면 그중
+-- overlap 길이가 가장 짧은 것의 법선벡터x겹친길이 벡터를 구한다.
+-- obj2를 밀어내는 데 필요한 push벡터를 계산하여 반환
 local function proj_pg2pg(vecs, gpts, gpts2)
+
+    local push = {}
+    local minol = INF -- minimum overlap
 
     for k=1,#vecs,2 do
 
@@ -113,11 +155,21 @@ local function proj_pg2pg(vecs, gpts, gpts2)
 
         local c1, c2 = (max1+min1)/2, (max2+min2)/2
         local d1, d2 = (max1-min1)/2, (max2-min2)/2
+
         
-        if abs(c1-c2)>d1+d2 then return false end
+        if abs(c1-c2)>d1+d2 then
+            return false
+        -- 가장 짧게 겹치는 길이와 그 방향벡터를 구한다
+        else -- if abs(c1-c2)<=d1+d2 
+            local overlap = (d1+d2)-abs(c1-c2) -- 항상 음이 아닌 값임
+            if minol > overlap then
+                minol = overlap
+                push = {vx, vy, overlap}
+            end
+        end
     end
 
-    return true
+    return push
 
 end
 
@@ -155,46 +207,95 @@ local function proj_pg2cc(vecs, pgpts, ccpt)
 end
 
 -------------------------------------------------------------------------------
--- 2021/05/09 폴리곤-폴리곤의 충돌판정 작성
--- 2021/05/18 폴리곤-원/원-폴리곤/원-원 들의 충돌판정 작성
+--2021/05/26 updpush()함수 작성
+-- 이것을 Display:push() 메서드 내에서 __addupd__()메서드로 등록한다.
 -------------------------------------------------------------------------------
-function Disp:ishit(obj)
-    -- (1) 모든 꼭지점의 전역좌표값을 먼저 구해서 저장한다.
-    -- print(self.__cpg, obj.__cpg)
-    
-    --(1) 둘 다 폴리곤(Rect포함)일 경우
-    if self.__cpg and obj.__cpg then
 
-        local gpts1, vecs1 = gvec_poly(self)
-        local gpts2, vecs2 = gvec_poly(obj)
-        return proj_pg2pg(vecs1, gpts1, gpts2) and proj_pg2pg(vecs2, gpts2, gpts1)
+local function updpush(self)
 
-    --(2b) 원(self)과 폴리곤(obj)일 경우
-    elseif self.__ccc and obj.__cpg then
+    for key, obj in pairs(self.__push) do --print(key)
+        
+        if obj.__bd==nil then -- if object had already removed
 
-        local pgpts, pgvecs = gvec_poly(obj)
-        local ccpt, ccvec = gvec_circ(self, pgpts)
+            self.__push[key] = nil --table.remove(self.__push, key) 
+        
+        else
+        
+            --(1) 둘 다 폴리곤(Rect포함)일 경우
+            if self.__cpg and obj.__cpg then
 
-        return proj_pg2cc(pgvecs, pgpts, ccpt) and proj_pg2cc(ccvec, pgpts, ccpt)
+                -- self의 중심 -> obj의 중심  방향의 벡터 계산
+                local x1, y1 = self:getglobalxy()
+                local x2, y2 = obj:getglobalxy()
+                local outerx, outery = x2-x1, y2-y1
 
-    --(2a) 폴리곤(Rect포함)과 원일 경우
-    elseif self.__cpg and obj.__ccc then
+                -- 만약 hit 상태라면 밀어낼 벡터<pushx,pushy>를 구한다
+                local gpts1, vecs1 = gvec_poly(self)
+                local gpts2, vecs2 = gvec_poly(obj)
 
-        local pgpts, pgvecs = gvec_poly(self)
-        local ccpt, ccvec = gvec_circ(obj, pgpts)
-        return proj_pg2cc(pgvecs, pgpts, ccpt) and proj_pg2cc(ccvec, pgpts, ccpt)
+                local push1 = proj_pg2pg(vecs1, gpts1, gpts2)
+                local push2 = proj_pg2pg(vecs2, gpts2, gpts1)
 
-    
-    --(3) 둘 다 원일 경우
-    elseif self.__ccc and obj.__ccc then
-        -- print('ishit')
-        local gcx1, gcy1 = self:getglobalxy()
-        local gcx2, gcy2 = obj:getglobalxy()
-        local dx, dy = gcx1-gcx2, gcy1-gcy2
-        local len = sqrt(dx*dx+dy*dy)
-        return len <= self.__ccc + obj.__ccc
+                if push1 and push2 then
+                    -- 두 벡터 중 길이가 더 작은 것을 선택한다
+                    local pushx, pushy
+                    if push1[3]<push2[3] then -- push1은 self -> obj 방향이다
+                        pushx, pushy = push1[1]*push1[3], push1[2]*push1[3]
+                    else
+                        pushx, pushy = push2[1]*push2[3], push2[2]*push2[3]
+                    end
+
+                    -- <pushx, pushy>가 self의 바깥방향으로의 벡터라면 더한다
+                    if (outerx*pushx+outery*pushy>=0) then
+                        obj:x(obj:getx()+pushx)
+                        obj:y(obj:gety()+pushy)
+                    else -- <pushx, pushy>가 self의 안쪽 방향으로의 벡터라면 뺀다.
+                        obj:x(obj:getx()-pushx)
+                        obj:y(obj:gety()-pushy)
+                    end
+
+                end
+
+
+            --(2b) 원(self)과 폴리곤(obj)일 경우
+            elseif self.__ccc and obj.__cpg then
+
+                local pgpts, pgvecs = gvec_poly(obj)
+                local ccpt, ccvec = gvec_circ(self, pgpts)
+
+                return proj_pg2cc(pgvecs, pgpts, ccpt) and proj_pg2cc(ccvec, pgpts, ccpt)
+
+            --(2a) 폴리곤(Rect포함)과 원일 경우
+            elseif self.__cpg and obj.__ccc then
+
+                local pgpts, pgvecs = gvec_poly(self)
+                local ccpt, ccvec = gvec_circ(obj, pgpts)
+                return proj_pg2cc(pgvecs, pgpts, ccpt) and proj_pg2cc(ccvec, pgpts, ccpt)
+
+            
+            --(3) 둘 다 원일 경우
+            elseif self.__ccc and obj.__ccc then
+                -- print('ishit')
+                local gcx1, gcy1 = self:getglobalxy()
+                local gcx2, gcy2 = obj:getglobalxy()
+                local dx, dy = gcx1-gcx2, gcy1-gcy2
+                local len = sqrt(dx*dx+dy*dy)
+                return len <= self.__ccc + obj.__ccc
+            end
+        end
     end
+end
 
+function Disp:push(obj)
+    self.__push = self.__push or {}
+    self.__push[obj] = obj
+
+    -- updpush함수가 아직 등록이 안되어 있다면 등록한다.
+    if not self.__iupds[updpush] then
+        print('addpush')
+        self.__iupds[updpush] = updpush
+    end
+    -- print(#self.__push, #self.__iupds)
 end
 --------------------------------------------------------------------------------
 

@@ -17,8 +17,10 @@ Display = class()
 -- static members of this class ------------------------------------------------
 --------------------------------------------------------------------------------
 local dobjs = {} -- Display OBJectS
-Display._dtobj = {}
-local dtobj = Display._dtobj -- Display Tagged OBJect
+
+-- tagged display object (tdobj) 들의 객체를 저장하는 테이블
+Display.__tdobj = {}
+local tdobj = Display.__tdobj -- Display Tagged OBJect
 -- local ndobjs = 0
 -------------------------------------------------------------------------------
 -- static public method
@@ -136,6 +138,45 @@ end
 function Display:getwidth() return 0 end
 function Display:getheight() return 0 end
 
+--2020/03/03 추가
+function Display:tag(name)
+
+    -- 2021/05/25에 아래 if문 추가
+    -- tag()메서드를 통해서 기존의 name을 바꿀 수 있다
+    if self.__tag then -- 기존의 이름이 있다면 
+        tdobj[self.__tag][self] = nil -- tdobj테이블에서 제거
+    end
+
+    self.__tag = name
+    -- 2020/06/21 tagged객체는 아래와 같이 tdobj에 별도로 (중복) 저장
+    if tdobj[name] == nil then
+        tdobj[name] = {[self]=self}
+    else
+        tdobj[name][self] = self
+    end
+    return self
+
+end
+
+--2020/06/21 tdobj에 tagged객체를 따로 저장하기 때문에
+-- collect()함수에서 매번 for반복문으로 tagged객체를 모을 필요가 없어졌음
+function Display.collect(name)
+
+    return tdobj[name] or {}
+
+end
+
+--2021/05/25 added : 기존의 tag를 제거
+function Display:detag()
+
+    if self.__tag then -- 기존의 이름이 있다면 
+        tdobj[self.__tag][self] = nil -- tdobj테이블에서 제거
+        self.__tag = nil
+    end
+    return self
+
+end
+
 --------------------------------------------------------------------------------
 if _Gideros then -- gideros
  --------------------------------------------------------------------------------
@@ -244,7 +285,7 @@ if _Gideros then -- gideros
 
         --2020/06/20 dobj[self]=self로 저장하기 때문에 삭제가 아래에서 바로 가능해짐
         dobjs[self] = nil
-        if self.__tag ~=nil then dtobj[self.__tag][self] = nil end
+        if self.__tag ~=nil then tdobj[self.__tag][self] = nil end
         -- ndobjs = ndobjs - 1
     end
 
@@ -331,7 +372,7 @@ elseif _Corona then -- if coronaSDK
         --2020/06/20 소멸자안에서 dobjs 테이블의 참조를 삭제한다
         dobjs[self] = nil
         -- ndobjs = ndobjs - 1
-        if self.__tag ~=nil then dtobj[self.__tag][self] = nil end
+        if self.__tag ~=nil then tdobj[self.__tag][self] = nil end
     end
 
     function Display:tint(r,g,b)

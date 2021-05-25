@@ -208,6 +208,7 @@ require 'luasopia.lib.02_shift'
 require 'luasopia.lib.04_blink' -- 2020/07/01, 2021/05/14 lib로 분리됨
 require 'luasopia.lib.05_wavescale' -- 2020/07/01, 2021/05/14 lib로 분리됨
 require 'luasopia.lib.06_ishit'
+require 'luasopia.lib.07_push'
 require 'luasopia.lib.path'
 require 'luasopia.lib.track' -- 2021/05/14 lib로 분리됨
 

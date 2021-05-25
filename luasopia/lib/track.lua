@@ -1,7 +1,7 @@
 local Disp = Display
 local sqrt, atan2 = math.sqrt, math.atan2
 local _R2D = 180/math.pi -- radian to degree constant
-local dtobj = Disp._dtobj
+local tdobj = Disp.__tdobj
 --------------------------------------------------------------------------------
 
 local function upd(self)
@@ -47,7 +47,7 @@ end
 
 local function newtrgt(self)
     local trgt1 = nil
-    local trgts = dtobj[self._ttag] or {}
+    local trgts = tdobj[self._ttag] or {}
     for _, obj in pairs(trgts) do
         if trgt1 == nil then trgt1 = obj end -- 첫 번째 객체를 저장
         if obj._lckd == nil then
