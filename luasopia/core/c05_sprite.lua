@@ -105,6 +105,11 @@ if _Gideros then
 
         self:seq(1) -- set 'default'(id==1) sequence
         
+        -- 2021/05/28 added for Display:ishit() method
+        local w, h = sht._w, sht._h
+        local hw, hh = w/2, h/2
+        self.__cpg = {-hw,-hh,1/h,  hw,-hh,1/w,  hw,hh,1/h,  -hw,hh,1/w}
+
         return Disp.init(self)
     end
 
@@ -237,6 +242,12 @@ elseif _Corona then
         self.__bd = newS(sht.sheet, self.__sq)
         
         self:seq(self)
+
+        -- 2021/05/28 added for Display:ishit() method
+        local w, h = sht._w, sht._h
+        local hw, hh = w/2, h/2
+        self.__cpg = {-hw,-hh,1/h,  hw,-hh,1/w,  hw,hh,1/h,  -hw,hh,1/w}
+        
         return Disp.init(self)
     end
 

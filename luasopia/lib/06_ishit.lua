@@ -277,12 +277,21 @@ function Disp:sethitpoint(x,y)
 end
 Disp.hitpoint = Disp.sethitpoint
 
+function Disp:sethitcircle(r)
+
+    self.__cpg, self.__cpt, self.__cln = nil, nil, nil
+    self.__ccc, self.ishit = r, ishit_cc
+    return self
+
+end
+Disp.hitcircle = Disp.sethitcircle
+
 function Disp:ishit(obj)
     --[[
     ishit()메서드를 이전에 한 번도 호출하지 않았다면 이것이 실행된다.
     하지만 한 번이라도 실행된 이후에는 ishitpg/ishitcc 중 하나가 실행된다.
-    이렇게 함으로써 Display.init() 생성자내에서 쓸데없이  ishit()메서드를
-    정의해 주는 것을 피할 수 있다.
+    이렇게 함으로써 Display.init() 생성자 내에서 사용을 안할 수도 있는
+     ishit()메서드를 매 객체마다 정의해 주는 것을 피할 수 있다.
     (루아라서 ishit()메서드 내에서 자신을 오버라이딩할 수 있음)
     --]]
 

@@ -24,6 +24,12 @@ if _Gideros then
 		self.__bd = Bitmap_new(tr)
 		self.__bd:setAnchorPoint(0.5, 0.5)
 		self.__sht = sht
+
+		-- 2021/05/28 added for Display:ishit() method
+		local w, h = sht.width, sht.height
+		local hw, hh = w/2, h/2
+		self.__cpg = {-hw,-hh,1/h,  hw,-hh,1/w,  hw,hh,1/h,  -hw,hh,1/w}
+		
 		return Display.init(self)
 	end
 
@@ -42,11 +48,17 @@ elseif _Corona then
 		self.__bd = newImg(imgsht, 1)
 		self.__bd.anchorX, self.__bd.anchorY = 0.5, 0.5
 		self.__sht = sht
+
+		-- 2021/05/28 added for Display:ishit() method
+		local w, h = sht.width, sht.height
+		local hw, hh = w/2, h/2
+		self.__cpg = {-hw,-hh,1/h,  hw,-hh,1/w,  hw,hh,1/h,  -hw,hh,1/w}
+		
 		return Display.init(self)
 	end
 
 end
 
 --2020/08/26:added
-function ImageRegion:getwidth() return __sht.width end
-function ImageRegion:getheight() return __sht.height end
+function ImageRegion:getwidth() return self.__sht.width end
+function ImageRegion:getheight() return self.__sht.height end
