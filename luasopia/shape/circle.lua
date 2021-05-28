@@ -110,6 +110,7 @@ function Circle:init(radius, opt)
     self.__rds = radius
     self._apx, self._apy = 0.5, 0.5 -- AnchorPointX, AnchorPointY
     self.__ccc = radius
+    
     return Shape.init(self, mkpts(radius, 0.5, 0.5), opt)
 end
 

@@ -104,6 +104,7 @@ if _Gideros then
         self.__sq = modseq(seq, sht.__frames)
 
         self:seq(1) -- set 'default'(id==1) sequence
+        
         return Disp.init(self)
     end
 

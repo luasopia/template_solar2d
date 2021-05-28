@@ -36,15 +36,15 @@ if _Gideros then
       local w, h = self.__bd:getWidth(true), self.__bd:getHeight(true)
       local hw, hh = w/2, h/2
       self.__cpg = {-hw,-hh,1/h,  hw,-hh,1/w,  hw,hh,1/h,  -hw,hh,1/w}
-      self.__w__, self.__h__ = w, h
+      self.__wdt, self.__hgt = w, h
       --------------------------
 
       return Disp.init(self) --return self:superInit()
     end
 
     -- 2020/06/20 arguement ture means 'do not consider transformation'
-    function Image:getwidth() return self.__w__ end
-    function Image:getheight() return self.__h__ end
+    function Image:getwidth() return self.__wdt end
+    function Image:getheight() return self.__hgt end
 
     -- 2021/05/09: Gideros는 anchor를 조절하면 __cpts__도 조정해야
     -- getglobalxy()메서드가 제대로된 좌표값을 계산한다. 
@@ -55,7 +55,7 @@ if _Gideros then
 
       self.__bd:setAnchorPoint(ax,ay)
 
-      local w,h = self.__w__, self.__h__
+      local w,h = self.__wdt, self.__hgt
       self.__cpts__ = {
         -w*ax,-h*ay, 1/h,
         w*(1-ax),-h*ay, 1/w,
@@ -83,14 +83,14 @@ elseif _Corona then
     local w, h = self.__bd.width, self.__bd.height
     local hw, hh = w/2, h/2
     self.__cpg = {-hw,-hh,1/h,  hw,-hh,1/w,  hw,hh,1/h,  -hw,hh,1/w}
-    self.__w__, self.__h__ = w, h
+    self.__wdt, self.__hgt = w, h
     --------------------------
 
     return Disp.init(self) --return self:superInit()
   end  
   
   -- 2020/06/20
-  function Image:getwidth() return self.__w__ end
-  function Image:getheight() return self.__h__ end
+  function Image:getwidth() return self.__wdt end
+  function Image:getheight() return self.__hgt end
 
 end

@@ -16,14 +16,18 @@ local rooturl = _luasopia.root .. '/' -- 2021/05/12
 ----------------------------------------------------------------------------
 if _Gideros then
 
-    -- log('getsheet (gid)')
-    
     local Tnew = _Gideros.Texture.new
     local TRnew = _Gideros.TextureRegion.new
     
     function getsheet(url, frameWidth, frameHeight, numFrames)
+
         local txts, frms = {}, {}
-        local sht = {__textures = txts, __frames = frms, _w = frameWidth, _h = frameHeight}
+        local sht = { 
+                __textures = txts,
+                __frames = frms,
+                _w = frameWidth,
+                _h = frameHeight
+            }
         local txt = Tnew(rooturl..url)
         local w, h = txt:getWidth(), txt:getHeight()
         local nfrms = 0
@@ -39,17 +43,27 @@ if _Gideros then
             end
         end
         return sht
+        
     end
 
+-------------------------------------------------------------------------------
 elseif _Corona then
+-------------------------------------------------------------------------------
 
     local newIS = _Corona.graphics.newImageSheet
     
     function getsheet(url, frameWidth, frameHeight, numFrames)
+
         local args = {width=frameWidth, height=frameHeight, numFrames = numFrames}
-        local sht = {sheet = newIS(rooturl..url, args), __frames={}, _w = frameWidth, _h = frameHeight}
+        local sht = {
+            sheet = newIS(rooturl..url, args),
+            __frames={},
+            _w = frameWidth,
+            _h = frameHeight
+        }
         for k=1,numFrames do tIn(sht.__frames, k) end
         return sht
+
     end
     
 end

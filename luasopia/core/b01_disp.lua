@@ -59,6 +59,7 @@ function Display:init()
 
     dobjs[self] = self
     self.__iupds = {} -- 내부 update함수들을 저장
+
 end
 
 -- This function is called in every frames
