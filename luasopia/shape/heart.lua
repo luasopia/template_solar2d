@@ -50,9 +50,10 @@ function Heart:__mkpts__()
 end
 
 
-function Heart:init(radius, opt)
+function Heart:init(r, opt)
 
-    self.__rds = radius
+    self.__rds = r
+    self.__ccc = r*0.85
     return Shape.init(self, self:__mkpts__(), opt)
     
 end
@@ -61,6 +62,7 @@ end
 function Heart:setradius(r)
 
     self.__rds = r
+    self.__ccc = r*0.85
     
     self.__pts = self:__mkpts__()
     return self:__redraw__()

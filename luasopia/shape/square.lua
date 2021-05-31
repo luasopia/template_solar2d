@@ -22,17 +22,6 @@ function Square:init(sidelen, opt)
     return Shape.init(self, mkpts(sidelen, 0.5, 0.5), opt)
 end
 
--- 2020/02/23 : Gideros의 경우 anchor()함수는 오버라이딩해야 한다.
-function Square:anchor(ax, ay)
-    self._apx, self._apy = ax, ay
-    self:_re_pts1(mkpts(self._slen, ax, ay))
-    return self
-end
-
-function Square:getanchor()
-    return self._apx, self._apy
-end
-
 --2020/06/23
 function Square:sidelen(len)
     self._slen = len
