@@ -4,14 +4,14 @@
 
 local tIn = table.insert
 local tRm = table.remove
-local tmgapf = 1000/_luasopia.fps
+local tmgapf = 1000/_luasopia.fps -- 1frame에 소요되는시간[ms]
 --------------------------------------------------------------------------------
 -- 2020/01/15 times that is NOT use intrinsic (Gideros/Corona) Timer class
 --
--- tmr = Timer(delay, func [,loops [,onend]])
+-- tmr = Timer(delay, fn [,loops [,onend]])
 --
--- 	After delay [ms], func (function) is called.
--- 	loops (default=1) designates the total number of calling func
+-- 	After delay (in milliseconds), fn (function) is called.
+-- 	loops (default=1) designates the total number of calling fn
 -- 	if loops is INF, then func is called infinitely with time gap of delay
 --
 -- 	arguments given to func call : event = {
@@ -58,8 +58,9 @@ function Timer.updateAll()
 				--if isfinal then
 				if isfinal and dobj.__bd ~=nil then
 					if tmr.__onend then
-						tmr.__onend(dobj, event) --dobj를 먼저 넘김
+					 	tmr.__onend(dobj, event) --dobj를 먼저 넘김
 					end
+										
 					dobj.__tmrs[tmr] = nil -- dobj안의 tmr객체도 삭제
 					timers[tmr] = nil
 					break
@@ -77,6 +78,7 @@ function Timer.updateAll()
 				end
 
 			end
+
 		end -- while  count > tmr.count do
 	end
 end
@@ -118,12 +120,3 @@ function Timer:remove()
 	end
 	timers[self] = nil
 end
-
---[[
-function Timer:remove2()
-	if self.__dobj then -- display object에 붙어있는 타이머의 경우
-		self.__dobj.__tmrs[self] = nil -- dobj안의 tmr객체도 삭제
-	end
-	timers[self] = nil
-end
---]]

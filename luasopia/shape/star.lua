@@ -114,30 +114,33 @@ function Star:init(radius, opt)
     self.__rds, self.__npts = radius, opt.points or 5
     self.__irt = opt.ratio or inratio0
     self.__apx, self.__apy = 0.5, 0.5 -- AnchorPointX, AnchorPointY
-    self.__ccc = radius
+    self.__ccc = radius*(0.5+self.__irt*0.5) -- 2021/05/31 added
     return Shape.init(self, mkpts(radius, self.__npts, self.__irt, 0.5, 0.5), opt)
 end
 
 
-function Star:getanchor()
-    return self.__apx, self.__apy
-end
-
 --2020/06/23
-function Star:radius(r)
+function Star:setradius(r)
     self.__rds = r
     self:_re_pts1( mkpts(r, self.__npts, self.__irt, self.__apx, self.__apy) )
+    self.__ccc = r*(0.5+self.__irt*0.5) -- 2021/05/31 added
     return self
 end
 
-function Star:points(n)
+function Star:setpoints(n)
     self.__npts = n
     self:_re_pts1( mkpts(self.__rds, n, self.__irt, self.__apx, self.__apy) )
     return self
 end
 
-function Star:ratio(rt)
+function Star:setratio(rt)
     self.__irt = rt
     self:_re_pts1( mkpts(self.__rds, self.__npts, rt, self.__apx, self.__apy) )
+    self.__ccc = self.__rds*(0.5+self.__irt*0.5) -- 2021/05/31 added
     return self
 end
+
+-- 2021/05/31 added
+Star.radius = Star.setradius
+Star.points = Star.setpoints
+Star.ratio = Star.setratio

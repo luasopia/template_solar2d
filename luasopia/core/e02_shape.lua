@@ -89,6 +89,11 @@ if _Gideros then
     function Shape:__addshp__(shp)
 
         self.__bd:addChild(shp)
+
+        self.__shp = shp
+        shp:setX( self.__xmn*(self.__apx-1) - self.__xmx*self.__apx )
+        shp:setY( self.__ymn*(self.__apy-1) - self.__ymx*self.__apy )
+
         return self
 
     end
@@ -106,9 +111,7 @@ if _Gideros then
         end
 
         --(2) 아래는 self:__addshp__(shp) 함수와 같다.
-        local shp = mkshp(self.__pts, self.__sopt)
-        self.__bd:addChild(shp)
-        return self
+        return self:__addshp__( mkshp(self.__pts, self.__sopt) )
 
     end
 --------------------------------------------------------------------------------
@@ -119,6 +122,11 @@ elseif _Corona then
     function Shape:__addshp__(shp)
 
         self.__bd:insert(shp)
+
+        self.__shp = shp
+        shp.x = self.__xmn*(self.__apx-1) - self.__xmx*self.__apx
+        shp.y = self.__ymn*(self.__apy-1) - self.__ymx*self.__apy
+
         return self
 
     end
@@ -136,15 +144,16 @@ elseif _Corona then
         end
 
         --(2) 아래는 self:__addshp__(shp) 함수와 같다.
-        local shp = mkshp(self.__pts, self.__sopt)
-        self.__bd:insert(shp)
-        return self
+        return self:__addshp__( mkshp(self.__pts, self.__sopt) )
+
     end
 
 end
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 function Shape:init(pts, opt)
+
+    self.__apx, self.__apy = 0.5, 0.5 -- AnchorPointX, AnchorPointY
 
     self.__pts = pts
 
@@ -159,7 +168,7 @@ function Shape:init(pts, opt)
     end
 
     self.__bd = newGrp()
-    self:__addshp__( mkshp(pts, self.__sopt) )
+    self:__addshp__(  mkshp(pts, self.__sopt) )
 
     return Disp.init(self)
     
@@ -207,13 +216,58 @@ function Shape:empty()
 
 end
 
+if _Gideros then
+    
+    --2021/05/31 : Shpae객체의 anchor point를 변경하기 위한 메서드들
+    -- self.__shp의 (parent group내에서의) 위치를 바꿔주는 방식으로 변경
+    function Shape:setanchor(apx, apy)
+
+        self.__apx, self.__apy = apx, apy
+        self.__shp:setX( self.__xmn*(apx-1) - self.__xmx*apx )
+        self.__shp:setY( self.__ymn*(apy-1) - self.__ymx*apy )
+        return self
+
+    end
+
+    -- 2021/05/31: globalxy는 __bd가 아니라 __shp에서 구해야 한다
+    function Display:getglobalxy(x,y)
+        return self.__shp:localToGlobal(x or 0,y or 0)
+    end
+    
+
+elseif _Corona then
+
+    function Shape:setanchor(apx, apy)
+
+        self.__apx, self.__apy = apx, apy
+        self.__shp.x = self.__xmn*(apx-1) - self.__xmx*apx
+        self.__shp.y = self.__ymn*(apy-1) - self.__ymx*apy
+        return self
+
+    end
+
+    function Display:getglobalxy(x,y)
+        return self.__shp:localToContent(x or 0,y or 0)
+    end
+
+
+end
+
+
+function Shape:getanchor()
+
+    return self.__apx, self.__apy
+
+end
+
+
 -- 2021/05/04에 추가
 
 Shape.strokewidth = Shape.setstrokewidth
 Shape.strokecolor = Shape.setstrokecolor
+Shape.anchor = Shape.setanchor
 
 Shape.fillcolor = Shape.fill -- 삭제예정
-
 
 --------------------------------------------------------------------------------
 -- 2020/06/13 Rawshape 클래스는 lib.Tail 클래스에서 사용됨

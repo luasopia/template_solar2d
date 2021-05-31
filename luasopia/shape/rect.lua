@@ -6,47 +6,51 @@ Rect = class(Shape)
 --------------------------------------------------------------------------------
 
 -- 2020/02/23 : anchor위치에 따라 네 꼭지점의 좌표를 결정
+-- 2021/05/31 : 중심점이 원점인 사각형의 네 꼭지점 좌표 생성
 function Rect:__mkpts__()
 
-    local w,h,apx,apy = self.__wdt, self.__hgt, self.__apx, self.__apy
-    local x1, y1 = w*-apx, h*-apy -- (x,y) of left-top
-    local x2, y2 = w*(1-apx), h*(1-apy) -- (x,y) of right-bottom
+    local hw, hh = self.__wdt*0.5, self.__hgt*0.5
+    local x1, y1 = -hw, -hh -- left-top
+    local x2, y2 = hw, -hh -- right-top
+    local x3, y3 = hw, hh -- right-bottom
+    local x4, y4 = -hw, hh -- left-bottom
 
     -- 2021/05/08 : 충돌판정에 필요한 점의 정보 저장
     -- x,y,1/변의길이(단위벡터를 계산하는 데 필요함)
-    self.__cpg = {x1,y1,1/h,  x2, y1,1/w,  x2, y2,1/h,   x1,y2,1/w }
+    self.__cpg = {x1,y1,0.5/hh,  x2,y2,0.5/hw,  x3,y3,0.5/hh,   x4,y4,0.5/hw }
 
-    return {x1, y1,  x2, y1,  x2, y2,  x1, y2 }
+    self.__xmn, self.__xmx = -hw, hw
+    self.__ymn, self.__ymx = -hh, hh
+
+    return {x1,y1,  x2,y2,  x3,y3,  x4,y4 }
 end
 
 function Rect:init(width, height, opt)
 
     self.__wdt, self.__hgt = width, height or width
-    self.__apx, self.__apy = 0.5, 0.5 -- AnchorPointX, AnchorPointY
     return Shape.init(self, self:__mkpts__(), opt)
 
 end
 
--- 2020/02/23 : Gideros의 경우 anchor()함수는 오버라이딩해야 한다.
-function Rect:anchor(ax, ay)
-    self.__apx, self.__apy = ax, ay
-    self:_re_pts1(self:__mkpts__())
-    return self
-end
-
-function Rect:getanchor()
-    return self.__apx, self.__apy
-end
 
 --2020/06/23
 function Rect:setwidth(w)
+
     self.__wdt = w
-    return self:_re_pts1(self:__mkpts__())
+
+    self.__pts = self:__mkpts__()
+    return self:__redraw__()
+
 end
 
+
 function Rect:setheight(h)
+
     self.__hgt = h
-    return self:_re_pts1( self:__mkpts__() )
+
+    self.__pts = self:__mkpts__()
+    return self:__redraw__()
+
 end
 
 function Rect:getwidth() return self.__wdt end

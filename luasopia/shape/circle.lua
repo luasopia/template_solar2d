@@ -42,89 +42,34 @@ local function rawmkpts(r)
 end
 
 --------------------------------------------------------------------------------
+function Circle:__mkpts__()
 
-local mkpts
+    local r = self.__rds
+    local pts, np = rawmkpts(r)
 
-if _Gideros then
-
-    mkpts = function(r, ax, ay)
-
-        local pts, np = rawmkpts(r)
-
-        -- anchor 위치에 따른 좌표값 보정
-        -- local xof, yof = (xmax-xmin)*(0.5-ax), (ymax-ymin)*(0.5-ay)
-        local xof, yof = 2*r*(0.5-ax), 2*r*(0.5-ay)
-        for k=1,2*np-1,2 do
-            pts[k] = pts[k] + xof
-            pts[k+1] = pts[k+1] + yof
-        end
-        
-        return pts
-    end
-
-    -- 2020/06/24 : Corona의 Circle 특성때문에 apx, apy는 0과1사이값으로 조정
-    local function setap(ap)
-        if ap<0 then
-            return 0
-        elseif ap>1 then
-            return 1
-        else
-            return ap
-        end
-    end
-
-    function Circle:anchor(ax, ay)
-        self._apx = setap(ax)
-        self._apy = setap(ay)
-        self:_re_pts1(mkpts(self.__rds, self._npts, self._apx, self._apy))
-        return self
-    end
-
-elseif _Corona then
-
-    mkpts = function(r, ax, ay)
-
-        local pts, np = rawmkpts(r)
-
-        -- anchor 위치에 따른 좌표값 보정
-        local xof, yof = 2*r*(0.5-ax), 2*r*(0.5-ay)
-        for k=1,2*np-1,2 do
-            pts[k] = pts[k] + xof
-            pts[k+1] = pts[k+1] + yof
-        end
-        
-        return pts
-    end
-
-    function Circle:anchor(ax, ay)
-        self._apx, self._apy = ax, ay
-        self:_re_pts1(mkpts(self.__rds, self._npts, self._apx, self._apy))
-        return self
-    end
-
+    self.__xmn, self.__xmx = -r, r
+    self.__ymn, self.__ymx = -r, r
+    return pts
 end
 
 --------------------------------------------------------------------------------
 
 function Circle:init(radius, opt)
     self.__rds = radius
-    self._apx, self._apy = 0.5, 0.5 -- AnchorPointX, AnchorPointY
     self.__ccc = radius
     
-    return Shape.init(self, mkpts(radius, 0.5, 0.5), opt)
+    return Shape.init(self, self:__mkpts__(), opt)
 end
 
-
-function Circle:getanchor()
-    return self._apx, self._apy
-end
 
 --2020/06/23
 function Circle:setradius(r)
     self.__rds = r
     self.__ccc = r
-    self:_re_pts1( mkpts(r, self._apx, self._apy) )
-    return self
+
+    self.__pts = self:__mkpts__()
+    return self:__redraw__()
+
 end
 
 --2021/05/11
