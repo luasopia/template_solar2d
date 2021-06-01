@@ -1,7 +1,7 @@
 --------------------------------------------------------------------------------
 -- 2021/05/31 created
 --------------------------------------------------------------------------------
-local int = math.floor
+local int, sqrt = math.floor, math.sqrt
 --------------------------------------------------------------------------------
 Arrow = class(Shape)
 --------------------------------------------------------------------------------
@@ -19,7 +19,9 @@ function Arrow:__mkpts__()
     local x7, y7 = -0.5*w, 0
 
     -- x,y,1/변의길이(단위벡터를 계산하는 데 필요함)
-    -- self.__cpg = {x1,y1,1/h,  x2, y1,1/w,  x2, y2,1/h,   x1,y2,1/w }
+    local _1_len1 = 1/sqrt(hhgt*hhgt+w*w*0.25)
+    local _1_len2 = 1/sqrt(thgt*thgt+(w-twdt)*(w-twdt)*0.25)
+    self.__cpg = {x1,y1,_1_len1,  x2,y2,_1_len1,  x4,y4,_1_len2,  x5,y5,1/twdt,  x7,y7,_1_len2}
 
     self.__xmn, self.__xmx = -0.5*w, 0.5*w
     self.__ymn, self.__ymx = -hhgt, thgt
@@ -52,17 +54,46 @@ function Arrow:setwidth(w)
 
 end
 
-function Arrow:setheight(h)
+function Arrow:setheadheight(h)
 
-    self.__hgt = h
+    self.__hhgt = h
+    self.__pts = self:__mkpts__()
+    return self:__redraw__()
+
+end
+
+
+-- tailwidth < (head)width 가 되도록 강제함
+function Arrow:settailwidth(w)
+
+    if w<self.__wdt then
+        self.__twdt = w
+        self.__pts = self:__mkpts__()
+        return self:__redraw__()
+    else
+        return self
+    end
+
+end
+
+function Arrow:settailheight(h)
+
+    self.__thgt = h
     self.__pts = self:__mkpts__()
     return self:__redraw__()
 
 end
 
 function Arrow:getwidth() return self.__wdt end
+function Arrow:getheadheight() return self.__hhgt end
+function Arrow:gettailwidth() return self.__twdt end
+function Arrow:gettailheight() return self.__thgt end
+
+function Arrow:getwidth() return self.__wdt end
 function Arrow:getheight() return self.__hgt end
 
 -- 2021/05/04: add aliases of set methods 
 Arrow.width = Arrow.setwidth
-Arrow.height = Arrow.setheight
+Arrow.headheight = Arrow.setheadheight
+Arrow.tailheight = Arrow.settailheight
+Arrow.tailwidth = Arrow.settailwidth
