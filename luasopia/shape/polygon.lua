@@ -18,11 +18,11 @@ function Polygon:__mkpts__()
     local rgap = _2PI/np
     local pts = {0, -r}
 
-    local xmin,ymin, xmax, ymax = 0,-r, 0,-r
+    -- local xmin,ymin, xmax, ymax = 0,-r, 0,-r
     
     -- 2021/05/20: 충돌판정을 위한 벡터정보 생성
-    local _1_len = 1/(r*sqrt(2*(1-cos(_2PI/np)))) -- 1/(변의 길이)
-    local cpg = {}
+    local _1_len = 1/(r*sqrt(2*(1-cos(rgap)))) -- 1/(변의 길이)
+    local cpg = {0,-r,_1_len}
 
     for k=1, np-1 do
         local rot = k*rgap
@@ -30,24 +30,22 @@ function Polygon:__mkpts__()
         tbins(pts, xr) -- x
         tbins(pts, yr) -- y
 
-        if xr>xmax then xmax = xr
-        elseif xr<xmin then xmin = xr end
-        if yr>ymax then ymax = yr
-        elseif yr<ymin then ymin = yr end
+        -- if xr>xmax then xmax = xr
+        -- elseif xr<xmin then xmin = xr end
+        -- if yr>ymax then ymax = yr
+        -- elseif yr<ymin then ymin = yr end
 
 
         -- 2021/05/20: 충돌판정을 위한 벡터정보 생성
-        tbins(cpg, pts[k])
-        tbins(cpg, pts[k+1])
+        tbins(cpg, xr)
+        tbins(cpg, yr)
         tbins(cpg, _1_len) -- 세 번째 요소로 1/(변의길이) 값이 저장되어야 한다
-
     end
     
     self.__cpg = cpg -- 2021/05/20: 충돌판정을 위한 벡터정보 생성
 
-    self.__xmn, self.__xmx = xmin, xmax
-    self.__ymn, self.__ymx = ymin, ymax 
     return pts
+
 end
 
 

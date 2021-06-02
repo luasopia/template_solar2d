@@ -43,8 +43,9 @@ function Heart:__mkpts__()
 
     end
 
-    self.__xmn, self.__xmx = xmin, xmax
-    self.__ymn, self.__ymx = ymin, ymax 
+    self.__ctx, self.__cty = (xmax+xmin)*0.5, (ymax+ymin)*0.5
+    self.__hwdt, self.__hhgt = (xmax-xmin)*0.5, (ymax-ymin)*0.5
+
     return pts
 
 end

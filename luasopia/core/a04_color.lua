@@ -1,4 +1,5 @@
--- if not_required then return end -- This prevents auto-loading in Gideros
+--------------------------------------------------------------------------------
+local inv255 = 1/255
 --------------------------------------------------------------------------------
 Color = class() --:is'Color'
 --------------------------------------------------------------------------------
@@ -27,16 +28,22 @@ elseif _Corona then
             self.__r, self.__g, self.__b = r.__r, r.__g, r.__b
             self.r, self.g, self.b = r.r, r.g, r.b
             self.a = g or r.a or 1 -- in this case, 2nd argument is an alpha
+            self.hex = r.hex
         else
             self.__r, self.__g, self.__b = r, g, b
-            self.r, self.g, self.b = r/255, g/255, b/255
-            -- self.rgb = {self.r, self.g, self.b}
+            self.r, self.g, self.b = r*inv255, g*inv255, b*inv255
+            self.hex = r*65536 + g*256 + b
             self.a = a or 1
         end
         
     end
 
 end
+
+function Color:isequal(c)
+    return self.hex == c.hex and self.a == c.a
+end
+
 
 local rand = rand
 local lowval = 40 -- 2020/06/12 added to prevent generating too dark color

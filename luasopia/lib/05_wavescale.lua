@@ -19,6 +19,8 @@ local function wvtmr(self, e)
 end
 
 function Disp:wavescale(prd, amp)
+
+    -- if self.__bd==nil then return self end
     
     if self._tmrwv then self._tmrwv:remove() end
     
@@ -31,11 +33,15 @@ function Disp:wavescale(prd, amp)
 end
 
 function Disp:stopwave()
+
+    -- if self.__bd==nil then return self end
+
     if self._tmrwv then
         self._tmrwv:remove() -- dobj:removetimer(dobj._tmrwv)
         self:scale(dobj._orgns)
     end
     return self
+
 end
 
 --------------------------------------------------------------------------------

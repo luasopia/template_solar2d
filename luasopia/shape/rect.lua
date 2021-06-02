@@ -19,9 +19,6 @@ function Rect:__mkpts__()
     -- x,y,1/변의길이(단위벡터를 계산하는 데 필요함)
     self.__cpg = {x1,y1,0.5/hh,  x2,y2,0.5/hw,  x3,y3,0.5/hh,   x4,y4,0.5/hw }
 
-    self.__xmn, self.__xmx = -hw, hw
-    self.__ymn, self.__ymx = -hh, hh
-
     return {x1,y1,  x2,y2,  x3,y3,  x4,y4 }
 end
 
