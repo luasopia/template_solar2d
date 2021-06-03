@@ -32,14 +32,12 @@ function Star:__mkpts__()
             tblin(pts, yr) -- y
         end
 
-        if xr>xmax then xmax = xr
-        elseif xr<xmin then xmin = xr end
-        if yr>ymax then ymax = yr
-        elseif yr<ymin then ymin = yr end
+        if xr>xmax then xmax = xr elseif xr<xmin then xmin = xr end
+        if yr>ymax then ymax = yr elseif yr<ymin then ymin = yr end
     end
     
-    self.__xmn, self.__xmx = xmin, xmax
-    self.__ymn, self.__ymx = ymin, ymax
+    self.__sctx, self.__scty = (xmax+xmin)*0.5, (ymax+ymin)*0.5
+    self.__hwdt, self.__hhgt = (xmax-xmin)*0.5, (ymax-ymin)*0.5
     
     return pts
 end
@@ -51,7 +49,7 @@ function Star:init(radius, opt)
     opt = opt or {}
     self.__rds, self.__npts = radius, opt.points or 5
     self.__irt = opt.ratio or inratio0
-    self.__ccc = radius*(0.5+self.__irt*0.5) -- 2021/05/31 added
+    self.__ccc = {0,0,radius*(0.5+self.__irt*0.5)} -- 2021/05/31 added
     return Shape.init(self, self:__mkpts__(), opt)
 
 end

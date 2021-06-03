@@ -10,8 +10,9 @@ local INF, abs, sqrt = math.huge, math.abs, math.sqrt
 -- polygon  : __cpg = {x1,y1,_1_len1, x2,y2,_1_len2. ...}
 --            여기서 _1_lenk는 (xk_1, yk_1)->(xk, yk) 벡터의 길이의 역수
 --            (곱셈이 나눗셈보다 시간이 덜 걸리므로 미리 역수를 계산해둔다)
--- circle   : __ccc = r
+-- circle   : __ccc = {x, y, r} -- x,y is the coordinates of center point
 -- point    : __cpt = {x, y}
+
 -- line     : __cln = {x1,y1, x2,y2, len}, len은 선분의 길이
 --------------------------------------------------------------------------------
 
@@ -62,10 +63,11 @@ local function gvec_cc(circ, pgpts)
     local gpts, vecs = {}, {}
 
     -- 원의 중심점을 따로 저장한다
-    local gx, gy = circ:getglobalxy()
+    local ccc = circ.__ccc
+    local gx, gy = circ:getglobalxy(ccc[1], ccc[2])
     tins(gpts, gx)
     tins(gpts, gy)
-    tins(gpts, circ.__ccc) -- gpts[3]에는 반지름을 저장한다.
+    tins(gpts, ccc[3]) -- gpts[3]에는 반지름을 저장한다.
 
     -- 원의 중심점에서 가장 가까운 꼭지점을 찾는다
     local cx, cy
@@ -214,11 +216,13 @@ local function proj_pg2pt(pg, pt)
 
 end
 
-local function proj_cc2cc(cc1, cc2)
+local function proj_cc2cc(circ1, circ2)
 
-    local r12 = cc1.__ccc + cc2.__ccc
-    local gcx1, gcy1 = cc1:getglobalxy()
-    local gcx2, gcy2 = cc2:getglobalxy()
+    local c1, c2 = circ1.__ccc, circ2.__ccc
+
+    local r12 = c1[3] + c2[3]
+    local gcx1, gcy1 = circ1:getglobalxy(c1[1],c1[2])
+    local gcx2, gcy2 = circ2:getglobalxy(c2[1],c2[2])
     local dx, dy = gcx1-gcx2, gcy1-gcy2
     return dx*dx+dy*dy <= r12*r12
 
@@ -277,10 +281,10 @@ function Disp:sethitpoint(x,y)
 end
 Disp.hitpoint = Disp.sethitpoint
 
-function Disp:sethitcircle(r)
+function Disp:sethitcircle(r, x, y)
 
     self.__cpg, self.__cpt, self.__cln = nil, nil, nil
-    self.__ccc, self.ishit = r, ishit_cc
+    self.__ccc, self.ishit = {x or 0, y or 0, r}, ishit_cc
     return self
 
 end
@@ -301,6 +305,9 @@ function Disp:ishit(obj)
     elseif self.__ccc then
         self.ishit = ishit_cc -- ishit()메서드 overriding
         return ishit_cc(self, obj)
+    elseif self.__cpt then
+        self.inshit = ishit_pt
+        return ishit_pt(self, obj)
     else
         return false
     end

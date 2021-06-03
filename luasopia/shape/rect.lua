@@ -18,6 +18,8 @@ function Rect:__mkpts__()
     -- 2021/05/08 : 충돌판정에 필요한 점의 정보 저장
     -- x,y,1/변의길이(단위벡터를 계산하는 데 필요함)
     self.__cpg = {x1,y1,0.5/hh,  x2,y2,0.5/hw,  x3,y3,0.5/hh,   x4,y4,0.5/hw }
+    self.__sctx, self.__scty = 0, 0
+    self.__hwdt, self.__hhgt = hw, hh
 
     return {x1,y1,  x2,y2,  x3,y3,  x4,y4 }
 end

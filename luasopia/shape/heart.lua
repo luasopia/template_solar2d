@@ -43,7 +43,7 @@ function Heart:__mkpts__()
 
     end
 
-    self.__ctx, self.__cty = (xmax+xmin)*0.5, (ymax+ymin)*0.5
+    self.__sctx, self.__scty = (xmax+xmin)*0.5, (ymax+ymin)*0.5
     self.__hwdt, self.__hhgt = (xmax-xmin)*0.5, (ymax-ymin)*0.5
 
     return pts
@@ -54,7 +54,7 @@ end
 function Heart:init(r, opt)
 
     self.__rds = r
-    self.__ccc = r*0.85
+    self.__ccc = {0,0,r*0.85}
     return Shape.init(self, self:__mkpts__(), opt)
     
 end

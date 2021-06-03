@@ -32,6 +32,7 @@ elseif _Corona then
         else
             self.__r, self.__g, self.__b = r, g, b
             self.r, self.g, self.b = r*inv255, g*inv255, b*inv255
+            -- solar2d에서 hex필드는 사용되지 않지만 isequal()메서드에서 사용됨
             self.hex = r*65536 + g*256 + b
             self.a = a or 1
         end

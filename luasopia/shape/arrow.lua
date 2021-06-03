@@ -10,21 +10,21 @@ function Arrow:__mkpts__()
 
     local w, hhgt, thgt, twdt = self.__wdt, self.__hhgt, self.__thgt, self.__twdt
 
-    local x1, y1 = 0, -hhgt
-    local x2, y2 = 0.5*w, 0 
-    local x3, y3 = 0.5*twdt, 0 
-    local x4, y4 = 0.5*twdt, thgt
-    local x5, y5 = -0.5*twdt, thgt
-    local x6, y6 = -0.5*twdt, 0
-    local x7, y7 = -0.5*w, 0
+    local x1, y1 = 0,           -hhgt
+    local x2, y2 = 0.5*w,       0 
+    local x3, y3 = 0.5*twdt,    0 
+    local x4, y4 = 0.5*twdt,    thgt
+    local x5, y5 = -0.5*twdt,   thgt
+    local x6, y6 = -0.5*twdt,   0
+    local x7, y7 = -0.5*w,      0
 
     -- x,y,1/변의길이(단위벡터를 계산하는 데 필요함)
     local _1_len1 = 1/sqrt(hhgt*hhgt+w*w*0.25)
     local _1_len2 = 1/sqrt(thgt*thgt+(w-twdt)*(w-twdt)*0.25)
     self.__cpg = {x1,y1,_1_len1,  x2,y2,_1_len1,  x4,y4,_1_len2,  x5,y5,1/twdt,  x7,y7,_1_len2}
 
-    self.__xmn, self.__xmx = -0.5*w, 0.5*w
-    self.__ymn, self.__ymx = -hhgt, thgt
+    self.__sctx, self.__scty = 0, (thgt-hhgt)*0.5
+    self.__hwdt, self.__hhgt = w*0.5, (hhgt+thgt)*0.5
 
     return {x1,y1,  x2,y2,  x3,y3,  x4,y4,  x5,y5,  x6,y6,  x7,y7}
 
