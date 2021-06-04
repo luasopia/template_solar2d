@@ -90,7 +90,7 @@ function Arrow:gettailwidth() return self.__twdt end
 function Arrow:gettailheight() return self.__thgt end
 
 function Arrow:getwidth() return self.__wdt end
-function Arrow:getheight() return self.__hgt end
+function Arrow:getheight() return self.__hhgt + self.__thgt end
 
 -- 2021/05/04: add aliases of set methods 
 Arrow.width = Arrow.setwidth

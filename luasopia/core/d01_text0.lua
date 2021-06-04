@@ -52,18 +52,14 @@ if _Gideros then -- for Gideros ###############################################
 	
 	local ttfnew = _Gideros.TTFont.new
 	local tfnew = _Gideros.TextField.new
-
-
-	-- gideros는 문자열이 여러 줄일 경우에도 anchor point가 첫줄의 좌하점이 된다
-	-- 아래는 여러 줄일 경우에 y축의 중점을 잡기 위한 setAnchorPoint(x,y)
-	-- 에서 y값(보정값)을 구하는 함수 (corona에서는 자동으로 중점이 잡힌다.)
+	-- y축의 중점을 잡기 위한 setAnchorPoint(x,y) 에서 y값(보정값)
+	-- (corona에서는 자동으로 중점이 잡힌다.)
 	local apys = {[0]=-0.35, 0.15, 0.27, 0.34, 0.36, 0.4, 0.41}
-	local function getya(str) -- 보정할 anchorY값을 구한다.
 
+	local function getya(str) -- 보정할 anchorY값을 구한다.
 		local nn = select(2, str:gsub('\n', '\n')) -- number of '\n' character
 		if nn>6 then return 0.41 end
 		return apys[nn] -- 1:-0.35,  2:0.15, 3:0.27, 4:0.34
-
 	end
 
 	function Text:__mktxt__()
@@ -76,29 +72,13 @@ if _Gideros then -- for Gideros ###############################################
 		local font = ttfnew(fonturl, self.__fsz)
 		local text = tfnew(font, self.__str)
 		text:setTextColor(self.__fclr.hex)
-
-		self.__wdt, self.__hgt = text:getWidth(), text:getHeight()
-		self.__hwdt, self.__hhgt = self.__wdt*0.5, self.__hgt*0.5
-		
-		
-		self.__bd:addChild(text)
-		
-		--text:setAnchorPoint(0.5, getya(self.__str)) -- 1:-0.35,  2:0.15, 3:0.27, 4:0.34
-		
 		text:setAnchorPoint(0.5, getya(self.__str)) -- 1:-0.35,  2:0.15, 3:0.27, 4:0.34
-		
-		
-		text:setX( self.__hwdt*(1-2*self.__apx) )
-		text:setY( self.__hhgt*(1-2*self.__apy) )
-		
-		self.__tbd = text
 		return text
 		
 	end
 
 	-- 2020/02/15: text의 size를 조절하기 위해 sprite안에 text를 삽입
 	function Text:init(str, opt)
-
 		self.__str = str
         opt = opt or {}
 
@@ -106,11 +86,9 @@ if _Gideros then -- for Gideros ###############################################
 		self.__fsz = opt.fontsize or fontsize0 -- font size (fsz)
 		self.__fclr = opt.color or fontcolor0
 
-		self.__apx, self.__apy = 0.5, 0.5
-
+		self.__tbd = self:__mktxt__()
 		self.__bd = _Gideros.Sprite.new()
-		self:__mktxt__()
-		
+		self.__bd:addChild(self.__tbd)
 
 		return Disp.init(self)
 	end
@@ -158,21 +136,16 @@ if _Gideros then -- for Gideros ###############################################
 
 	function Text:getfontsize() return self.__fsz end
 
-	
-	-- 2020/08/26 added, 2021/06/04 refactored
-	function Text:getwidth() return self.__wdt end
-	function Text:getheight() return self.__hgt	end
-	
-	
-	function Text:setanchor(apx, apy)
-		-- self.__tbd:setAnchorPoint(xa,ya)
-
-		self.__apx, self.__apy = apx, apy
-		self.__tbd:setX( self.__hwdt*(1-2*apx) )
-		self.__tbd:setY( self.__hhgt*(1-2*apy) )
-
+	function Text:setanchor(xa, ya)
+		self.__tbd:setAnchorPoint(xa,ya)
 		return self
 	end
+
+	-- 2020/08/26 added
+	function Text:getwidth() return self.__tbd:getWidth() end
+	function Text:getheight() return self.__tbd:getHeight()	end
+
+
 -------------------------------------------------------------------------------
 elseif _Corona then
 -------------------------------------------------------------------------------
@@ -184,7 +157,6 @@ elseif _Corona then
 	local newGroup =  _Corona.display.newGroup
 
 	function Text:__mktxt__()
-
 		local fonturl
 		if assert(isvalid(self.__fnm), errmsg()) then
 			fonturl = strf(ttfurl, self.__fnm)
@@ -197,20 +169,10 @@ elseif _Corona then
 		})
 		local fc = self.__fclr
 		text:setFillColor(fc.r, fc.g, fc.b)
-
-		self.__bd:insert(text)
-		self.__tbd = text
-
-		text.x = 0.5*self:getwidth()*(1-2*self.__apx)
-		text.y = 0.5*self:getheight()*(1-2*self.__apy)
-
-
 		return text
-
 	end
 
 	function Text:init(str, opt)
-
 		self.__str = str
         opt = opt or {}
         -------------------------------------------------------------------------
@@ -218,13 +180,11 @@ elseif _Corona then
 		self.__fsz = opt.fontsize or fontsize0 -- font size (fsz)
 		self.__fclr = opt.color or fontcolor0
 
-		self.__apx, self.__apy = 0.5, 0.5
-
+		self.__tbd = self:__mktxt__()
 		self.__bd = newGroup()
-		self:__mktxt__()
-		
-		return Disp.init(self)
+		self.__bd:insert(self.__tbd)
 
+		return Disp.init(self)
 	end
 
 	
@@ -260,14 +220,8 @@ elseif _Corona then
 
 	function Text:getfontsize() return self.__tbd.size end
 	
-	function Text:setanchor(apx, apy)
-
-		-- self.__tbd.anchorX, self.__tbd.anchorY = xa, ya
-
-		self.__apx, self.__apy = apx, apy
-		self.__tbd.x = 0.5*self:getwidth()*(1-2*apx)
-		self.__tbd.y = 0.5*self:getheight()*(1-2*apy)
-
+	function Text:setanchor(xa, ya)
+		self.__tbd.anchorX, self.__tbd.anchorY = xa, ya
 		return self
 	end
 

@@ -3,7 +3,7 @@ local int = math.floor
 --------------------------------------------------------------------------------
 local txtobjs = {}
 local linespace = 1.3 -- 줄간격을 0.3으로 설정(너무 붙으면 가독성이 떨어짐)
-local yoff = 0; if _Gideros then yoff = 50 end
+local yoff = 0 --; if _Gideros then yoff = 50 end
 local numlines = 15
 local leftmargin = 10
 local loglayer = _luasopia.loglayer
@@ -11,7 +11,7 @@ local loglayer = _luasopia.loglayer
 --local function initlog()
 
 --local txtobj = Text("logf() ready.", _luasopia.loglayer):anchor(0,0) --:xy(0,cursorY+yoff)
-local txtobj = Text(""):anchor(0,0):addto(loglayer) --:xy(0,cursorY+yoff)
+local txtobj = Text("puts() ready"):anchor(0,1):addto(loglayer) --:xy(0,cursorY+yoff)
 local fontSize =  txtobj:getfontsize()*linespace
 local maxlines = int(screen.height / fontSize)
 txtobj:xy(leftmargin, fontSize*(maxlines-1)+yoff) -- 맨 마지막줄부터 출력 시작
@@ -27,7 +27,7 @@ _luasopia.dcdobj = _luasopia.dcdobj + 1
 local logf = setmetatable({},{__call=function(_, str,...)
 
     local strf = string.format(str,...)
-    local txtobj = Text(strf):anchor(0,0):addto(loglayer)
+    local txtobj = Text(strf):anchor(0,1):addto(loglayer)
     txtobj:xy(leftmargin, cursorY+yoff)
     tIn(txtobjs, txtobj)
     cursorY = cursorY + fontSize

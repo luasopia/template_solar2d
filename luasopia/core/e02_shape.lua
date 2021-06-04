@@ -104,6 +104,7 @@ if _Gideros then
 
         local opt = self.__sopt
 
+        -- print("sw", opt.sw)
         -- strokewidth==0 인 경우는 기존의 strk를 삭제(2번자리)하고 리턴
         if opt.sw == 0 then
 
@@ -232,6 +233,7 @@ if _Gideros then
 
 
     -- 2021/05/31: globalxy는 __bd가 아니라 __shp에서 구해야 한다
+    -- 따라서 Display의 그것을 override해야 한다.
     function Shape:getglobalxy(x,y)
 
         return self.__shp:localToGlobal(x or 0,y or 0)
@@ -270,7 +272,10 @@ if _Gideros then
     
     function Shape:setstrokewidth(sw)
 
-        if self.__strk == nil or self.__sopt.sw == sw then
+        -- print('setstrkwdt(',sw)
+
+        -- width가 기존의 것과 같다면 그냥 리턴
+        if self.__sopt.sw == sw then
             return self
         end
 

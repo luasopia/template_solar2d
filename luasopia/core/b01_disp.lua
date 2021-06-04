@@ -136,8 +136,8 @@ function Display:__addupd__( fn )
 end
 
 --2020/08/27: added
-function Display:getwidth() return 0 end
-function Display:getheight() return 0 end
+function Display:getwidth() return self.__wdt or 0 end
+function Display:getheight() return self.__hgt or 0 end
 
 --2020/03/03 추가
 function Display:tag(name)
