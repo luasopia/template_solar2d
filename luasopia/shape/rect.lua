@@ -85,4 +85,28 @@ screen.deviceheight = ls.deviceheight
 screen.orientation = ls.orientation 
 -- added 2020/05/06
 screen.x0, screen.y0, screen.endx, screen.endy = x0, y0, endx, endy
---##############################################################################
+-------------------------------------------------------------------------------
+--2021/06/05 added
+--[[
+screen.console = {
+
+    clear = function() 
+
+    end,
+
+
+    function setlines(n)
+
+    end,
+
+
+    function hide()
+
+    end,
+
+
+    function show()
+
+    end,
+}
+--]]

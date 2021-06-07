@@ -4,28 +4,34 @@ local Color = Color
 -- 첫 번째 폰트가 defualt 폰트로 지정됨
 local ttfs = {'opensans', 'typed', 'cabin', 'cruft',}
 local ttfurl = 'luasopia/ttf/%s.ttf'
--- default font and fontSize
-local fontname0 = ttfs[1]
-local fontsize0 = 50 --50
-local fontcolor0 = Color.WHITE
+local fontname0 = ttfs[1] 		-- default font 
+local fontsize0 = 50 			-- default font size
+local fontcolor0 = Color.WHITE	--default font color
 --------------------------------------------------------------------------------
 local Disp = Display
 local strf = string.format
 
+
+-- 지정한 ttf이름이 valid한지 체크하는 함수
 local function isvalid(name)
+
 	for _, v in ipairs(ttfs) do
 		if v==name then return true end
 	end
+
 end
+
 
 -- 2020/02/15:font name이 잘못 지정되었을 때의 에러메세지를 생성
 local function errmsg()
+
 	local msg = 'Invalid font name. It must be one of '
 	for k, v in ipairs(ttfs) do 
 		if k==#ttfs then msg = msg .. strf("and '%s'.",v)
 		else msg = msg .. strf("'%s', ",v) end
 	end
 	return msg
+
 end
 --------------------------------------------------------------------------------
 Text = class(Disp)
@@ -33,22 +39,21 @@ Text = class(Disp)
 -- local fontcolor0 = {255,255,255} -- r,g,b
 --------------------------------------------------------------------------------
 function Text.setDefaultFont(fontname)
+
 	if assert(isvalid(fontname), errmsg()) then
 		fontname0 = fontname
 	end
+
 end
 
 function Text.setDefaultFontSize(size)
+
 	fontsize0 = size
+
 end
 --------------------------------------------------------------------------------
 if _Gideros then -- for Gideros ###############################################
 --------------------------------------------------------------------------------
-
-	-- local fontcolor0 = 0xffffff
-	-- function Text.setdefaultcolor(r,g,b)
-	-- 	fontcolor0 = r*65526+g*256+b
-	-- end
 	
 	local ttfnew = _Gideros.TTFont.new
 	local tfnew = _Gideros.TextField.new
@@ -66,6 +71,7 @@ if _Gideros then -- for Gideros ###############################################
 
 	end
 
+
 	function Text:__mktxt__()
 
 		local fonturl
@@ -80,21 +86,20 @@ if _Gideros then -- for Gideros ###############################################
 		self.__wdt, self.__hgt = text:getWidth(), text:getHeight()
 		self.__hwdt, self.__hhgt = self.__wdt*0.5, self.__hgt*0.5
 		
-		
 		self.__bd:addChild(text)
 		
-		--text:setAnchorPoint(0.5, getya(self.__str)) -- 1:-0.35,  2:0.15, 3:0.27, 4:0.34
-		
+		-- 보정을 해서 anchor point가 문자열의 중심점이 되도록 한다.
 		text:setAnchorPoint(0.5, getya(self.__str)) -- 1:-0.35,  2:0.15, 3:0.27, 4:0.34
 		
-		
+		-- anchor point는 group내에서의 xy좌표를 조절해서 설정
 		text:setX( self.__hwdt*(1-2*self.__apx) )
 		text:setY( self.__hhgt*(1-2*self.__apy) )
 		
 		self.__tbd = text
-		return text
+		return self
 		
 	end
+
 
 	-- 2020/02/15: text의 size를 조절하기 위해 sprite안에 text를 삽입
 	function Text:init(str, opt)
@@ -110,43 +115,62 @@ if _Gideros then -- for Gideros ###############################################
 
 		self.__bd = _Gideros.Sprite.new()
 		self:__mktxt__()
-		
 
 		return Disp.init(self)
+
 	end
 
+
 	function Text:setfont(fontname, size)
+
 		self.__fnm = fontname -- fontname은 필수요소임
 		self.__fsz = size or self.__fsz -- size가 nil이면 기존크기로
-		self.__tbd = self:__mktxt__()
+		
 		self.__bd:removeChildAt(1)
-		self.__bd:addChild(self.__tbd)
-		return self
+		return self:__mktxt__()
+
 	end
 
 
 	-- r, g, b는 0-255 범위의 정수
-	function Text:setcolor(r,g,b)
-		-- self.__fclr = r*65536+g*256+b
-		self.__fclr = Color(r,g,b)
-		self.__tbd:setTextColor(self.__fclr.hex)
+	function Text:setcolor(color)
+
+		self.__fclr = color
+		self.__tbd:setTextColor(color.hex)
 		return self
+
 	end
+
 
 	-- 2020/01/28 text가 변경되면 중심점도 다시 잡아야 한다.
 	function Text:setstring(str,...)
+
+		local text = self.__tbd
+
 		self.__str = strf(str,...)
-		self.__tbd:setText(self.__str)
-		self.__tbd:setAnchorPoint(0.5, getya(self.__str))
+		text:setText(self.__str)
+
+		self.__wdt, self.__hgt = text:getWidth(), text:getHeight()
+		self.__hwdt, self.__hhgt = self.__wdt*0.5, self.__hgt*0.5
+		
+		-- 보정을 해서 anchor point가 문자열의 중심점이 되도록 한다.
+		text:setAnchorPoint(0.5, getya(self.__str)) -- 1:-0.35,  2:0.15, 3:0.27, 4:0.34
+		
+		-- anchor point는 group내에서의 xy좌표를 조절해서 설정
+		text:setX( self.__hwdt*(1-2*self.__apx) )
+		text:setY( self.__hhgt*(1-2*self.__apy) )
+
 		return self
+
 	end
 
+
 	function Text:setfontsize(v)
+
 		self.__fsz = v
-		self.__tbd = self:__mktxt__()
 		self.__bd:removeChildAt(1)
-		self.__bd:addChild(self.__tbd)
-		return self
+		return self:__mktxt__()
+
 	end
 
 	--[[ -- 소멸자를 오버로딩하나 안하나 textmem은 차이가 없음
@@ -158,20 +182,15 @@ if _Gideros then -- for Gideros ###############################################
 
 	function Text:getfontsize() return self.__fsz end
 
-	
-	-- 2020/08/26 added, 2021/06/04 refactored
-	function Text:getwidth() return self.__wdt end
-	function Text:getheight() return self.__hgt	end
-	
-	
+
+	-- 2021/06/05 group내에서의 xy좌표를 이동하여 anchor point를 설정한다.
 	function Text:setanchor(apx, apy)
-		-- self.__tbd:setAnchorPoint(xa,ya)
 
 		self.__apx, self.__apy = apx, apy
 		self.__tbd:setX( self.__hwdt*(1-2*apx) )
 		self.__tbd:setY( self.__hhgt*(1-2*apy) )
-
 		return self
+
 	end
 -------------------------------------------------------------------------------
 elseif _Corona then
