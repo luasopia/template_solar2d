@@ -62,7 +62,9 @@ if _Gideros then -- for Gideros ###############################################
 	-- gideros는 문자열이 여러 줄일 경우에도 anchor point가 첫줄의 좌하점이 된다
 	-- 아래는 여러 줄일 경우에 y축의 중점을 잡기 위한 setAnchorPoint(x,y)
 	-- 에서 y값(보정값)을 구하는 함수 (corona에서는 자동으로 중점이 잡힌다.)
-	local apys = {[0]=-0.35, 0.15, 0.27, 0.34, 0.36, 0.4, 0.41}
+	-- local apys = {[0] = -0.35, 0.15, 0.27, 0.34, 0.36, 0.4, 0.41}
+	-- 2021/06/08일 apys값들 다시 보정
+	local apys = {[0] = -0.52, 0.132, 0.28, 0.34, 0.36, 0.4, 0.41}
 	local function getya(str) -- 보정할 anchorY값을 구한다.
 
 		local nn = select(2, str:gsub('\n', '\n')) -- number of '\n' character
@@ -192,6 +194,8 @@ if _Gideros then -- for Gideros ###############################################
 		return self
 
 	end
+
+	
 -------------------------------------------------------------------------------
 elseif _Corona then
 -------------------------------------------------------------------------------
@@ -248,24 +252,39 @@ elseif _Corona then
 
 	
 	function Text:setfontsize(v)
+
 		self.__fsz = v
 		self.__tbd.size = v
+
+		-- fontsize가 변경되었다면 anchor point도 다시 잡아줘야된다.
+		self.__tbd.x = 0.5*self:getwidth()*(1-2*self.__apx)
+		self.__tbd.y = 0.5*self:getheight()*(1-2*self.__apy)
+		
 		return self
+
 	end
 	
 	
 	function Text:setstring(str,...)
+
 		self.__str = strf(str,...)
 		self.__tbd.text = self.__str
+
+		-- string이 변경되었다면 anchor point도 다시 잡아줘야된다.
+		self.__tbd.x = 0.5*self:getwidth()*(1-2*self.__apx)
+		self.__tbd.y = 0.5*self:getheight()*(1-2*self.__apy)
+
 		return self
 	end
 	
 	-- r, g, b는 0-255 범위의 정수, (r이 color객체일 수도 있음)
-	function Text:setcolor(r,g,b)
-		self.__fclr = Color(r,g,b) -- {r/255,g/255,b/255}
-		local fc = self.__fclr
+	-- function Text:setcolor(r,g,b)
+	function Text:setcolor(fc)
+
 		self.__tbd:setFillColor(fc.r, fc.g, fc.b)
+		self.__fclr = fc -- {r/255,g/255,b/255}
 		return self
+
 	end
 	
 	function Text:setfont(fontname, size)
