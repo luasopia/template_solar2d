@@ -221,6 +221,7 @@ require 'luasopia.lib.maketile' -- 2020/06/24 added
 
 require 'luasopia.widget.button'
 require 'luasopia.widget.progressbar'
+require 'luasopia.widget.alert'
 
 -------------------------------------------------------------------------------
 
@@ -229,10 +230,10 @@ local enterframedbg = require 'luasopia.core.z01_enterframe' -- 맨 마지막에
 
 
 
--- 2021/05/13 전역 printf()함수 정의
--- printf()함수를 한 번도 호출하지 않는다면 loglayer가 hide()로 유지된다
+-- 2021/05/13 전역 puts()함수 정의
+-- puts()함수를 한 번도 호출하지 않는다면 loglayer가 hide()로 유지된다
 
-function printf(str, ...)
+function puts(str, ...)
 
     if not _luasopia.loglayer:isvisible() then
         _luasopia.loglayer:show()
@@ -257,10 +258,10 @@ function setdebug(args)
     end
 
     -- 2020/05/30: added
-    printf("(content)width:%d, height:%d", _luasopia.width, _luasopia.height)
-    printf("(device)width:%d, height:%d", _luasopia.devicewidth, _luasopia.deviceheight)
-    printf("orientation:'%s', fps:%d", _luasopia.orientation, _luasopia.fps)
-    -- printf("endx:%d, endy:%d", screen.endx, screen.endy)
+    puts("(content)width:%d, height:%d", _luasopia.width, _luasopia.height)
+    puts("(device)width:%d, height:%d", _luasopia.devicewidth, _luasopia.deviceheight)
+    puts("orientation:'%s', fps:%d", _luasopia.orientation, _luasopia.fps)
+    -- puts("endx:%d, endy:%d", screen.endx, screen.endy)
     
     enterframedbg()
 
