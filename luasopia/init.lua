@@ -192,7 +192,8 @@ require 'luasopia.core.f01_sound'
 -------------------------------------------------------------------------------
 -- shapes
 
-require 'luasopia.shape.rect' -- screen 객체 생성
+require 'luasopia.shape.rect'
+require 'luasopia.shape.rectscreen' -- screen객체 생성 (Rect 뒤에 와야 함)
 require 'luasopia.shape.polygon'
 require 'luasopia.shape.circle'
 require 'luasopia.shape.star'
@@ -209,6 +210,7 @@ require 'luasopia.lib.02_shift'
 require 'luasopia.lib.04_blink' -- 2020/07/01, 2021/05/14 lib로 분리됨
 require 'luasopia.lib.05_wavescale' -- 2020/07/01, 2021/05/14 lib로 분리됨
 require 'luasopia.lib.06_ishit'
+
 require 'luasopia.lib.push'
 require 'luasopia.lib.path'
 require 'luasopia.lib.track' -- 2021/05/14 lib로 분리됨
@@ -240,10 +242,11 @@ function puts(str, ...)
     end
 
     if not _luasopia.logf then
-        _luasopia.logf = _req 'luasopia.lib.03_logf'
+        _luasopia.logf = _req 'luasopia.lib.03_puts'
     end
 
     _luasopia.logf(str,...)
+    
 end
 
 

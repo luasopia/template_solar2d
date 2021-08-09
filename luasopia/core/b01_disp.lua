@@ -58,29 +58,32 @@ function Display:init()
     self.__al = self.__al or 1 -- only for coronaSDK (for storing al.pha)
 
     dobjs[self] = self
-    self.__iupds = {} -- 내부 update함수들을 저장
+    --self.__iupds = {} -- 내부 update함수들을 저장
 
 end
+
 
 -- This function is called in every frames
 function Display:__upd__()
     
-    if self.touch and self.__tch==nil then self:__touchon() end
-    if self.tap and self.__tap==nil then self:__tapon() end
+    if self.ontouch and self.__tch==nil then self:__touchon() end
+    if self.ontap and self.__tap==nil then self:__tapon() end
 
     if self.__noupd then return end -- self.__noupd==true이면 갱신 금지------------
 
     if self.__mv then self:__playmv__() end  -- move{}
     if self.__tr then self:__playtr__() end -- shift{}
     
-    -- 2020/02/16 call user update if exists
+    -- 2020/02/16 call user-defined update() if exists
     if self.update and self:update() then
         return self:remove() -- 꼬리호출로 즉시 종료
     end
 
     --2020/07/01 내부갱신함수들이 있다면 호출
-    for _, fn in pairs(self.__iupds) do
-        if fn(self) then return self:remove() end
+    if self.__iupds then
+        for _, fn in pairs(self.__iupds) do
+            if fn(self) then return self:remove() end
+        end
     end
 
     --2020/07/01 removeif함수는 삭제됨
@@ -89,55 +92,100 @@ function Display:__upd__()
     -- end
 end
 
+
 -- function Display:setTimer(delay, func, loops, onEnd)
 function Display:timer(...)
+
     self.__tmrs = self.__tmrs or {}
     local tmr = Timer(...)
     tmr.__dobj = self -- callback함수의 첫 번째 인자로 넘긴다.
     self.__tmrs[tmr] = tmr
     --return self
     return tmr -- 2020/03/27 수정
+
 end
+Display.addtimer = Display.timer -- 2021/08/09 added
+
 
 --2020/06/26 refactoring removeafter() method
 function Display:removeafter(ms)
+
     self:timer(ms, self.remove)
     return self
+
 end
 
 
 function Display:resumeupdate()
+
     self.__noupd = false
     --타이머도 다시 시작해야 한다.(2020/07/01)
     return self
+
 end
 
+
 function Display:stopupdate()
+
     self.__noupd = true
     --타이머도 다 멈추어야 한다.(2020/07/01)
     return self
+
 end
 
+
 --2020/03/02: group:add(child) returns child
-function Display:addto(g)
-    g:add(self)
+function Display:addto(group)
+
+    group:add(self) -- this returns group object
     return self
+
 end
+
 
 --function Display:remove() self.__rm = true end
 function Display:isremoved() return self.__bd==nil end
 
+
 --2020/06/12
 function Display:getparent() return self.__pr end
 
+
 --2020/07/01 : handle Internal UPDateS (__iupds)
 function Display:__addupd__( fn )
+
+    self.__iupds = self.__iupds or {}
     self.__iupds[fn] = fn
+
 end
+
+-- 2021/08/09 table(t)이 empty일 경우 true를 반환
+local next = next
+local function isempty(t)
+    if next(t) == nil then
+        return true
+    end
+    return false
+end
+
+--2021/08/09 : remove internal update function
+function Display:__rmupd__( fn )
+
+    if self.__iupds == nil or fn==nil then return end
+    self.__iupds[fn] = nil
+
+    -- if self.__iupds is empty then set that nil
+    if next(self.__iupds) == nil then
+        self.__iupds = nil
+    end
+
+end
+
 
 --2020/08/27: added
 function Display:getwidth() return self.__wdt or 0 end
 function Display:getheight() return self.__hgt or 0 end
+
 
 --2020/03/03 추가
 function Display:tag(name)
@@ -288,12 +336,15 @@ if _Gideros then -- gideros
         dobjs[self] = nil
         if self.__tag ~=nil then tdobj[self.__tag][self] = nil end
         -- ndobjs = ndobjs - 1
+
     end
 
 
     -- 2020/06/08 : 추가 
     function Display:getglobalxy(x,y)
+
         return self.__bd:localToGlobal(x or 0,y or 0)
+        
     end
 
 --------------------------------------------------------------------------------    

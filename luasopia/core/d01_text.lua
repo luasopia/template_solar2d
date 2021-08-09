@@ -5,7 +5,7 @@ local Color = Color
 local ttfs = {'opensans', 'typed', 'cabin', 'cruft',}
 local ttfurl = 'luasopia/ttf/%s.ttf'
 local fontname0 = ttfs[1] 		-- default font 
-local fontsize0 = 50 			-- default font size
+local fontsize0 = 40			-- default font size (50)
 local fontcolor0 = Color.WHITE	--default font color
 --------------------------------------------------------------------------------
 local Disp = Display
@@ -287,13 +287,16 @@ elseif _Corona then
 
 	end
 	
+
 	function Text:setfont(fontname, size)
+
 		self.__fnm = fontname -- fontname은 필수요소임
 		self.__fsz = size or self.__fsz -- size가 nil이면 기존크기로
 		self.__tbd:removeSelf()
 		self.__tbd = self:__mktxt__()
 		self.__bd:insert(self.__tbd)
 		return self
+
 	end
 
 	function Text:getfontsize() return self.__tbd.size end

@@ -7,23 +7,34 @@ if _Gideros then -- 2020/02/10
     
     local Sndnew = _Gideros.Sound.new
 
-    -- The Sound class lets you load and play WAV, MP3, MOD, XM, S3M and IT sound files.
+
+    -- The Sound class lets you load and 
+    -- play WAV, MP3, MOD, XM, S3M and IT sound files.
     function Sound:init(url, volume)
+
         self.__bd = Sndnew(rooturl..url, volume)
         self.__vol = volume or 1
+
     end
 
+    
     -- 정해진 반복회수만큼 play하기 위한 callback함수
     local function count(self)
+
         self.__cnt = self.__cnt + 1
         if self.__cnt<self.__loops then
             self.__ch = self.__bd:play()
             self.__ch:addEventListener(_Gideros.Event.COMPLETE, count, self)
-            if self.__vol < 1 then self.__ch:setVolume(self.__vol) end
+            if self.__vol < 1 then
+                self.__ch:setVolume(self.__vol)
+            end
         end
+    
     end
     
+
     function Sound:play(loops)
+
         self.__loops = loops or 1
         -- Sound:play(startTime, looping(=false), paused)
         -- startTime: (number, default = 0) The initial position in milliseconds at which playback should start.
@@ -41,30 +52,44 @@ if _Gideros then -- 2020/02/10
             self.__ch:setVolume(self.__vol)
         --end
         return self
+
     end
+
 
     function Sound:pause()
+
         if self.__ch then self.__ch:setPaused(true) end
         return self
+
     end
 
+    
     function Sound:resume()
+
         if self.__ch then self.__ch:setPaused(false) end
         return self
+
     end
 
+
     function Sound:volume(v)
+
         self.__vol = v
-        if self.__ch then self.__ch:setVolume(self.__vol) end
+        if self.__ch then self.__ch:setVolume(v) end
         return self
+
     end
     
+
     function Sound:remove()
+
         if self.__ch then
             self.__ch:stop()
             self.__ch = nil
         end
+
     end
+
 
 elseif _Corona then -- 2020/02/09
 
@@ -80,6 +105,7 @@ elseif _Corona then -- 2020/02/09
     local play = _Corona.audio.play
     local setvol = _Corona.audio.setVolume
 
+
     function Sound:init(url, volume)
 
         local isWav = string.find(url, '.wav')
@@ -94,7 +120,9 @@ elseif _Corona then -- 2020/02/09
         end
         --self.__loops = loops or 0 -- dafault는 한 번 플레이됨
         self.__vol = volume or 1 -- 초기 볼륨은 1(가장크게) 이다.
+
     end
+
 
     function Sound:play(loops)
         --[[
@@ -112,36 +140,65 @@ elseif _Corona then -- 2020/02/09
         return self
     end
 
+
     function Sound:pause()
+
         -- if self.__ch then
             _Corona.audio.pause(self.__ch)
         -- end
         return self
+
     end
 
+
     function Sound:resume()
+
         -- if self.__ch then
             _Corona.audio.resume(self.__ch)
         -- end
         return self
+
     end
 
+
     -- volume은 1과 0사이의 값이다.
-    function Sound:volume(v)
+    function Sound:volume(v
+    )
         self.__vol = v
         if self.__ch then setvol(v, {channel=self.__ch}) end
         return self
+
     end
 
+
     function Sound:remove()
+
         if self.__ch then
             _Corona.audio.stop(self.__ch)
             self.__bd = nil -- self.__ch = nil
         end
+
     end
     
     -- static methods
-    function Sound.pause_all() _Corona.audio.pause() end
-    function Sound.resume_all() _Corona.audio.resume() end
-    function Sound.volume_all(v) setvol(v) end
+    function Sound.pause() -- 모든 Sound를 puase 시킨다
+
+        _Corona.audio.pause()
+
+    end
+
+    
+    function Sound.resume() -- 모든 Sound에 적용시킨다.
+
+        _Corona.audio.resume()
+    
+    end
+
+
+    function Sound.volume(v) -- 모든 Sound에 적용시킨다.
+
+        setvol(v)
+
+    end
+
 end

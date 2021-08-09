@@ -41,7 +41,7 @@ function Button:init(str, func, opt)
     
     Group.init(self)
 
-    -- 2021/06/07 Button(s,f), Button(s,f,o)뿐만 아니라 
+    -- 2021/06/07 Button(str,func), Button(str,func,opt)뿐만 아니라 
     -- local b = Button(str,opt) 이후에 function b:onpush(e) end 도 가능하다.
     if type(func) == 'table' then
         opt = func
@@ -101,11 +101,11 @@ function Button:init(str, func, opt)
     --(3) register tap() method
     self.__shpbd.onpush = func -- **rect의 필드**로 저장해야한다
 
-    function self.__shpbd:tap(e)
+    function self.__shpbd:ontap(e)
 
         if effect then
             self.__btn:scale(0.97) -- 0.97
-            self.__btn:timer(100, function(self) self:scale(1) end)
+            self.__btn:addtimer(100, function(self) self:scale(1) end)
         end
 
         -- btn:onpush(e) 가 정의되어 있을 경우

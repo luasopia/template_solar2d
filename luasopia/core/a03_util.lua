@@ -144,7 +144,7 @@ end
 
 -- 2021/05/13 : file url로부터 현재폴더(문자열)을 구하는 함수
 -- 파일의 첫 줄에 local here = gethere(...) 라고 호출하면
--- 현재폴더의 url을 구할 수 있다.(ex: 'main.lib.mod' -> 'lib/')
+-- 현재폴더의 url을 구할 수 있다.(ex: 'root.lib.mod' -> 'lib/')
 local gmatch = string.gmatch
 function getdir(url)
     local k, here, folder_1 = 1, ''
@@ -157,7 +157,7 @@ function getdir(url)
     return function(url) return here..url end
 end
 
---201/05/14 : library를 쉽게 불러오는 import()함수. 가정들:
+--2021/05/14 : library를 쉽게 불러오는 import()함수. 가정들:
 -- (1) library는 main/lib 폴더에 개별 폴더로 존재한다.
 -- (2) library폴더와 그 안의 lua파일의 이름이 같다.
 -- 예를 드렁 main/lib/blink/blink.lua 파일이 있다고 가정하면
@@ -165,4 +165,13 @@ end
 local liburl = _luasopia.root .. '.lib.'
 function import(libname)
     return _req(liburl..libname..'.'..libname)
+end
+
+-- 2021/08/09 table(t)이 empty일 경우 true를 반환
+local next = next
+function isempty(t)
+    if next(t) == nil then
+        return true
+    end
+    return false
 end

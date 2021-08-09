@@ -30,10 +30,13 @@ local function setdebug() -- 디버그모드일 경우 호출됨
 	local mtxts = {}
 	
 	local getTxtMem
-	local TCOLOR = Color.LIGHT_PINK
+	local fontsz0, TCOLOR = 40, Color.LIGHT_PINK
 	
-	mtxts[1] = Text(""):addto(lsp.loglayer):xy(screen.centerx, 30):color(TCOLOR)
-	mtxts[2] = Text(""):addto(lsp.loglayer):xy(screen.centerx, 90):color(TCOLOR)
+	mtxts[1] = Text("",{fontsize=fontsz0, color=TCOLOR}):addto(lsp.loglayer)
+	mtxts[1]:anchor(0,0.5):xy(0, 30)
+
+	mtxts[2] = Text("",{fontsize=fontsz0, color=TCOLOR}):addto(lsp.loglayer)
+	mtxts[2]:anchor(0,0.5):xy(0, 80)
 	-- mtxts[1] = Text("", _luasopia.loglayer):xy(screen.centerx, 30)--:color(255,182,193)
 	-- mtxts[2] = Text("", _luasopia.loglayer):xy(screen.centerx, 90)--:color(255,182,193)
 	_luasopia.dcdobj = _luasopia.dcdobj + 2
@@ -45,9 +48,9 @@ local function setdebug() -- 디버그모드일 경우 호출됨
 
 		local txtmem = getTxtMem()
 		local mem = int(collectgarbage('count'))
-		mtxts[1]:string('mem: %d kb, texture mem: %d kb', mem, txtmem)
+		mtxts[1]:string('memory: %d kb, texture memory: %d kb', mem, txtmem)
 		local ndisp = Disp.__getNumObjs() -- - logf.__getNumObjs() - 2
-		mtxts[2]:string('Disp:%d, Timer:%d', ndisp, Timer.__getNumObjs())
+		mtxts[2]:string('number of Display objects:%d / Timer objects:%d', ndisp, Timer.__getNumObjs())
 
 	end
 
