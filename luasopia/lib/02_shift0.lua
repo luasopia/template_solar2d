@@ -1,7 +1,5 @@
 ----------------------------------------------------------------------------------
-----------------------------------------------------------------------------------
 -- lib for shift{} method
--- 2021/08/10 shift 메서드를 __iupd 테이블에 추가/삭제하는 방식으로 변경
 ----------------------------------------------------------------------------------
 local tmgapf = 1000/_luasopia.fps
 local int = math.floor
@@ -13,7 +11,7 @@ local int = math.floor
 --		{time(필수), x, y, rot, xscale, yscale, scale, alpha},
 --		{time(필수), x, y, rot, xscale, yscale, scale, alpha},
 --		...
--- } 
+-- }
 ----------------------------------------------------------------------------------
 
 -- 이 함수가 반환하는 tr테이블은 미리 계산될 수가 없다.
@@ -44,8 +42,7 @@ local function calcTr(self, sh)
 end
 
 
--- 2021/08/10: self.__iupds 테이블에 추가할 지역함수
-local function shift(self) -- tr == self.__trInfo
+function Display:__playtr__() -- tr == self.__trInfo
 
     local tr = self.__tr
     tr.framecnt = tr.framecnt + 1
@@ -55,16 +52,14 @@ local function shift(self) -- tr == self.__trInfo
 
         if tr.__to1 then -- tr.__to1 이 있다는 것은 마지막 위치테이블이라는 의미
 
-            -- loops에 저장된 횟수만큼 반복이 끝나면 tr 종료
             self.__sh.__loopcnt = self.__sh.__loopcnt + 1
             if self.__sh.loops == self.__sh.__loopcnt then
                 self.__tr = nil
-                self.__iupds[shift] = nil --return self:__rmupd__(shift)
-                -- onend()함수가 있다면 그것을 실행시키고 종료
-                return self.__sh.onend and self.__sh.onend(self)
+                if self.__sh.onend then
+                    return self.__sh.onend(self)
+                end
+                return
             end
-
-            -- 그렇지 않다면 처음부터 다시 반복
             self.__tr = calcTr(self, tr.__to1)
         
         elseif tr.__to then -- 마지막은 아니고 그 다음 위치테이블이 있는 경우
@@ -74,9 +69,10 @@ local function shift(self) -- tr == self.__trInfo
         else -- 단독테이블인 경우
 
             self.__tr = nil -- tr=nil 이라고 하면 안된다.
-            self.__iupds[shift] = nil -- return self:__rmupd__(shift)
-            -- onend()함수가 있다면 그것을 실행시키고 종료
-            return self.__sh.onend and self.__sh.onend(self)
+            if self.__sh.onend then
+                return self.__sh.onend(self)
+            end
+            return
 
         end
     
@@ -123,13 +119,10 @@ end
 
 
 -- 외부 사용자 함수
--- 2021/08/10:self.__tr 테이블을 생성 -> shift함수를 __iupds 테이블에 등록
 function Display:shift(sh)
 
     self.__sh = sh
     self.__tr = makeTr(self, sh)
-    self.__iupds[shift] = shift --  self:__addupd__(shift)
-
     return self
 
 end

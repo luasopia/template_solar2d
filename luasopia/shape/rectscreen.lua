@@ -118,7 +118,7 @@ if _Gideros then
             -- puts('keyCode:%d,realCode:%d',e.keyCode, e.realCode)
         end)
         
-        print('enkeydown()')
+        -- print('enkeydown()')
     end
 
 
@@ -139,7 +139,7 @@ if _Gideros then
             screen:onkey(k,'up')
         end)
 
-        print('enkeyboth()')
+        -- print('enkeyboth()')
     end
 
 
@@ -184,7 +184,7 @@ elseif _Corona then
     function ls.enkeydown() -- enable key input
 
         Runtime:addEventListener('key', onkeydown)
-        print('enkeydown()')
+        -- print('enkeydown()')
 
     end
 
@@ -204,7 +204,7 @@ elseif _Corona then
     function ls.enkeyboth() -- enable key input
 
         Runtime:addEventListener('key', onkeyboth)
-        print('enkey()')
+        -- print('enkey()')
 
     end
 
@@ -215,7 +215,7 @@ end
 
 local function checkkey(self)
 
-    print('ckd')
+    -- print('ckd')
 
     if self.onkeydown then
         ls.enkeydown()

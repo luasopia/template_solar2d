@@ -193,7 +193,7 @@ require 'luasopia.core.f01_sound'
 -- shapes
 
 require 'luasopia.shape.rect'
-require 'luasopia.shape.rectscreen' -- screen객체 생성 (Rect 뒤에 와야 함)
+require 'luasopia.shape.rectscreen' --2021/08/09:screen객체 생성 (Rect 뒤에 와야 함)
 require 'luasopia.shape.polygon'
 require 'luasopia.shape.circle'
 require 'luasopia.shape.star'
@@ -311,7 +311,7 @@ function setdebug(args)
 end
 
 --------------------------------------------------------------------------------
--- 2021/05/13: require함수를 치환 (__req__는 lua의 original require함수)
+-- 2021/05/13: require함수를 치환 (_req는 lua의 original require함수)
 _req = require
 local rooturl = _luasopia.root .. '.'
 function require(url) return _req(rooturl..url) end

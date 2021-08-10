@@ -1,5 +1,3 @@
--- print('core.disp_tr')
-
 local Dp = Display
 
 function Dp:__playmv__()
@@ -16,8 +14,17 @@ function Dp:__playmv__()
     if d.dyscale then self:yscale(self:getyscale() + d.dyscale) end
 end
 
-function Dp:move(arg) self.__mv = arg; return self end
-function Dp:stopmove() self.__mv = nil; return self end
+
+function Dp:move(arg)
+    self.__mv = arg
+    return self
+end
+
+
+function Dp:stopmove()
+    self.__mv = nil
+    return self
+end
 
 --------------------------------------------------------------------------------
 -- 2020/02/18, 2021/04/27 : modified as follows
@@ -58,9 +65,3 @@ Dp.dscale = Dp.setdscale
 Dp.dalpha = Dp.setdalpha
 Dp.dxscale = Dp.setdxscale
 Dp.dyscale = Dp.setdyscale
-
---Dp.getdr = Dp.getdrot
---Dp.getds = Dp.getdscale
---Dp.getda = Dp.getdalpha
---Dp.getdxs =  Dp.getdxscale
---Dp.getdys = Dp.getdyscale

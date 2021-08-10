@@ -167,11 +167,13 @@ function import(libname)
     return _req(liburl..libname..'.'..libname)
 end
 
+----[[
 -- 2021/08/09 table(t)이 empty일 경우 true를 반환
-local next = next
+local _nxt = next
 function isempty(t)
-    if next(t) == nil then
+    if _nxt(t) == nil then
         return true
     end
     return false
 end
+--]]

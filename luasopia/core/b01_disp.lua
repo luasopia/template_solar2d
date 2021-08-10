@@ -1,13 +1,9 @@
 --------------------------------------------------------------------------------
-local tIn = table.insert
-local tRm = table.remove
-local tmgapf = 1000/_luasopia.fps
-local int = math.floor
 local Timer = Timer
 local timers = Timer.__tmrs -- 2020/06/24:Disp:remove()함수 내에서 직접 접근
---local baselayer = _luasopia.baselayer
 local lsp = _luasopia
 local cx, cy = lsp.centerx, lsp.centery
+local _nxt = next
 --------------------------------------------------------------------------------
 -- 2020/02/06: 모든 set함수는 self를 반환하도록 수정됨
 -- 향후: 내부코드는 속도를 조금이라도 높이기 위해서 self.__bd객체를 직접 접근한다
@@ -58,7 +54,7 @@ function Display:init()
     self.__al = self.__al or 1 -- only for coronaSDK (for storing al.pha)
 
     dobjs[self] = self
-    --self.__iupds = {} -- 내부 update함수들을 저장
+    self.__iupds = {} -- 내부 update함수들을 저장할 테이블
 
 end
 
@@ -72,7 +68,7 @@ function Display:__upd__()
     if self.__noupd then return end -- self.__noupd==true이면 갱신 금지------------
 
     if self.__mv then self:__playmv__() end  -- move{}
-    if self.__tr then self:__playtr__() end -- shift{}
+    -- if self.__tr then self:__playtr__() end -- shift{}
     
     -- 2020/02/16 call user-defined update() if exists
     if self.update and self:update() then
@@ -80,21 +76,18 @@ function Display:__upd__()
     end
 
     --2020/07/01 내부갱신함수들이 있다면 호출
-    if self.__iupds then
-        for _, fn in pairs(self.__iupds) do
-            if fn(self) then return self:remove() end
+    -- self.__iupds가 nil인지를 check하는 것이 성능에 별로 효과가 없을 것 같다
+    for _, fn in _nxt, self.__iupds do
+        if fn(self) then
+            return self:remove()
         end
     end
 
-    --2020/07/01 removeif함수는 삭제됨
-    -- if self._retupd or (self.removeif and self:()) then
-    --     return self:remove() -- 2020/06/20 여기서 직접 (바로) 삭제
-    -- end
 end
 
 
--- function Display:setTimer(delay, func, loops, onEnd)
-function Display:timer(...)
+-- 2021/08/10: addtimer()로 이름을 바꿈
+function Display:addtimer(...)
 
     self.__tmrs = self.__tmrs or {}
     local tmr = Timer(...)
@@ -104,13 +97,13 @@ function Display:timer(...)
     return tmr -- 2020/03/27 수정
 
 end
-Display.addtimer = Display.timer -- 2021/08/09 added
+Display.timer = Display.addtimer -- will be deprecaed in future
 
 
 --2020/06/26 refactoring removeafter() method
 function Display:removeafter(ms)
 
-    self:timer(ms, self.remove)
+    self:addtimer(ms, self.remove)
     return self
 
 end
@@ -154,30 +147,21 @@ function Display:getparent() return self.__pr end
 --2020/07/01 : handle Internal UPDateS (__iupds)
 function Display:__addupd__( fn )
 
-    self.__iupds = self.__iupds or {}
+    -- self.__iupds = self.__iupds or {}
     self.__iupds[fn] = fn
 
 end
 
--- 2021/08/09 table(t)이 empty일 경우 true를 반환
-local next = next
-local function isempty(t)
-    if next(t) == nil then
-        return true
-    end
-    return false
-end
 
 --2021/08/09 : remove internal update function
 function Display:__rmupd__( fn )
 
-    if self.__iupds == nil or fn==nil then return end
+    -- if self.__iupds == nil or fn==nil then return end
+    if fn==nil then return end
     self.__iupds[fn] = nil
 
     -- if self.__iupds is empty then set that nil
-    if next(self.__iupds) == nil then
-        self.__iupds = nil
-    end
+    -- if _nxt(self.__iupds) == nil then  self.__iupds = nil  end
 
 end
 
