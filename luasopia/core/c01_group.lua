@@ -88,9 +88,12 @@ elseif _Corona then
   
     local Gnew = _Corona.display.newGroup
   --------------------------------------------------------------------------------
-    function Group:init()
+    
+  function Group:init()
+
       self.__bd = Gnew()
       return Disp.init(self) --return self:superInit()
+
     end
 
     function Group:add(child)
@@ -149,11 +152,14 @@ elseif _Corona then
       end
     end
 
+    
     --2020/06/15 : 그룹자체는 유지하고 내용물들만 삭제함
     function Group:clear()
+
       for k = self.__bd.numChildren, 1, -1 do
         self.__bd[k].__obj:remove()
       end
+      
     end
 
 end

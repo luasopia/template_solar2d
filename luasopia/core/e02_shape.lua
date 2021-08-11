@@ -188,7 +188,7 @@ if _Gideros then
         -----------------------------------------------------------------------
         -- 2021/06/02 gideros에서 shp(내부)와 strk(외곽선)을 분리함
 
-        local shp =  GShape.new() -- 내부
+        local shp = GShape.new() -- 내부
         shp:setFillStyle(GShape.SOLID, opt.fc.hex, opt.fc.a)
         shp:beginPath()
         shp:moveTo(pts[1], pts[2]) -- starting at upmost point
