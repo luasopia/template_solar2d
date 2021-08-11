@@ -67,7 +67,7 @@ function Display:__upd__()
 
     if self.__noupd then return end -- self.__noupd==true이면 갱신 금지------------
 
-    if self.__mv then self:__playmv__() end  -- move{}
+    -- if self.__mv then self:__playmv__() end  -- move{}
     -- if self.__tr then self:__playtr__() end -- shift{}
     
     -- 2020/02/16 call user-defined update() if exists
@@ -78,7 +78,7 @@ function Display:__upd__()
     --2020/07/01 내부갱신함수들이 있다면 호출
     -- self.__iupds가 nil인지를 check하는 것이 성능에 별로 효과가 없을 것 같다
     for _, fn in _nxt, self.__iupds do
-        if fn(self) then
+        if fn(self) then -- 만약 fn(self)==true 라면 곧바로 삭제하고 리턴
             return self:remove()
         end
     end
@@ -390,9 +390,9 @@ elseif _Corona then -- if coronaSDK
     function Display:show() self.__bd.isVisible = true; return self end
     function Display:setvisible(v) self.__bd.isVisible = v;return self end
     
-    --function Display:visible(v) self.__bd.isVisible = v; return self end
 
     function Display:remove() --print('disp_del_') 
+
         if self.__tmrs then -- 이 시점에서는 이미 죽은 timer도 있을 것
             for _, tmr in pairs(self.__tmrs) do
                 timers[tmr] = nil --tmr:remove()
@@ -411,6 +411,7 @@ elseif _Corona then -- if coronaSDK
         if self.__tag ~=nil then tdobj[self.__tag][self] = nil end
     end
 
+    
     function Display:tint(r,g,b)
         self.__bd:setFillColor(r,g,b)
         return self

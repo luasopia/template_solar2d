@@ -47,6 +47,15 @@ end
 -- 2021/08/10: self.__iupds 테이블에 추가할 지역함수
 local function shift(self) -- tr == self.__trInfo
 
+    -- 2021/08/11:shift를 완전히 종료시키는 함수
+    local endshift = function()
+        self.__tr = nil
+        self.__iupds[shift] = nil --return self:__rmupd__(shift)
+        -- onend()함수가 있다면 그것을 실행시키고 종료
+        -- onend()가 혹시 nil이 아니더라도 확실하게 nil을 반환
+        return self.__sh.onend and (self.__sh.onend(self) and nil) --(1)
+    end
+
     local tr = self.__tr
     tr.framecnt = tr.framecnt + 1
     if tr.framecnt == tr.endcnt then
@@ -58,10 +67,7 @@ local function shift(self) -- tr == self.__trInfo
             -- loops에 저장된 횟수만큼 반복이 끝나면 tr 종료
             self.__sh.__loopcnt = self.__sh.__loopcnt + 1
             if self.__sh.loops == self.__sh.__loopcnt then
-                self.__tr = nil
-                self.__iupds[shift] = nil --return self:__rmupd__(shift)
-                -- onend()함수가 있다면 그것을 실행시키고 종료
-                return self.__sh.onend and self.__sh.onend(self)
+                return endshift()
             end
 
             -- 그렇지 않다면 처음부터 다시 반복
@@ -73,10 +79,7 @@ local function shift(self) -- tr == self.__trInfo
 
         else -- 단독테이블인 경우
 
-            self.__tr = nil -- tr=nil 이라고 하면 안된다.
-            self.__iupds[shift] = nil -- return self:__rmupd__(shift)
-            -- onend()함수가 있다면 그것을 실행시키고 종료
-            return self.__sh.onend and self.__sh.onend(self)
+            return endshift()
 
         end
     

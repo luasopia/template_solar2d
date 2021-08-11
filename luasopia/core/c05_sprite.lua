@@ -5,7 +5,7 @@ local Disp = Display
 local DispUpd = Disp.__upd__
 --[[---------------------------------------------------------------------------
 -- local spr = Sprite(sheet, seq)
--- local sheet = makeSheet(url, frameWidth, frameHeight, numFrames)
+-- local sheet = getsheet(url, frameWidth, frameHeight, numFrames)
 -- local seq = { time = ms, -- required
 --               frames ( = {1,2,3...,numFrames}) -- 선택: 생략시 모든 프레임 순서 테이블
 --               loops (=INF) -- 반복회수, 생략하면 무한반복
