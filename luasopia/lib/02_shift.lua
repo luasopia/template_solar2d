@@ -65,8 +65,8 @@ local function shift(self) -- tr == self.__trInfo
         if tr.__to1 then -- tr.__to1 이 있다는 것은 마지막 위치테이블이라는 의미
 
             -- loops에 저장된 횟수만큼 반복이 끝나면 tr 종료
-            self.__sh.__loopcnt = self.__sh.__loopcnt + 1
-            if self.__sh.loops == self.__sh.__loopcnt then
+            self.__trloopcnt = self.__trloopcnt + 1
+            if self.__sh.loops == self.__trloopcnt then
                 return endshift()
             end
 
@@ -101,7 +101,7 @@ end
 local function makeTr(self, sh)
 
     sh.loops = sh.loops or 1
-    sh.__loopcnt = 0
+    self.__trloopcnt = 0 --SHiftLooPCouNT
 
     local tr, lastk = nil, 0
 
