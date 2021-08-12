@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- 2021/08/11:started refactoring Sprite class and getsheet() function
+-- 2021/08/11: refactored Sprite class (and getsheet() function)
 --------------------------------------------------------------------------------
 local Disp = Display
 --------------------------------------------------------------------------------
@@ -202,11 +202,14 @@ function Sprite:resume()
     
 end
 
-function Sprite:stop(id)
+
+function Sprite:stop()
 
     if self.__tmrsprt and not self.__tmrsprt:isremoved() then
         self.__tmrsprt:remove()
     end
+
+    return self
 
 end
 
@@ -214,5 +217,14 @@ end
 function Sprite:getanchor()
 
     return self.__apx, self.__apy
+
+end
+
+
+function Sprite:setframe(idfrm)
+
+    self:stop()
+    self.__setfrm__(idfrm)
+    return self
 
 end

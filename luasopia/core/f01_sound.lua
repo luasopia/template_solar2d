@@ -1,11 +1,19 @@
--- local tIn = table.insert
+--------------------------------------------------------------------------------
+-- 2020/02/10: first created
+-- 2021/08/12: modified and added some static methods
+--------------------------------------------------------------------------------
 local rooturl = _luasopia.root .. '/' -- 2021/05/12
-
+local INF = INF
+--------------------------------------------------------------------------------
 Sound = class()
 
-if _Gideros then -- 2020/02/10
+if _Gideros then 
     
+    local sounds = {} -- 2021/08/12 모든 Sound객체 관리
+    -- stopall(), pauseall()같은 스태틱메서드에서 사용됨
+
     local Sndnew = _Gideros.Sound.new
+    local EFIN = _Gideros.Event.COMPLETE
 
 
     -- The Sound class lets you load and 
@@ -15,21 +23,27 @@ if _Gideros then -- 2020/02/10
         self.__bd = Sndnew(rooturl..url, volume)
         self.__vol = volume or 1
 
+        sounds[self]=self -- 2021/08/12 added
+
     end
 
-    
+
     -- 정해진 반복회수만큼 play하기 위한 callback함수
     local function count(self)
 
         self.__cnt = self.__cnt + 1
+
         if self.__cnt<self.__loops then
+
             self.__ch = self.__bd:play()
-            self.__ch:addEventListener(_Gideros.Event.COMPLETE, count, self)
+            self.__ch:addEventListener(EFIN, count, self)
+
             if self.__vol < 1 then
                 self.__ch:setVolume(self.__vol)
             end
+
         end
-    
+
     end
     
 
@@ -40,17 +54,38 @@ if _Gideros then -- 2020/02/10
         -- startTime: (number, default = 0) The initial position in milliseconds at which playback should start.
         -- looping: (boolean, default = false)
         -- paused: (boolean, default = false)
-        if loops == 1 then self.__ch = self.__bd:play()
-        elseif loops == INF then self.__ch = self.__bd:play(0,true)
+        if loops == 1 then
+        
+            self.__ch = self.__bd:play()
+        
+        elseif loops == INF then
+
+            self.__ch = self.__bd:play(0,true)
+
         else -- loops로 주어진 횟수만큼만 플레이한다.
+
             self.__cnt = 0
             self.__ch = self.__bd:play()
-            self.__ch:addEventListener(_Gideros.Event.COMPLETE, count, self)
+            self.__ch:addEventListener(EFIN, count, self)
+
         end
 
         --if self.__vol < 1 then 
             self.__ch:setVolume(self.__vol)
         --end
+
+        return self
+
+    end
+
+
+    function Sound:stop()
+
+        if self.__ch then
+            self.__ch:stop()
+            self.__ch = nil
+        end
+
         return self
 
     end
@@ -58,7 +93,10 @@ if _Gideros then -- 2020/02/10
 
     function Sound:pause()
 
-        if self.__ch then self.__ch:setPaused(true) end
+        if self.__ch then
+            self.__ch:setPaused(true)
+        end
+
         return self
 
     end
@@ -66,16 +104,22 @@ if _Gideros then -- 2020/02/10
     
     function Sound:resume()
 
-        if self.__ch then self.__ch:setPaused(false) end
+        if self.__ch then
+            self.__ch:setPaused(false)
+        end
+
         return self
 
     end
 
 
-    function Sound:volume(v)
+    function Sound:setvolume(v)
 
         self.__vol = v
-        if self.__ch then self.__ch:setVolume(v) end
+        if self.__ch then
+            self.__ch:setVolume(v)
+        end
+
         return self
 
     end
@@ -83,15 +127,52 @@ if _Gideros then -- 2020/02/10
 
     function Sound:remove()
 
-        if self.__ch then
-            self.__ch:stop()
-            self.__ch = nil
+        self:stop()
+        sounds[self] = nil
+
+    end
+
+
+    --static methods
+
+    function Sound.stopall()
+
+        for _, snd in pairs(sounds) do
+            snd:stop()
         end
 
     end
 
 
+    function Sound.pauseall()
+
+        for _, snd in pairs(sounds) do
+            snd:pause()
+        end
+
+    end
+
+
+    function Sound.resumeall()
+
+        for _, snd in pairs(sounds) do
+            snd:resume()
+        end
+
+    end
+
+
+    function Sound.setvolumeall(v)
+
+        for _, snd in pairs(sounds) do
+            snd:setvolume(v)
+        end
+
+    end
+
+--------------------------------------------------------------------------------
 elseif _Corona then -- 2020/02/09
+--------------------------------------------------------------------------------
 
 -- wav files must be 16-bit uncompressed
 -- loadSound()는 파일전체를 로드하며 작은 크기의 효과음 에 적절하다
@@ -104,6 +185,10 @@ elseif _Corona then -- 2020/02/09
     local loadstrm = _Corona.audio.loadStream 
     local play = _Corona.audio.play
     local setvol = _Corona.audio.setVolume
+    local isplaying = _Corona.audio.isChannelPlaying
+    local stop = _Corona.audio.stop
+    local pause = _Corona.audio.pause
+    local resume = _Corona.audio.resume
 
 
     function Sound:init(url, volume)
@@ -133,18 +218,37 @@ elseif _Corona then -- 2020/02/09
         --]]
         -- corona에서는 loops 가 추가적인 플레이횟수를 의미함
         -- loops가 INF면 무한반복
-        if loops == INF then self.__loops = -1
-        else self.__loops = loops and (loops-1) or 0 end
+        if loops == INF then
+            self.__loops = -1
+        else
+            self.__loops = loops and (loops-1) or 0
+        end
+
         self.__ch = play(self.__bd, {loops=self.__loops})
-        if self.__vol<1 then setvol(self.__vol, {channel=self.__ch}) end
+
+        if self.__vol<1 then
+            setvol(self.__vol, {channel=self.__ch})
+        end
+
         return self
+
+    end
+
+
+
+    function Sound:stop()
+
+        if self.__ch and isplaying(self.__ch) then
+            stop(self.__ch)
+        end
+
     end
 
 
     function Sound:pause()
 
         -- if self.__ch then
-            _Corona.audio.pause(self.__ch)
+            pause(self.__ch)
         -- end
         return self
 
@@ -154,7 +258,7 @@ elseif _Corona then -- 2020/02/09
     function Sound:resume()
 
         -- if self.__ch then
-            _Corona.audio.resume(self.__ch)
+            resume(self.__ch)
         -- end
         return self
 
@@ -162,8 +266,8 @@ elseif _Corona then -- 2020/02/09
 
 
     -- volume은 1과 0사이의 값이다.
-    function Sound:volume(v
-    )
+    function Sound:setvolume(v)
+
         self.__vol = v
         if self.__ch then setvol(v, {channel=self.__ch}) end
         return self
@@ -174,31 +278,19 @@ elseif _Corona then -- 2020/02/09
     function Sound:remove()
 
         if self.__ch then
-            _Corona.audio.stop(self.__ch)
+            stop(self.__ch)
             self.__bd = nil -- self.__ch = nil
         end
 
     end
     
+
     -- static methods
-    function Sound.pause() -- 모든 Sound를 puase 시킨다
-
-        _Corona.audio.pause()
-
-    end
-
-    
-    function Sound.resume() -- 모든 Sound에 적용시킨다.
-
-        _Corona.audio.resume()
-    
-    end
-
-
-    function Sound.volume(v) -- 모든 Sound에 적용시킨다.
-
-        setvol(v)
-
-    end
+    Sound.pauseall = pause
+    Sound.resumeall = resume
+    Sound.setvolumeall = setvol
+    Sound.stopall = stop
 
 end
+
+Sound.volume = Sound.setvolume -- will be deprecated

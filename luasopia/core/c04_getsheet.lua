@@ -1,4 +1,4 @@
--- 2021/08/11:started refactoring Sprite class and getsheet() function
+-- 2021/08/11: refactored getsheet() function (and Sprite class)
 
 local rooturl = _luasopia.root .. '/' -- 2021/05/12
 local tins = table.insert
@@ -53,9 +53,8 @@ elseif _Gideros then
                 -- tins(sht.__txts, bmpNew(tr) ) -- bitmap을 저장하면 오류가 남
                 tins(sht.__txts, tr) -- 따라서 texture를 테이블에 저장해야 함
                 frm = frm + 1
-                --print('frm:'..frm)
                 tins(sht.__allfrms, frm)
-                if nfrms and frm >=nfrms then return sht end
+                if nfrms and frm >= nfrms then return sht end
 
             end
 
@@ -66,4 +65,3 @@ elseif _Gideros then
     end
 
 end
---------------------------------------------------------------------------------

@@ -14,32 +14,35 @@ local prd0, amp0 = 1000, 1.2
 -- dobj:stopwave()
 --------------------------------------------------------------------------------
 local function wvtmr(self, e)
-    local wv = 0.5*(1-cos(_2PI*e.time/self._prd))
-    self:scale( self._orgns*(1 + self._drt*wv) )
+
+    local wv = 0.5*(1-cos(_2PI*e.time/self.__prd))
+    self:scale( self.__scale0*(1 + self.__drt*wv) )
+
 end
+
 
 function Disp:wavescale(prd, amp)
 
-    -- if self.__bd==nil then return self end
+    if self.__tmrwave and not self.__tmrwave:isremoved() then
+        self.__tmrwave:remove()
+    end
     
-    if self._tmrwv then self._tmrwv:remove() end
-    
-    self._drt = (amp or amp0) - 1
-    self._orgns = self:getscale() -- original scale
-    self._prd = prd or prd0
-    self._tmrwv = self:timer(tmgap, wvtmr, INF)
+    self.__drt = (amp or amp0) - 1
+    self.__scale0 = self:getscale() -- original scale
+    self.__prd = prd or prd0
+    self.__tmrwave = self:addtimer(tmgap, wvtmr, INF)
 
     return self
 end
 
+
 function Disp:stopwave()
 
-    -- if self.__bd==nil then return self end
-
-    if self._tmrwv then
-        self._tmrwv:remove() -- dobj:removetimer(dobj._tmrwv)
-        self:scale(dobj._orgns)
+    if self.__tmrwave and not self.__tmrwave:isremoved() then
+        self.__tmrwave:remove()
+        self:scale(dobj.__scale0)
     end
+
     return self
 
 end
@@ -47,37 +50,45 @@ end
 --------------------------------------------------------------------------------
 
 local function xwvtmr(self, e)
-    local wv = 0.5*(1-cos(_2PI*e.time/self._prd))
-    self:xs( self._orgns*(1 + self._drt*wv) )
+
+    local wv = 0.5*(1-cos(_2PI*e.time/self.__prd))
+    self:xs( self.__scale0*(1 + self.__drt*wv) )
+
 end
 
 function Disp:wavexscale(prd, amp)
     
-    if self._tmrwv then self._tmrwv:remove() end
+    if self.__tmrwave and not self.__tmrwave:isremoved() then
+        self.__tmrwave:remove()
+    end
     
-    self._drt = (amp or amp0) - 1
-    self._orgns = self:getscale() -- original scale
-    self._prd = prd or prd0
-    self._tmrwv = self:timer(tmgap, xwvtmr, INF)
+    self.__drt = (amp or amp0) - 1
+    self.__scale0 = self:getscale() -- original scale
+    self.__prd = prd or prd0
+    self.__tmrwave = self:addtimer(tmgap, xwvtmr, INF)
 
 end
 
 --------------------------------------------------------------------------------
 
 local function ywvtmr(self, e)
-    local wv = 0.5*(1-cos(_2PI*e.time/self._prd))
-    self:ys( self._orgns*(1 + self._drt*wv) )
+
+    local wv = 0.5*(1-cos(_2PI*e.time/self.__prd))
+    self:ys( self.__scale0*(1 + self.__drt*wv) )
+
 end
 
 
 
 function Disp:waveyscale(prd, amp)
     
-    if self._tmrwv then self._tmrwv:remove() end
+    if self.__tmrwave and not self.__tmrwave:isremoved() then
+        self.__tmrwave:remove()
+    end
     
-    self._drt = (amp or amp0) - 1
-    self._orgns = self:getscale() -- original scale
-    self._prd = prd or prd0
-    self._tmrwv = self:timer(tmgap, ywvtmr, INF)
+    self.__drt = (amp or amp0) - 1
+    self.__scale0 = self:getscale() -- original scale
+    self.__prd = prd or prd0
+    self.__tmrwave = self:addtimer(tmgap, ywvtmr, INF)
 
 end
