@@ -218,6 +218,9 @@ elseif _Corona then
 			font = fonturl,
 			fontSize = self.__fsz
 		})
+
+		text.anchorX, text.anchorY = 0.5,0.5 -- 2021/08/13
+
 		local fc = self.__fclr
 		text:setFillColor(fc.r, fc.g, fc.b)
 

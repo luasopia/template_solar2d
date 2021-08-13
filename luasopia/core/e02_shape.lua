@@ -243,6 +243,7 @@ elseif _Corona then
         -- 따라서 중심점을 원점으로 만드는 pts변환(pts.x-ctx, pts.y-cty)이 불필요함
         -- 아래는 shp의 (0,0)원점(중심점)이 group(self.__bd)의 원점에 위치됨
         local shp = newPoly(0, 0, pts)
+        shp.anchorX, shp.anchorY = 0.5,0.5 -- 2021/08/13
         self.__bd:insert(shp) 
         
         --[[

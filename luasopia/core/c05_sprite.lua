@@ -2,69 +2,12 @@
 -- 2021/08/11: refactored Sprite class (and getsheet() function)
 --------------------------------------------------------------------------------
 local Disp = Display
+local int = math.floor
 --------------------------------------------------------------------------------
-
 Sprite = class(Disp)
 
 --------------------------------------------------------------------------------
-if _Corona then
---------------------------------------------------------------------------------
-
-    local newGrp = _Corona.display.newGroup
-    local newImg = _Corona.display.newImage
-    
-    function Sprite:init(sht, seq)
-  
-        self.__bd = newGrp()
-        self.__sht = sht
-        self.__seq = seq
-        self.__apx, self.__apy = 0.5, 0.5
-
-        local img = newImg(sht.__txts,1)
-        self.__bd:insert(img)
-        self.__img = img
-
-        return Disp.init(self) --return self:superInit()
-  
-    end
-
-
-    -- 현재 그룹내 Img를 제거하고 새로운 Img를 넣는다
-    function Sprite:__setfrm__(idframe)
-
-        self.__bd[1]:removeSelf()
-
-
-        local img = newImg(self.__sht.__txts, idframe)
-        img.anchorX, img.anchorY = self.__apx, self.__apy
-        self.__bd:insert(img)
-
-        self.__img = img
-        -- return self
-
-    end
-
-
-    -- Disp 베이스클래스의 remove()를 오버로딩
-    function Sprite:remove()
-
-        self.__bd[1]:removeSelf() -- 차일드 각각의 소멸자 호출(즉시 삭제)
-        return Disp.remove(self) -- 부모의 소멸자 호출
-
-    end
-      
-
-    function Sprite:setanchor(apx, apy)
-
-        self.__apx, self.__apy = apx, apy
-        self.__img.anchorX, self.__img.anchorY = apx, apy
-        return self
-
-    end
-  
-
---------------------------------------------------------------------------------
-elseif _Gideros then
+if _Gideros then
 --------------------------------------------------------------------------------
 
     local bmpNew = _Gideros.Bitmap.new
@@ -79,9 +22,15 @@ elseif _Gideros then
         self.__apx, self.__apy = 0.5, 0.5
 
         local bmp = bmpNew(self.__sht.__txts[1])
-        bmp:setAnchorPoint(0.5,0.5)
+        
+        -- bmp:setAnchorPoint(0.5,0.5)
+        self.__wdt = sht.__frmwdt
+        self.__hgt = sht.__frmhgt
+        bmp:setPosition(-int(self.__wdt/2),-int(self.__hgt/2))
+
+
         self.__bd:addChild(bmp)
-        self.__bmp = bmp
+        self.__img = bmp
 
         return Disp.init(self) --return self:superInit()
 
@@ -98,7 +47,7 @@ elseif _Gideros then
         bmp:setAnchorPoint(self.__apx,self.__apy)
         self.__bd:addChild(bmp)
 
-        self.__bmp = bmp
+        self.__img = bmp
 
         -- self.__bd:addChild( bmpNew(self.__sht.__txts[idfrm]) )
         -- return self
@@ -117,14 +66,84 @@ elseif _Gideros then
     function Sprite:setanchor(apx, apy)
     
         self.__apx, self.__apy = apx, apy
-        self.__bmp:setAnchorPoint(apx, apy)
+        -- self.__bmp:setAnchorPoint(apx, apy)
+        self.__img:setPosition(-int(apx*self.__apx),-int(apy*self.__apy))
         return self
 
     end
     
 
-end -- if _Corono then ... elseif _Gideros then
 
+
+--------------------------------------------------------------------------------
+elseif _Corona then
+--------------------------------------------------------------------------------
+    
+    local newGrp = _Corona.display.newGroup
+    local newImg = _Corona.display.newImage
+    
+    function Sprite:init(sht, seq)
+    
+        self.__bd = newGrp()
+        self.__sht = sht
+        self.__seq = seq
+        self.__apx, self.__apy = 0.5, 0.5
+
+        local img = newImg(sht.__txts,1)
+        -- img.anchorX, img.anchrorY = 0,0
+
+        self.__wdt = sht.__frmwdt
+        self.__hgt = sht.__frmhgt
+
+        img.x, img.y = -int(self.__wdt*0.5), -int(self.__hgt*0.5)
+
+        self.__bd:insert(img)
+        self.__img = img
+
+
+        return Disp.init(self) --return self:superInit()
+    
+    end
+
+
+    -- 현재 그룹내 Img를 제거하고 새로운 Img를 넣는다
+    function Sprite:__setfrm__(idframe)
+
+        self.__bd[1]:removeSelf()
+
+
+        local img = newImg(self.__sht.__txts, idframe)
+        -- img.anchorX, img.anchorY = self.__apx, self.__apy
+        img.x, img.y = -int(self.__apx*self.__wdt), -int(self.__apy*self.__hgt)
+        
+
+        self.__bd:insert(img)
+
+        self.__img = img
+        -- return self
+
+    end
+
+
+    -- Disp 베이스클래스의 remove()를 오버로딩
+    function Sprite:remove()
+
+        self.__bd[1]:removeSelf() -- 차일드 각각의 소멸자 호출(즉시 삭제)
+        return Disp.remove(self) -- 부모의 소멸자 호출
+
+    end
+        
+
+    function Sprite:setanchor(apx, apy)
+
+        self.__apx, self.__apy = apx, apy
+        -- self.__img.anchorX, self.__img.anchorY = apx, apy
+        self.__img.x, self.__img.y = -int(apx*self.__wdt), -int(apy*self.__hgt)
+        return self
+
+    end
+
+end -- if _Corono then ... elseif _Gideros then
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 

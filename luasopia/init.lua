@@ -6,6 +6,7 @@
 -- Lua 고유의 전역변수들만 남기고 특정SDK의 전역변수들을 tbl로 이동
 --------------------------------------------------------------------------------
 local function moveg()
+
     local tbl = {}
 
     local luag = { -- 39 -- lua global variables
@@ -141,6 +142,13 @@ elseif coronabaselib then -- in the case of using CoronaSDK
         show = function(self) self.__bd.isVisible = true; return self end
     }
     _luasopia.loglayer:hide()
+
+    --2021/08/13:solar2d 의 디스플레이객체의 앵커포인트의 초기값을 (0,0)으로 설정
+    -- pixel모드에서 정확한 점좌표를 획득하기 위해서이다
+    --gideros는 default가 (0,0)이다
+    _Corona.display.setDefault('anchorX',0)
+    _Corona.display.setDefault('anchorY',0)
+
 
 elseif love then-- in the case of using LOVE2d
 
