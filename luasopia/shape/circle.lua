@@ -53,7 +53,9 @@ end
 
 --2021/05/11
 function Circle:getradius()
+
     return self.__rds
+    
 end
 
 Circle.radius = Circle.setradius

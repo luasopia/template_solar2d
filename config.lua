@@ -8,8 +8,7 @@ application =
 	content =
 	{
 		width = 1080, height = 1920, -- default resolution
-		-- width = 480, height = 640, 
-		-- width = 360, height = 480, 
+		-- width = 180, height = 320, -- pixel mode
 		scale = "letterbox",
 		fps = 60,
 		

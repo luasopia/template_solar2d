@@ -4,6 +4,7 @@ local timers = Timer.__tmrs -- 2020/06/24:Disp:remove()함수 내에서 직접 �
 local lsp = _luasopia
 local cx, cy = lsp.centerx, lsp.centery
 local _nxt = next
+local int = math.floor
 --------------------------------------------------------------------------------
 -- 2020/02/06: 모든 set함수는 self를 반환하도록 수정됨
 -- 향후: 내부코드는 속도를 조금이라도 높이기 위해서 self.__bd객체를 직접 접근한다
@@ -229,8 +230,23 @@ if _Gideros then -- gideros
     end
     --]]
 
-    function Display:getx() return self.__bd:getX() end
-    function Display:gety() return self.__bd:getY() end
+    function Display:getx()
+        -- return self.__bd:getX()
+        return self.__bdx
+    end
+
+
+    function Display:gety()
+        -- return self.__bd:getY()
+        return self.__bdy
+    end
+
+    
+    function Display:getxy()
+        -- return self.__bd:getPosition()
+        return self.__bdx, self.__bdy
+    end
+
     function Display:getrot() return self.__bd:getRotation() end -- 2020/02/26
     -- gideros getScale() returns xScale, yScale, and zScale
     function Display:getscale() local sx, sy = self.__bd:getScale(); return (sx+sy)/2 end
@@ -238,7 +254,6 @@ if _Gideros then -- gideros
     function Display:getxscale() return self.__bd:getScaleX() end
     function Display:getyscale() return self.__bd:getScaleY() end
 
-    function Display:getxy() return self.__bd:getPosition() end
     
     function Display:isvisible() return self.__bd:isVisible() end
 
@@ -257,9 +272,28 @@ if _Gideros then -- gideros
         return self
     end
 
+    
     -- 2020/02/18 (Gideros), 2021/04/22 다시 정리 ##################################
-    function Display:setx(v) self.__bd:setX(v); return self end
-    function Display:sety(v) self.__bd:setY(v); return self end
+    function Display:setx(v)
+        self.__bdx = v
+        self.__bd:setX(int(v))
+        return self
+    end
+
+
+    function Display:sety(v)
+        self.__bdy = v
+        self.__bd:setY(int(v))
+        return self
+    end
+
+    function Display:setxy(x,y)
+        self.__bdx, self.__bdy = x, y
+        self.__bd:setPosition(int(x),int(y))
+        return self
+    end
+
+
     function Display:setrot(v) self.__bd:setRotation(v); return self end -- 2020/02/26
     -- gid는 setScale(v)라고 하면 scaleX, scaleY(, scaleZ)에 모두 v가 적용됨
     function Display:setscale(x,y) self.__bd:setScale(x,y); return self end
@@ -270,7 +304,6 @@ if _Gideros then -- gideros
     function Display:setxscale(v) self.__bd:setScaleX(v); return self end
     function Display:setyscale(v) self.__bd:setScaleY(v); return self end
     
-    function Display:setxy(x,y) self.__bd:setPosition(x,y); return self end
 
     function Display:setxyrot(x,y,r)
         self.__bd:setPosition(x,y)
@@ -334,15 +367,30 @@ if _Gideros then -- gideros
 --------------------------------------------------------------------------------    
 elseif _Corona then -- if coronaSDK
 --------------------------------------------------------------------------------    
-    function Display:getx() return self.__bd.x end
-    function Display:gety() return self.__bd.y end
+    
+    function Display:getx()
+        -- return self.__bd.x
+        return self.__bdx
+    end
+
+
+    function Display:gety()
+        -- return self.__bd.y
+        return self.__bdy
+    end
+    
+    
+    function Display:getxy()
+        -- return self.__bd.x, self.__bd.y
+        return self.__bdx, self.__bdy
+    end
+
     function Display:getrot() return self.__bd.rotation end -- 2020/02/26
     function Display:getscale() return (self.__bd.xScale + self.__bd.yScale)/2 end
     function Display:getalpha() return self.__al end
     function Display:getxscale() return self.__bd.xScale end
     function Display:getyscale() return self.__bd.yScale end
     
-    function Display:getxy() return self.__bd.x, self.__bd.y end
     
     function Display:isvisible() return self.__bd.isVisible end
 
@@ -364,16 +412,44 @@ elseif _Corona then -- if coronaSDK
     end
 
     -- 2020/02/18 시험메서드 (Solar2D)###############################################
-    function Display:setx(v) self.__bd.x = v; return self end
-    function Display:sety(v) self.__bd.y = v; return self end
+    function Display:setx(v)
+
+        self.__bdx = v
+        self.__bd.x = int(v)
+        return self
+
+    end
+    
+    function Display:sety(v)
+
+        self.__bdy = v
+        self.__bd.y = int(v)
+        return self
+
+    end
+
+    function Display:setxy(x,y)
+
+        self.__bdx, self.__bdy = x, y
+        self.__bd.x, self.__bd.y = int(x), int(y)
+        return self
+
+    end
+
+
     function Display:setrot(v) self.__bd.rotation = v; return self end -- 2020/02/25
     -- setscale(v) 는 xScale, yScale 둘 다 v로;setscale(x,y)는 xScale=x, yScale=y로 설정
-    function Display:setscale(x, y) self.__bd.xScale, self.__bd.yScale = x, y or x;return self end
+    
+    
+    function Display:setscale(x, y)
+        self.__bd.xScale, self.__bd.yScale = x, y or x
+        return self
+    end
+
     function Display:setalpha(v) self.__al, self.__bd.alpha = v,v; return self end
     function Display:setxscale(v) self.__bd.xScale = v; return self end
     function Display:setyscale(v) self.__bd.yScale = v; return self end
     
-    function Display:setxy(x,y) self.__bd.x, self.__bd.y = x, y; return self end
     function Display:setxyrot(x,y,r) 
         self.__bd.x, self.__bd.y, self.__bd.rotation = x, y, r
         return self

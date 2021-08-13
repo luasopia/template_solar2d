@@ -19,6 +19,8 @@ local rooturl = _luasopia.root .. '/' -- 2021/05/12
 Image = class(Disp)
 --------------------------------------------------------------------------------
 if _Gideros then
+--------------------------------------------------------------------------------
+
     -- print('core.Image(gid)')
     local Tnew = _Gideros.Texture.new
     local Bnew = _Gideros.Bitmap.new
@@ -27,6 +29,7 @@ if _Gideros then
     -- 아래와 같이 개별 객체에서 별도로 만드는 경우나 textureMemory의 차이가 없다.
     --------------------------------------------------------------------------------
     function Image:init(url)
+
       local texture = Tnew(rooturl..url)
       self.__bd = Bnew(texture)
       self.__bd:setAnchorPoint(0.5, 0.5)
@@ -40,7 +43,9 @@ if _Gideros then
       --------------------------
 
       return Disp.init(self) --return self:superInit()
+
     end
+
 
     -- 2020/06/20 arguement ture means 'do not consider transformation'
     function Image:getwidth() return self.__wdt end
@@ -67,8 +72,9 @@ if _Gideros then
     end
     Image.anchor = Image.setanchor
 
-  
+--------------------------------------------------------------------------------
 elseif _Corona then
+--------------------------------------------------------------------------------
   -- print('core.Image(cor)')
   local newImg = _Corona.display.newImage
   --------------------------------------------------------------------------------

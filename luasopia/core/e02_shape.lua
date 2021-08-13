@@ -32,90 +32,27 @@ if _Gideros then
     newgroup = _Gideros.Sprite.new    
     local GShape = _Gideros.Shape
 
-    --[[
-    function Shape:__mkshp__()
-
-        local pts, opt = self.__pts, self.__sopt
-
-        -- 원좌표계에서의 중심점의 좌표와 너비/2, 높이/2를 구한다
-        local xmn, xmx, ymn, ymx = pts[1], pts[1], pts[2], pts[2]
-        for k=3, #pts, 2 do
-            local x, y = pts[k], pts[k+1]
-            if x>xmx then xmx = x elseif x<xmn then xmn = x end
-            if y>ymx then ymx = y elseif y<ymn then ymn = y end
-        end
-        local ctx, cty = (xmx+xmn)*0.5, (ymx+ymn)*0.5
-                
-        -- solar2d와 동일한 원점을 가지게끔 하기 위해서
-        -- pts좌표들을 중심점이 원점이 되도록 이동시킨다.
-        -- (solar2d는 이 연산이 내부적으로 수행되므로 따로 할 필요가 없음)
-        for k=1, #pts, 2 do
-            pts[k], pts[k+1] = pts[k]-ctx, pts[k+1]-cty
-        end
-        
-        -- 폴리곤이라면 cpg좌표를 수정한다.
-        if self.__cpg then
-            local ctx, cty = (xmx+xmn)*0.5, (ymx+ymn)*0.5
-            local cpg = self.__cpg
-            for k=1,#cpg,3 do
-                cpg[k], cpg[k+1] = cpg[k]-ctx, cpg[k+1]-cty
-            end
-        end
-        
-        -----------------------------------------------------------------------
-        -- 2021/06/02 gideros에서 shp(내부)와 strk(외곽선)을 분리함
-
-        local shp =  GShape.new() -- 내부
-        local strk = GShape.new() -- 외곽선
-        
-        shp:setFillStyle(GShape.SOLID, opt.fc.hex, opt.fc.a)
-        strk:setLineStyle(opt.sw, opt.sc.hex, opt.sc.a) -- width, color, alpha
-        
-        shp:beginPath(); shp:moveTo(pts[1], pts[2]) -- starting at upmost point
-        strk:beginPath(); strk:moveTo(pts[1], pts[2]) -- starting at upmost point
-        for k=3,#pts,2 do
-            shp:lineTo(pts[k], pts[k+1])
-            strk:lineTo(pts[k], pts[k+1])
-        end
-        shp:lineTo(pts[1], pts[2]); shp:endPath() -- ending at the starting point
-        strk:lineTo(pts[1], pts[2]); strk:endPath() -- ending at the starting point
-        
-        -- gideros의 shape는 자동으로 원점(0,0)이 anchor point가 된다
-        self.__bd:addChild(shp) 
-        self.__bd:addChild(strk) --외곽선을 나중에 add해야 shp의 위에 그려진다.
-        ------------------------------------------------------------------------
-        
-        -- anchor point의 위치를 shp의 xy위치를 조절하여 설정
-        self.__hwdt, self.__hhgt = (xmx-xmn)*0.5, (ymx-ymn)*0.5
-        shp:setX( self.__hwdt*(1-2*self.__apx) )
-        shp:setY( self.__hhgt*(1-2*self.__apy) )
-
-        self.__shp = shp
-        self.__strk = strk
-        return self
-
-    end
-    --]]
-
-    -- 2021/06/02 : 외곽선만 다시 그려주는 함수
+    -- 2021/06/02:gideros에서 shp(내부)와 strk(외곽선)을 분리함
+    -- 2021/06/02:아래 함수는 외곽선만 (다시) 그려주는 함수
     -- 외곽선에는 setColorTransform()함수가 듣지 않아서 지우고 다시 그려야한다
     -- shp는 1번, strk는 2번자리에 넣는다 (addChildAt()메서드 이용)
     function Shape:__mkstrk__()
 
         local opt = self.__sopt
-
-        -- print("sw", opt.sw)
-        -- strokewidth==0 인 경우는 기존의 strk를 삭제(2번자리)하고 리턴
+        
+        -- 먼저 기존의 strk가 존재한다면 삭제한다        
+        if self.__strk then
+            self.__bd:getChildAt(2):removeFromParent()
+        end
+        
+        -- strokewidth==0 인 경우는 기존의 self.__strk를 nil로 하고 리턴
         if opt.sw == 0 then
-
-            if self.__strk then
-                self.__bd:getChildAt(2):removeFromParent()
-            end
             self.__strk = nil
             return self
-    
         end
-
+        
+        -- strokewidth~=0 인 경우 strk를 교체한다
+        
         local pts = self.__pts
         local strk = GShape.new() -- 외곽선
         strk:setLineStyle(opt.sw, opt.sc.hex, opt.sc.a) -- width, color, alpha
@@ -126,10 +63,9 @@ if _Gideros then
         end
         strk:lineTo(pts[1], pts[2]); strk:endPath() -- ending at the starting point
         
-        
-        if self.__strk then
-            self.__bd:getChildAt(2):removeFromParent()
-        end
+        --if self.__strk then
+        --    self.__bd:getChildAt(2):removeFromParent()
+        --end
 
         self.__bd:addChildAt(strk,2)
         self.__strk = strk
@@ -151,7 +87,13 @@ if _Gideros then
         --     self.__bd:getChildAt(k):removeFromParent()
         -- end
         if self.__shp then
+
+            --if self.__strk then -- 2021/08/13:strk가 있다면 그것을 먼저 지운다
+            --    self.__bd:getChildAt(2):removeFromParent()
+            --end
+
             self.__bd:getChildAt(1):removeFromParent()
+    
         end
 
         -- (2) (add new) 새로운 shp/strk를 생성해서 추가한다
@@ -375,6 +317,7 @@ elseif _Corona then
 
     end
 
+
     function Shape:fill(fc)
 
         --2021/06/21: 현재 fillcolor와 변경하려는 것이 같다면 그냥 리턴
@@ -385,6 +328,7 @@ elseif _Corona then
         return self
     
     end
+
     
     function Shape:setstrokecolor(sc)
 
@@ -396,6 +340,7 @@ elseif _Corona then
         return self
     
     end
+
     
     function Shape:setstrokewidth(sw)
 
@@ -407,7 +352,8 @@ elseif _Corona then
     end
     
 
-end -- elseif _Corona then
+end -- if _Gideros elseif _Corona
+
 
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -417,13 +363,17 @@ function Shape:init(pts, opt)
     self.__pts = pts
 
     if opt == nil then
+
         self.__sopt = {sw=0, sc=WHITE, fc=WHITE}
+
     else
+
         self.__sopt = {
             sw = opt.strokewidth or 0,
             sc = opt.strokecolor or WHITE,
             fc = opt.fill or opt.fillcolor or WHITE,
         }
+
     end
 
     self.__bd = newgroup()

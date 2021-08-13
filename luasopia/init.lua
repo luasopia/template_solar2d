@@ -198,8 +198,8 @@ require 'luasopia.shape.polygon'
 require 'luasopia.shape.circle'
 require 'luasopia.shape.star'
 require 'luasopia.shape.heart'
-require 'luasopia.shape.square'
 require 'luasopia.shape.arrow'
+-- require 'luasopia.shape.square'
 
 -------------------------------------------------------------------------------
 -- standard library

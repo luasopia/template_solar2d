@@ -228,3 +228,5 @@ function Sprite:setframe(idfrm)
     return self
 
 end
+
+Sprite.anchor = Sprite.setanchor

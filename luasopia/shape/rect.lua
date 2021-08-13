@@ -22,7 +22,10 @@ function Rect:__mkpts__()
     self.__hwdt, self.__hhgt = hw, hh
 
     return {x1,y1,  x2,y2,  x3,y3,  x4,y4 }
+
 end
+
+
 
 function Rect:init(width, height, opt)
 
@@ -52,8 +55,19 @@ function Rect:setheight(h)
 
 end
 
-function Rect:getwidth() return self.__wdt end
-function Rect:getheight() return self.__hgt end
+
+function Rect:getwidth()
+    
+    return self.__wdt
+
+end
+
+
+function Rect:getheight()
+    
+    return self.__hgt
+
+end
 
 -- 2021/05/04: add aliases of set methods 
 Rect.width = Rect.setwidth
