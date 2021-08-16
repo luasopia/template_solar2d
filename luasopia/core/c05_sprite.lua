@@ -24,10 +24,11 @@ if _Gideros then
         local bmp = bmpNew(self.__sht.__txts[1])
         
         -- bmp:setAnchorPoint(0.5,0.5)
-        self.__wdt = sht.__frmwdt
-        self.__hgt = sht.__frmhgt
-        bmp:setPosition(-int(self.__wdt/2),-int(self.__hgt/2))
-
+        self.__wdt, self.__hgt = sht.__frmwdt, sht.__frmhgt
+        
+        -- __wdt1, __hgt1은 앵커포인트를 계산하는 데 사용된다.
+        self.__wdt1, self.__hgt1 = sht.__frmwdt-1, sht.__frmhgt-1
+        bmp:setPosition(-int(self.__wdt1*0.5),-int(self.__hgt1*0.5))
 
         self.__bd:addChild(bmp)
         self.__img = bmp
@@ -35,6 +36,7 @@ if _Gideros then
         return Disp.init(self) --return self:superInit()
 
     end
+
 
     -- 현재 그룹내 Img를 제거하고 새로운 Img를 넣는다
     function Sprite:__setfrm__(idfrm)
@@ -44,7 +46,7 @@ if _Gideros then
         self.__bd:removeChildAt(1)
 
         local bmp = bmpNew(self.__sht.__txts[idfrm])
-        bmp:setAnchorPoint(self.__apx,self.__apy)
+        bmp:setPosition(-int(self.__apx*self.__wdt1),-int(self.__apy*self.__hgt1))
         self.__bd:addChild(bmp)
 
         self.__img = bmp
@@ -53,6 +55,7 @@ if _Gideros then
         -- return self
 
     end
+
 
     -- Disp 베이스클래스의 remove()를 오버로딩
     function Sprite:remove()
@@ -67,7 +70,7 @@ if _Gideros then
     
         self.__apx, self.__apy = apx, apy
         -- self.__bmp:setAnchorPoint(apx, apy)
-        self.__img:setPosition(-int(apx*self.__apx),-int(apy*self.__apy))
+        self.__img:setPosition(-int(apx*self.__wdt1),-int(apy*self.__hgt1))
         return self
 
     end
@@ -92,10 +95,12 @@ elseif _Corona then
         local img = newImg(sht.__txts,1)
         -- img.anchorX, img.anchrorY = 0,0
 
-        self.__wdt = sht.__frmwdt
-        self.__hgt = sht.__frmhgt
+        self.__wdt, self.__hgt = sht.__frmwdt, sht.__frmhgt
+        
+        --앵커포인터를 계산하는데 사용된다.
+        self.__wdt1, self.__hgt1 = sht.__frmwdt-1, sht.__frmhgt-1
 
-        img.x, img.y = -int(self.__wdt*0.5), -int(self.__hgt*0.5)
+        img.x, img.y = -int(self.__wdt1*0.5), -int(self.__hgt1*0.5)
 
         self.__bd:insert(img)
         self.__img = img
@@ -110,15 +115,10 @@ elseif _Corona then
     function Sprite:__setfrm__(idframe)
 
         self.__bd[1]:removeSelf()
-
-
         local img = newImg(self.__sht.__txts, idframe)
-        -- img.anchorX, img.anchorY = self.__apx, self.__apy
-        img.x, img.y = -int(self.__apx*self.__wdt), -int(self.__apy*self.__hgt)
-        
-
+        -- 앵커포인트를 고려한 xy좌표값 설정
+        img.x, img.y = -int(self.__apx*self.__wdt1), -int(self.__apy*self.__hgt1)
         self.__bd:insert(img)
-
         self.__img = img
         -- return self
 
@@ -138,7 +138,7 @@ elseif _Corona then
 
         self.__apx, self.__apy = apx, apy
         -- self.__img.anchorX, self.__img.anchorY = apx, apy
-        self.__img.x, self.__img.y = -int(apx*self.__wdt), -int(apy*self.__hgt)
+        self.__img.x, self.__img.y = -int(apx*self.__wdt1), -int(apy*self.__hgt1)
         return self
 
     end
@@ -229,13 +229,6 @@ function Sprite:stop()
     end
 
     return self
-
-end
-
-
-function Sprite:getanchor()
-
-    return self.__apx, self.__apy
 
 end
 

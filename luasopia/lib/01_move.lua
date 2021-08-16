@@ -4,7 +4,9 @@
 
 local Dp = Display
 
+
 local function move(self)
+
     -- print('mv')
 
     local d = self.__mv
@@ -75,6 +77,7 @@ function Dp:setdscale(d)
 
     self.__mv = self.__mv or {}
     self.__mv.dscale = d
+    self.__iupds[move] = move
     return self
 
 end

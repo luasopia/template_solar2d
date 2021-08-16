@@ -177,3 +177,42 @@ function isempty(t)
     return false
 end
 --]]
+
+--2021/08/13: pixel모드(저해상도)를 실시간으로 구현하고자 하는 아이디어
+--2021/08/14: pixelmode를 추가
+--저해상도에서 pixel(이미지내의 점)의 위치가 정확하게 잡히려면 지정된 xy좌표가
+--정수가 되어야 한다. 실수가 되면 정확한 위치에 점이 놓이지 않는다.
+local int = math.floor
+function setpixelmode(scale)
+    
+    scale = scale or 8
+
+    if _Corona then
+
+        _luasopia.baselayer.__bd:scale(scale,scale)
+
+
+    elseif _Gideros then
+
+        -- clipping 된 영역도 흑색으로 채우려면 아래함수에0을 주면 된다.
+        _Gideros.application:setBackgroundColor(0x303030)
+
+        _luasopia.baselayer.__bd:setScale(scale,scale)
+
+        -- 궂이 clipping할 필요가 있을까 싶은데 실행속도에 영향이 있으려나
+        -- _luasopia.baselayer.__bd:setClip(0,0,50,50)
+        
+
+    end
+
+    screen.width = int(screen.width0/scale)
+    screen.height = int(screen.height0/scale)
+
+    screen.centerx = int(screen.width*0.5)
+    screen.centery = int(screen.height*0.5)
+
+    -- 아래는 Display.init() 안에서 사용된다
+    _luasopia.centerx = screen.centerx
+    _luasopia.centery = screen.centery
+
+end

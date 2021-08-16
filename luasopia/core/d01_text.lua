@@ -271,7 +271,7 @@ elseif _Corona then
 	function Text:setstring(str,...)
 
 		self.__str = strf(str,...)
-		self.__tbd.text = self.__str
+		self.__tbd.text = self.__str  --<<== C stack overflow
 
 		-- string이 변경되었다면 anchor point도 다시 잡아줘야된다.
 		self.__tbd.x = 0.5*self:getwidth()*(1-2*self.__apx)

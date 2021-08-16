@@ -94,6 +94,19 @@ if gideros then -- in the case of using Gideros
 
 elseif coronabaselib then -- in the case of using CoronaSDK
 
+    --2021/08/13:solar2d 의 디스플레이객체의 앵커포인트의 초기값을 (0,0)으로 설정
+    -- pixel모드에서 정확한 점좌표를 획득하기 위해서이다
+    --gideros는 default가 (0,0)이다
+    display.setDefault('anchorX',0)
+    display.setDefault('anchorY',0)
+    -- 2021/08/13: 아래를 실행하면 (작은)이미지를 확대할 때 점이 뭉개지지 않는다
+    -- 참조: https://docs.coronalabs.com/api/library/display/setDefault.html
+    -- 만약 pixel모드라면 solar2d에서는 반드시 아래와 같이 먼저 실행해야 
+    -- (점들로 이루어진) png파일이 왜곡없이 화면에 표시된다.
+    -- (Gideros는 필요 없다)
+    display.setDefault("magTextureFilter",'nearest') --default:'linear'
+
+
     _Corona = moveg()
 
     local contentwidth = _Corona.display.contentWidth
@@ -143,12 +156,6 @@ elseif coronabaselib then -- in the case of using CoronaSDK
     }
     _luasopia.loglayer:hide()
 
-    --2021/08/13:solar2d 의 디스플레이객체의 앵커포인트의 초기값을 (0,0)으로 설정
-    -- pixel모드에서 정확한 점좌표를 획득하기 위해서이다
-    --gideros는 default가 (0,0)이다
-    _Corona.display.setDefault('anchorX',0)
-    _Corona.display.setDefault('anchorY',0)
-
 
 elseif love then-- in the case of using LOVE2d
 
@@ -196,6 +203,10 @@ require 'luasopia.core.e02_shape'
 require 'luasopia.core.e30_line' -- required refactoring
 
 require 'luasopia.core.f01_sound'
+
+require 'luasopia.core.h01_pixel' --2021/08/14
+require 'luasopia.core.h02_getpixels' --2021/08/14
+require 'luasopia.core.h03_pixels' --2021/08/14
 
 -------------------------------------------------------------------------------
 -- shapes
@@ -269,7 +280,7 @@ function setdebug(args)
     end
 
     -- 2020/05/30: added
-    puts("(content)width:%d, height:%d", _luasopia.width, _luasopia.height)
+    puts("(content)width:%d, height:%d", screen.width, screen.height)
     puts("(device)width:%d, height:%d", _luasopia.devicewidth, _luasopia.deviceheight)
     puts("orientation:'%s', fps:%d", _luasopia.orientation, _luasopia.fps)
     -- puts("endx:%d, endy:%d", screen.endx, screen.endy)
@@ -286,7 +297,7 @@ function setdebug(args)
             local color = border.color or linecolor
             local width = border.width or 3
 
-            local br = Rect(screen.width, screen.height):empty()
+            local br = Rect(screen.width0, screen.height0):empty()
             br:strokewidth(width):strokecolor(color)
             _luasopia.dcdobj = _luasopia.dcdobj + 1
         
@@ -302,13 +313,13 @@ function setdebug(args)
             local color = grid.color or linecolor
             local width = grid.width or 2
 
-            for x = xgap, screen.width, xgap do
-                Line(x, 0, x, screen.height, {width=width, color=color}):addto(_luasopia.loglayer)
+            for x = xgap, screen.width0, xgap do
+                Line(x, 0, x, screen.height0, {width=width, color=color}):addto(_luasopia.loglayer)
                 _luasopia.dcdobj = _luasopia.dcdobj + 1
             end
 
-            for y = ygap, screen.height, ygap do
-                Line(0, y, screen.width, y, {width=width, color=color}):addto(_luasopia.loglayer)
+            for y = ygap, screen.height0, ygap do
+                Line(0, y, screen.width0, y, {width=width, color=color}):addto(_luasopia.loglayer)
                 _luasopia.dcdobj = _luasopia.dcdobj + 1
             end
 
@@ -338,5 +349,7 @@ setmetatable(_G, {
     end
 --]]
 })
+
+
 
 return init

@@ -2,8 +2,9 @@
 local Timer = Timer
 local timers = Timer.__tmrs -- 2020/06/24:Disp:remove()함수 내에서 직접 접근
 local lsp = _luasopia
-local cx, cy = lsp.centerx, lsp.centery
+-- local cx, cy = lsp.centerx, lsp.centery -- 정수값들이다
 local _nxt = next
+
 local int = math.floor
 --------------------------------------------------------------------------------
 -- 2020/02/06: 모든 set함수는 self를 반환하도록 수정됨
@@ -30,13 +31,16 @@ Display.updateAll = function()
     end
 end
 
+
 -- debugmode 일 때만 사용되는 함수 (따라서 약간의 overhead는 상관없음)
 Display.__getNumObjs = function() 
+
     local cnt = 0
     for _, _ in pairs(dobjs) do
         cnt = cnt + 1
     end
     return cnt - _luasopia.dcdobj - 1
+    
 end
 
 -------------------------------------------------------------------------------
@@ -45,17 +49,22 @@ end
 
 function Display:init()
 
-    -- 2020/02/16: screen에 add하는 경우 중앙에 위치시킨다.
-    -- 2020/08/23: parent가 파라메터로 넘어오지 않게금 수정
+    --2020/02/16: screen에 add하는 경우 중앙에 위치시킨다.
+    --2020/08/23: parent가 파라메터로 넘어오지 않게금 수정
     self.__pr = lsp.stage
     self.__pr:add(self)
-    self:xy(cx, cy)
+
+    --2021/08/15:pixelmode에서 cx,cy값이 변하므로 lsp.centerx/y값을 직접 읽어야 한다
+    self:xy(lsp.centerx, lsp.centery)
 
     self.__bd.__obj = self -- body에 원객체를 등록 (_Grp의 __del함수에서 사용)
-    self.__al = self.__al or 1 -- only for coronaSDK (for storing al.pha)
-
+    
     dobjs[self] = self
     self.__iupds = {} -- 내부 update함수들을 저장할 테이블
+    
+    --2021/08/14:pixel모드에서 xy값을 정위치에 놓기위해
+    -- __bdx,__bdy 저장된 (실수)값을 int()변환하여 설정한다.
+    self.__bda = 1
 
 end
 
@@ -211,65 +220,95 @@ function Display:detag()
 
 end
 
+
+-- 2021/08/14
+function Display:getanchor()
+    -- return self.__bd:getAnchorPosition()
+    -- return self.__bd.anchorX, self.__bd.anchorY --solar2d
+    return self.__apx, self.__apy
+end
+
+
+function Display:getx()
+    -- return self.__bd:getX() -- gid
+    -- return self.__bd.x --solar2d
+    return self.__bdx
+end
+
+
+function Display:gety()
+    -- return self.__bd:getY() --gid
+     -- return self.__bd.y --solar2d
+    return self.__bdy
+end
+
+
+function Display:getxy()
+    -- return self.__bd:getPosition() --gid
+    -- return self.__bd.x, self.__bd.y --solar2d
+    return self.__bdx, self.__bdy
+end
+
+
+function Display:getalpha()
+    -- return self.__bd:getAlpha() -- gideros
+    return self.__bda
+end
+
+--------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 if _Gideros then -- gideros
- --------------------------------------------------------------------------------
-    
-    --[[
-    Display.__get__ = function(o, k)
-        if k=='x' then return o.__bd:getX()
-        elseif k=='y' then return o.__bd:getY()
-        elseif k=='r' or k=='rot' then return o.__bd:getRotation()
-        elseif k=='s' or k=='scale' then 
-            local sx, sy = o.__bd:getScale()
-            return (sx+sy)/2 
-        elseif k=='a' or k=='alpha' then return o.__bd:getAlpha()
-        elseif k=='xs' or k=='xscale' then return o.__bd:getScaleX()
-        elseif k=='ys' or k=='yscale' then return o.__bd:getScaleY()
-        else return Display[k] end
-    end
-    --]]
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
-    function Display:getx()
-        -- return self.__bd:getX()
-        return self.__bdx
-    end
-
-
-    function Display:gety()
-        -- return self.__bd:getY()
-        return self.__bdy
-    end
-
-    
-    function Display:getxy()
-        -- return self.__bd:getPosition()
-        return self.__bdx, self.__bdy
-    end
 
     function Display:getrot() return self.__bd:getRotation() end -- 2020/02/26
     -- gideros getScale() returns xScale, yScale, and zScale
     function Display:getscale() local sx, sy = self.__bd:getScale(); return (sx+sy)/2 end
-    function Display:getalpha() return self.__bd:getAlpha() end
+    
     function Display:getxscale() return self.__bd:getScaleX() end
     function Display:getyscale() return self.__bd:getScaleY() end
 
     
     function Display:isvisible() return self.__bd:isVisible() end
 
-    function Display:getanchor() return self.__bd:getAnchorPoint() end
     
     -- 2020/02/04 args.init을 제거하고 대신 set()메서드 추가
     function Display:set(arg)
-        local t
-        if arg.x then self.__bd:setX(arg.x) end
-        if arg.y then self.__bd:setY(arg.y) end
-        t = arg.r or arg.rot; if t then self.__bd:setRotation(t) end
-        t = arg.s or arg.scale; if t then self.__bd:setScale(t) end
-        t = arg.a or arg.alpha; if t then self.__bd:setAlpha(t) end
-        t = arg.xs or arg.xscale; if t then self.__bd:setScaleX(t) end
-        t = arg.ys or arg.yscale; if t then self.__bd:setScaleY(t) end
+        
+        if arg.x then
+            self.__bdx = arg.x
+            self.__bd:setX(int(arg.x))
+        end
+
+        if arg.y then
+            self.__bdy = arg.y
+            self.__bd:setY(int(arg.y))
+        end
+
+        if arg.alpha then
+            self.__bda = arg.alpha
+            self.__bd:setAlpha(arg.alpha)
+        end
+
+        if arg.scale then
+            self.__bd:setScale(arg.scale)
+        end
+
+        if arg.rot then
+            self.__bd:setRotation(arg.rot)
+        end
+
+        if arg.xscale then
+            self.__bd:setScaleX(arg.xscale)
+        end
+
+        if arg.yscale then
+            self.__bd:setScaleY(arg.yscale)
+        end
+
         return self
+
     end
 
     
@@ -294,12 +333,19 @@ if _Gideros then -- gideros
     end
 
 
+    -- Gideros는 1이 넘으면 이미지가 열화(?)되고, Solar2D는 자동으로 1로 세팅됨
+    function Display:setalpha(v)
+        -- self.__bd:setAlpha(v>1 and 1 or v)
+        self.__bda = v>1 and 1 or v
+        self.__bd:setAlpha(self.__bda)
+        return self
+    end
+
+
     function Display:setrot(v) self.__bd:setRotation(v); return self end -- 2020/02/26
     -- gid는 setScale(v)라고 하면 scaleX, scaleY(, scaleZ)에 모두 v가 적용됨
     function Display:setscale(x,y) self.__bd:setScale(x,y); return self end
     -- 2020/04/26 : alpha가 1초과면 1로 세팅한다.
-    -- Gideros는 1이 넘으면 이미지가 열화(?)되고, Solar2D는 자동으로 1로 세팅됨
-    function Display:setalpha(v) self.__bd:setAlpha(v>1 and 1 or v);return self end
     -- xs()와 ys()는 x and scale, y and scale로 혼동할 여지가 있어서 삭제
     function Display:setxscale(v) self.__bd:setScaleX(v); return self end
     function Display:setyscale(v) self.__bd:setScaleY(v); return self end
@@ -365,51 +411,66 @@ if _Gideros then -- gideros
     end
 
 --------------------------------------------------------------------------------    
+--------------------------------------------------------------------------------    
 elseif _Corona then -- if coronaSDK
 --------------------------------------------------------------------------------    
+--------------------------------------------------------------------------------    
     
-    function Display:getx()
-        -- return self.__bd.x
-        return self.__bdx
-    end
+
+    function Display:getrot()
+        return self.__bd.rotation
+    end -- 2020/02/26
 
 
-    function Display:gety()
-        -- return self.__bd.y
-        return self.__bdy
-    end
-    
-    
-    function Display:getxy()
-        -- return self.__bd.x, self.__bd.y
-        return self.__bdx, self.__bdy
+    function Display:getscale()
+        return (self.__bd.xScale + self.__bd.yScale)/2
     end
 
-    function Display:getrot() return self.__bd.rotation end -- 2020/02/26
-    function Display:getscale() return (self.__bd.xScale + self.__bd.yScale)/2 end
-    function Display:getalpha() return self.__al end
+    
     function Display:getxscale() return self.__bd.xScale end
     function Display:getyscale() return self.__bd.yScale end
     
     
     function Display:isvisible() return self.__bd.isVisible end
 
-    function Display:getanchor()
-        return self.__bd.anchorX, self.__bd.anchorY
-    end
 
     -- 2020/02/04 args.init을 제거하고 대신 set()메서드 추가
     function Display:set(arg)
-        local t
-        if arg.x then self.__bd.x = arg.x end
-        if arg.y then self.__bd.y = arg.y end
-        t = arg.r or arg.rot; if t then self.__bd.rotation = t end
-        t = arg.s or arg.scale; if t then self.__bd.xScale,self.__bd.yScale=t,t end
-        t = arg.a or arg.alpha; if t then self.__al, self.__bd.alpha = t, t end
-        t = arg.xs or arg.xscale; if t then self.__bd.xScale = t end
-        t = arg.ys or arg.yscale; if t then self.__bd.yScale = t end
+
+        if arg.x then
+            self.__bdx = arg.x
+            self.__bd.x = int(arg.x)
+        end
+
+        if arg.y then
+            self.__bdy = arg.y
+            self.__bd.y = int(arg.y)
+        end
+        
+        if arg.alpha then
+            self.__bda, self.__bd.alpha = arg.alpha, arg.alpha
+        end
+
+        if arg.rot then
+            self.__bd.rotation = arg.rot
+        end
+
+        if arg.scale then
+            self.__bd.xScale, self.__bd.yScale = arg.scale, arg.scale
+        end
+
+        if arg.xscale then
+            self.__bd.xScale = arg.xscale
+        end
+
+        if arg.yscale then
+            self.__bd.yScale = arg.yscale
+        end
+
         return self
+
     end
+
 
     -- 2020/02/18 시험메서드 (Solar2D)###############################################
     function Display:setx(v)
@@ -446,7 +507,12 @@ elseif _Corona then -- if coronaSDK
         return self
     end
 
-    function Display:setalpha(v) self.__al, self.__bd.alpha = v,v; return self end
+    function Display:setalpha(v)
+        -- self.__al, self.__bd.alpha = v,v
+        self.__bda, self.__bd.alpha = v, v
+        return self
+    end
+
     function Display:setxscale(v) self.__bd.xScale = v; return self end
     function Display:setyscale(v) self.__bd.yScale = v; return self end
     
@@ -488,10 +554,6 @@ elseif _Corona then -- if coronaSDK
     end
 
     
-    function Display:tint(r,g,b)
-        self.__bd:setFillColor(r,g,b)
-        return self
-    end
 
     -- 2020/06/08 : 추가 
     function Display:getglobalxy(x,y)

@@ -50,8 +50,10 @@ if _Gideros then
         self.__cpg = {-hw,-hh,1/h,  hw,-hh,1/w,  hw,hh,1/h,  -hw,hh,1/w}
         self.__wdt, self.__hgt = w, h
         --------------------------
+        self.__wdt1, self.__hgt1 = w-1, h-1
 
-        img:setPosition(-int(hw), -int(hh))
+        img:setPosition(-int(self.__wdt1*0.5), -int(self.__hgt1*0.5))
+
         self.__bd:addChild(img)
         self.__img = img
 
@@ -91,7 +93,7 @@ if _Gideros then
         local w,h = self.__wdt, self.__hgt
 
         self.__apx, self.__apy = ax, ay
-        self.__img:setPosition(-int(ax*w), -int(ay*h))
+        self.__img:setPosition(-int(ax*self.__wdt1), -int(ay*self.__hgt1))
 
         self.__cpts__ = {
           -w*ax,-h*ay, 1/h,
@@ -99,6 +101,7 @@ if _Gideros then
           w*(1-ax),h*(1-ay), 1/h,
           -w*ax,h*(1-ay), 1/w
         }
+
         return self
 
     end
@@ -135,10 +138,12 @@ elseif _Corona then
         local w, h = img.width, img.height
         local hw, hh = w*0.5, h*0.5
         self.__cpg = {-hw,-hh,1/h,  hw,-hh,1/w,  hw,hh,1/h,  -hw,hh,1/w}
-        self.__wdt, self.__hgt = w, h
         --------------------------
 
-        img.x, img.y = -int(hw), -int(hh)
+        -- 앵커점을 고려하여 child의 xy좌표 설정
+        self.__wdt1, self.__hgt1 = w-1, h-1
+        img.x, img.y = -int(self.__wdt1*0.5), -int(self.__hgt1*0.5)
+
         self.__bd:insert(img)
         self.__img = img
 
@@ -149,7 +154,7 @@ elseif _Corona then
     function Image:setanchor(ax, ay)
 
         self.__apx, self.__apy = ax, ay
-        self.__img.x, self.__img.y = -int(ax*self.__wdt), -int(ay*self.__hgt)
+        self.__img.x, self.__img.y = -int(ax*self.__wdt1), -int(ay*self.__hgt1)
 
     end
 
@@ -157,6 +162,16 @@ elseif _Corona then
     -- 2020/06/20
     function Image:getwidth() return self.__wdt end
     function Image:getheight() return self.__hgt end
+
+    
+    --2021/08/13
+    function Display:tint(r,g,b)
+
+        self.__bd[1]:setFillColor(r,g,b)
+        return self
+        
+    end
+
 
 end
 

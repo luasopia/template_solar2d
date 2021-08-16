@@ -7,16 +7,26 @@
 --------------------------------------------------------------------------------
 local ls = _luasopia
 local x0, y0, endx, endy = ls.x0, ls.y0, ls.endx, ls.endy
+local int = math.floor
 --2020/05/06 Rect(screen)가 safe영역 전체를 덮도록 수정
 --2020/05/29 baselayer에 생성되어야 한다. xy는 센터로
 --screen = Rect(endx-x0+1, endy-y0+1,{fillcolor=Color.BLACK}, _luasopia.baselayer)
 screen = Rect(endx-x0+1, endy-y0+1, {fillcolor=Color.BLACK})
 
-screen:xy(ls.centerx, ls.centery)
-screen.width = ls.width
-screen.height = ls.height
-screen.centerx = ls.centerx
-screen.centery = ls.centery
+screen:xy(int(ls.centerx), int(ls.centery))
+
+--2021/08/14
+screen.width0 = ls.width -- original width
+screen.height0 = ls.height -- original width
+
+--2021/08/14:screen.width, screen.height는 pixelmode에서 변할 수 있다.
+screen.width = screen.width0
+screen.height = screen.height0
+
+
+
+screen.centerx = int(ls.centerx)
+screen.centery = int(ls.centery)
 screen.fps = ls.fps
 -- added 2020/05/05
 screen.devicewidth = ls.devicewidth
