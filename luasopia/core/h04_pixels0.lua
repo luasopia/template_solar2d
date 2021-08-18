@@ -2,9 +2,6 @@
 -- pixel모드는 Gideros의 성능이 더 좋은듯(아마 Gideros는 Pixel객체를 지원하고
 -- solar2d는 rectangle shape로 점을 그릴수밖에 없어서 그런듯 하다.)
 
--- setscale(s)은 xscale, yscale 모두 s로 설정한다.
--- setxscale(xs) 나 setyscale(ys)은 scale값도 (xs+ys)/2값으로 갱신한다.
--- getscale()은 (xs+ys)/2값을 반환한다
 
 --[[
 local alien = Pixels{
@@ -19,25 +16,18 @@ local alien = Pixels{
 }
 --]]
 
---[[
-local p='0110:1001:0110'
-for k =1, #p do
-    print(type(p:sub(k,k)))
-end
---]]
 local Disp = Display
 
 local floor = math.floor
 local function int(f) return floor(f+0.5) end -- local int = math.floor
 local D2R = math.pi/180
-
 local cos, sin = math.cos, math.sin
---local function rot(x,y,r)
---    return  int(x*cos(r)-y*sin(r)), int(x*sin(r)+y*cos(r))
---end
-local abs = math.abs
+local abs, max = math.abs, math.max
 local tins = table.insert
 
+-- 직전에 그린 각도와 지정된 각도가 이것보다 커야 새로 그린다
+-- (성능향상을 위해서)
+local gapdeg = 5 -- 5:default (3,5,9,15,45)
 
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -71,8 +61,8 @@ if _Gideros then
     function Pixels:__setpx__(px, xf, yf, xsf, ysf)
 
         px:setPosition(xf, yf)
-        if xsf then px:setScaleX(xsf) end
-        if ysf then px:setScaleY(ysf) end
+        if xsf>1 then px:setScaleX(xsf) end
+        if ysf>1 then px:setScaleY(ysf) end
 
     end
 
@@ -95,13 +85,21 @@ elseif _Corona then
     
     local newPoly = _Corona.display.newPolygon
     local pts={0,0, 1,0, 1,1, 0,1} -- PoinTS
-
+    
+    
+    -- local newImg = _Corona.display.newImage
 
     function Pixels:__mkpx__(x0, y0, fc)
-            
+        
+
+        -- local px = newImg('root/ex/pixel.png')
+        -- px:setFillColor(fc.r, fc.g, fc.b)
+
         local px = newPoly(0, 0, pts)
-        self.__bd:insert(px)
         px:setFillColor(fc.r, fc.g, fc.b)
+
+
+        self.__bd:insert(px)
         px.x0, px.y0 = x0, y0
 
         return px
@@ -121,75 +119,11 @@ elseif _Corona then
     function Pixels:__setpx__(px, xf, yf, xsf, ysf)
 
         px.x, px.y = xf, yf
-        if xsf then px.xScale = xsf end
-        if ysf then px.yScale = ysf end
+        if xsf>1 then px.xScale = xsf end
+        if ysf>1 then px.yScale = ysf end
 
     end
 
-
---[[
-    function Pixels:__setrs__()
-
-        -- print('__setrs__')
-
-        local r, xs, ys = self.__bdrr, self.__bdxs, self.__bdys
-        local ixs, iys, ixsr, iysr
-        -- floor(s+n)에서 n~[0.5,1)값에 따라서 확대할 때 줄이 생길수도 있다.
-        -- 소수점 확대시(예로 1.2) 점들간 간격이 없어지는 값이 0.95이다
-        if xs~=1 then
-            ixs = floor(xs+0.95)
-        end
-        
-        if ys~=1 then
-            iys = floor(ys+0.95)
-        end
-
-        -- 2021/08/16:r~=0이 아니고 scale~=1
-        if r~=0 then
-            -- ixsr = floor( abs(xs*cos(r)-ys*sin(r)) + 1.01 )
-            -- iysr = floor( abs(xs*sin(r)+ys*cos(r)) + 1.01 )
-
-            -- ixsr = floor( abs(xs*cos(r)-ys*sin(r))  + 1)
-            -- iysr = floor( abs(xs*sin(r)+ys*cos(r))  + 1)
-            
-            -- 이게 확대했을 때 (특히 90n 각도일 때) 제일 보기 좋다
-            ixsr = floor( abs(xs*cos(r)-ys*sin(r))  + 0.95) -- 0.95
-            if ixsr < xs then ixsr=xs end
-            iysr = floor( abs(xs*sin(r)+ys*cos(r))  + 0.95)
-            if iysr < ys then iysr=ys end
-
-        end
-    
-        for k = self.__bd.numChildren, 1, -1 do
-
-            local px = self.__bd[k]
-            local x, y = px.x0, px.y0
-
-            if xs ~=1 then
-                x = int(x*xs)
-                px.xScale = ixs    
-            end
-
-            if ys ~=1 then
-                y = int(y*ys)
-                px.yScale = iys    
-            end
-
-            -- r을 가장 나중에 변경시켜야 한다
-            if r~=0 then
-                x, y = int(x*cos(r)-y*sin(r)), int(x*sin(r)+y*cos(r)) --rot(px.x0,px.y0, rotr)
-                px.xScale, px.yScale = ixsr, iysr            
-            end
-
-
-            px.x, px.y = x, y
-
-        end
-        
-        return self
-    
-    end
---]]
 end
 
 --------------------------------------------------------------------------------
@@ -208,6 +142,7 @@ function Pixels:init(shts, seq)
 
     self.__bdrd, self.__bdrr = 0, 0 -- rotationa angle in deg(bdr) and radian(rotr)
     self.__bds, self.__bdxs, self.__bdys = 1, 1, 1
+    self.__rdprv = 0 -- 직전에 그린 각도(degree)
 
 
     self:setframe(1)
@@ -233,8 +168,10 @@ function Pixels:setframe(id)
 
         -- 앵커가 반영된 점의 좌표만 저장
         -- wdt1, hgt1을 사용해야 anchor(1,1)로 지정했을 때 정확히 우하점이 된다.
-        local x0 = px.x0 - int(self.__apx*self.__wdt1)
-        local y0 = px.y0 - int(self.__apy*self.__hgt1)
+        -- local x0 = px.x0 - int(self.__apx*self.__wdt1)
+        -- local y0 = px.y0 - int(self.__apy*self.__hgt1)
+        local x0 = px.x0 - floor(self.__apx*self.__wdt1 + 0.5)
+        local y0 = px.y0 - floor(self.__apy*self.__hgt1 + 0.5)
 
         tins(pxs, self:__mkpx__(x0, y0, px.c))
 
@@ -248,74 +185,62 @@ function Pixels:setframe(id)
 end
 
 
+-- --[[
 function Pixels:__setrs__()
 
+
     local r, xs, ys = self.__bdrr, self.__bdxs, self.__bdys
-    local ixs, iys, ixsr, iysr
-    -- floor(s+n)에서 n~[0.5,1)값에 따라서 확대할 때 줄이 생길수도 있다.
-    -- 소수점 확대시(예로 1.2) 점들간 간격이 없어지는 값이 0.95이다
-    if xs~=1 then
-        ixs = floor(xs+0.95)
-    end
-    
-    if ys~=1 then
-        iys = floor(ys+0.95)
-    end
+    local ixsr, iysr = floor(xs+0.5), floor(ys+0.5) -- +0.95
 
+    -- (xscale, yscale)벡터를 r만큼 회전시킨 후 그것의 x,y성분을 뽑아낸다 
     if r~=0 then
-        -- ixsr = floor( abs(xs*cos(r)-ys*sin(r)) + 1.01 )
-        -- iysr = floor( abs(xs*sin(r)+ys*cos(r)) + 1.01 )
-
-        -- ixsr = floor( abs(xs*cos(r)-ys*sin(r))  + 1)
-        -- iysr = floor( abs(xs*sin(r)+ys*cos(r))  + 1)
+        -- ixsr = max(ixsr, int( abs(xs*cos(r)-ys*sin(r)) )) -- +0.95
+        -- iysr = max(iysr, int( abs(xs*sin(r)+ys*cos(r)) )) -- +0.95
         
-        -- 이게 확대했을 때 (특히 90n 각도일 때) 제일 보기 좋다
-        ixsr = floor( abs(xs*cos(r)-ys*sin(r))  + 0.95) -- 0.95
-        if ixsr < xs then ixsr=xs end
-        iysr = floor( abs(xs*sin(r)+ys*cos(r))  + 0.95)
-        if iysr < ys then iysr=ys end
+        -- int()를 floor(x+0.5)로 치환하여 약간 더 빠르게
+        -- ixsr = max(ixsr, floor( abs(xs*cos(r)-ys*sin(r)) +0.5 )) -- +0.58578
+        -- iysr = max(iysr, floor( abs(xs*sin(r)+ys*cos(r)) +0.5 )) -- 
+
+        ixsr = max(ixsr, floor( abs(xs*cos(r)-ys*sin(r)) +0.5 ))
+        iysr = max(iysr, floor( abs(xs*sin(r)+ys*cos(r)) +0.5 ))
 
     end
 
     for k = 1, self.__npxs do
 
         local px = self.__pxs[k]
-        local xf, yf, xsf, ysf = px.x0, px.y0, nil, nil
-
-        if xs ~=1 then
-            xf, xsf = int(xf*xs), ixs
-        end
-
-        if ys ~=1 then
-            yf, ysf = int(yf*ys), iys
-        end
+        local xf, yf = px.x0*xs, px.y0*ys
 
         -- r을 가장 나중에 변경시켜야 한다
         if r~=0 then
-            xf, yf = int(xf*cos(r)-yf*sin(r)), int(xf*sin(r)+yf*cos(r)) --rot(px.x0,px.y0, rotr)
-            xsf, ysf = ixsr, iysr          
+            xf, yf = xf*cos(r)-yf*sin(r), xf*sin(r)+yf*cos(r) --rot(px.x0,px.y0, rotr)
         end
 
-        -- px.x, px.y = xf, yf
-        -- if xsf then px.xScale = xsf end
-        -- if ysf then px.yScale = ysf end
-        self:__setpx__(px,xf,yf,xsf,ysf)
-
+        -- self:__setpx__(px, int(xf), int(yf), ixsr, iysr)
+        self:__setpx__(px, floor(xf+0.5), floor(yf+0.5), ixsr, iysr)
+        
     end
     
     return self
 
 end
+--]]
 
-function Pixels:setrot(deg)
+-- function Pixels:setrot(deg)
+--2021/08/17:pxmode일 때 setrot() (and rot()) 함수가 아래로 교체된다
+function Pixels:__setr__(deg)
 
     self.__bdrd, self.__bdrr = deg, deg*D2R
+    if abs(deg - self.__rdprv) < gapdeg then return end
+
+    self.__rdprv = deg
+    
     return self:__setrs__()
 
 end
 
 
-function Pixels:setscale(s)
+function Pixels:__sets__(s)
 
     self.__bds, self.__bdxs, self.__bdys = s, s, s
     return self:__setrs__()
@@ -323,7 +248,7 @@ function Pixels:setscale(s)
 end
 
 
-function Pixels:setxscale(xs)
+function Pixels:__setxs__(xs)
 
     self.__bdxs = xs
     self.__bds = (xs+self.__bdys)*0.5 -- scale값 갱신
@@ -332,7 +257,7 @@ function Pixels:setxscale(xs)
 end
 
 
-function Pixels:setyscale(ys)
+function Pixels:__setys__(ys)
 
     self.__bdys = ys
     self.__bds = (self.__bdxs+ys)*0.5 -- scale값도 갱신한다
@@ -357,22 +282,4 @@ function Pixels:remove()
 end
 
 
-function Pixels:getrot()
-
-    return self.__bdrd
-
-end
-
-
-function Pixels:getscale()
-
-    return self.__bds
-
-end
-
-
 Pixels.anchor = Pixels.setanchor
-Pixels.rot = Pixels.setrot
-Pixels.scale = Pixels.setscale
-Pixels.xscale = Pixels.setxscale
-Pixels.yscale = Pixels.setyscale

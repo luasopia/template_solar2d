@@ -1,17 +1,18 @@
 --##############################################################################
 --------------------------------------------------------------------------------
 -- 2020/02/23 : screen 에 touch()를 직접붙이기 위해서 Rect를 screen으로 생성해서
--- _baselayer에 등록
+-- bglayer에 등록
 -- 2020/06/23 : Rect클래스를 리팩토링한 후 여기로 옮김
 -- 2021/08/09 : screen:onkeydown(k) 메서드 처리 추가
 --------------------------------------------------------------------------------
 local ls = _luasopia
 local x0, y0, endx, endy = ls.x0, ls.y0, ls.endx, ls.endy
 local int = math.floor
+
 --2020/05/06 Rect(screen)가 safe영역 전체를 덮도록 수정
---2020/05/29 baselayer에 생성되어야 한다. xy는 센터로
---screen = Rect(endx-x0+1, endy-y0+1,{fillcolor=Color.BLACK}, _luasopia.baselayer)
-screen = Rect(endx-x0+1, endy-y0+1, {fillcolor=Color.BLACK})
+--2020/08/17 bglayer에 생성되어야 한다
+screen = Rect(endx-x0+1, endy-y0+1, {fill=Color.BLACK})
+screen:addto(_luasopia.bglayer) -- 2021/08/17
 
 screen:xy(int(ls.centerx), int(ls.centery))
 

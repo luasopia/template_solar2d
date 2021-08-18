@@ -155,6 +155,7 @@ elseif _Corona then
 
         self.__apx, self.__apy = ax, ay
         self.__img.x, self.__img.y = -int(ax*self.__wdt1), -int(ay*self.__hgt1)
+        return self
 
     end
 

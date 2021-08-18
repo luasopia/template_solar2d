@@ -2,7 +2,7 @@ local Group = Group
 local time0 = 300
 local lsp = _luasopia
 local x0, y0, endx, endy = lsp.x0, lsp.y0, lsp.endx, lsp.endy
-local baselayer = lsp.baselayer
+local scnlayer = lsp.scnlayer
 --------------------------------------------------------------------------------
 -- private static methods
 --------------------------------------------------------------------------------
@@ -77,8 +77,8 @@ local inScene = nil -- current (or scheduled to enter) scene in the screen
 --------------------------------------------------------------------------------
 function Scene:init()
 
-    -- scene은 baselayer에 생성한다.
-    self.__stg = Group():addto(baselayer):xy(0,0)
+    -- scene은 scnlayer에 생성한다.
+    self.__stg = Group():addto(scnlayer):xy(0,0)
     lsp.stage = self.__stg
 
 end    
@@ -235,7 +235,7 @@ function Scene.goto(url, effect, time)
 end
 
 -- 2020/05/29 초기에 scene0를 생성한다
--- baselayer에는 screen(Rect객체)과 scene.__stg 만을 집어넣는다
+-- scnlayer에는 screen(Rect객체)과 scene.__stg 만을 집어넣는다
 lsp.scene0 = Scene()
 lsp.stage = lsp.scene0.__stg
 inScene = lsp.scene0

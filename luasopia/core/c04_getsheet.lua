@@ -33,11 +33,11 @@ elseif _Gideros then
     function getsheet(url, frmwidth, frmheight, nfrms)
 
         local sht = { 
-                __txts = {},
-                __frmwdt = frmwidth,
-                __frmhgt = frmheight,
-                __nfrms = nfrms,
-                __allfrms={}
+            __txts = {},
+            __frmwdt = frmwidth,
+            __frmhgt = frmheight,
+            __nfrms = nfrms,
+            __allfrms={}
         }
 
         local txt = txtNew(rooturl..url)

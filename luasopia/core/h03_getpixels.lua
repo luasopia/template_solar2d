@@ -1,5 +1,7 @@
 -- 2021/08/15:created
 
+local tins = table.insert
+
 local palette ={
     ['1'] = Color.WHITE,
     r=Color.RED,
@@ -14,11 +16,16 @@ function getpixels(...) --decode maps table
 
     local maps = {...}
 
-    local pxsht={} -- pixels sheet
+    local pxsht={
+        __txts={},
+        __allfrms = {},
+    } -- pixels sheet
     
     local width, height = -math.huge, -math.huge
     
-    for k, map in ipairs(maps)do
+    for k = 1,#maps do
+        
+        local map=maps[k]
         
         local pxs = {}
         local idpx = 1
@@ -53,14 +60,17 @@ function getpixels(...) --decode maps table
             
             end
 
-            pxsht[k] = pxs
-
+            
         end
-
+        
+        pxsht.__txts[k] = pxs
+        pxsht.__allfrms[k] = k
 
     end
 
-    pxsht.__wdt, pxsht.__hgt = width, height
+    pxsht.__frmwdt = width
+    pxsht.__frmhgt = height
+    pxsht.__nfrms = #pxsht.__allfrms
    
     return pxsht
 
