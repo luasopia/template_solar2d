@@ -235,7 +235,7 @@ require 'luasopia.core.e30_line' -- required refactoring
 require 'luasopia.core.f01_sound'
 
 require 'luasopia.core.h01_pxmode'      --2021/08/17
-require 'luasopia.core.h02_pixel'       --2021/08/14
+require 'luasopia.core.h02_dot'       --2021/08/14
 require 'luasopia.core.h03_getpixels'   --2021/08/14
 require 'luasopia.core.h04_pixels'      --2021/08/14
 

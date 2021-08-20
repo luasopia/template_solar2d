@@ -139,7 +139,25 @@ end
 
 function Display:stopshift()
 
+    self.__sh = nil
     self.__tr=nil
+    self.__iupds[shift] = nil --  self:__addupd__(shift)
+    return self
+    
+end
+
+
+function Display:pauseshift()
+
+    self.__iupds[shift] = nil --  self:__addupd__(shift)
+    return self
+    
+end
+
+
+function Display:resumeshift()
+
+    self.__iupds[shift] = nil --  self:__addupd__(shift)
     return self
     
 end

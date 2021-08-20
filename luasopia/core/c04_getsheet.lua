@@ -4,26 +4,7 @@ local rooturl = _luasopia.root .. '/' -- 2021/05/12
 local tins = table.insert
 
 --------------------------------------------------------------------------------
-if _Corona then
---------------------------------------------------------------------------------
-
-    local newImageSheet = _Corona.graphics.newImageSheet
-    
-    function getsheet(url, frmwidth, frmheight, nfrms)
-        local sheet = {}
-        local args = {width=frmwidth, height=frmheight, numFrames = nfrms}
-        sheet.__txts= newImageSheet('root/'..url, args)
-        sheet.__frmwdt = frmwidth
-        sheet.__frmhgt = frmheight
-        sheet.__nfrms = nfrms
-        sheet.__allfrms = {1}
-        for k=2,nfrms do tins(sheet.__allfrms, k) end
-        
-        return sheet
-    end
-
---------------------------------------------------------------------------------
-elseif _Gideros then
+if _Gideros then
 --------------------------------------------------------------------------------
 
     local txtNew = _Gideros.Texture.new
@@ -64,4 +45,25 @@ elseif _Gideros then
         
     end
 
+--------------------------------------------------------------------------------
+elseif _Corona then
+--------------------------------------------------------------------------------
+
+    local newImageSheet = _Corona.graphics.newImageSheet
+    
+
+    function getsheet(url, frmwidth, frmheight, nfrms)
+        
+        local sheet = {}
+        local args = {width=frmwidth, height=frmheight, numFrames = nfrms}
+        sheet.__txts= newImageSheet('root/'..url, args)
+        sheet.__frmwdt = frmwidth
+        sheet.__frmhgt = frmheight
+        sheet.__nfrms = nfrms
+        sheet.__allfrms = {1}
+        for k=2,nfrms do tins(sheet.__allfrms, k) end
+        
+        return sheet
+    end
+    
 end

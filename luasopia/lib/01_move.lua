@@ -7,11 +7,12 @@ local Dp = Display
 
 local function move(self)
 
-    -- print('mv')
-
     local d = self.__mv
-    -- local t
-    if d.dx then self:x(self:getx() + d.dx) end
+    
+    if d.dx then
+        self:x(self:getx() + d.dx)
+    end
+
     if d.dy then self:y(self:gety() + d.dy) end
     if d.drot then self:rot(self:getrot() +  d.drot) end
     if d.dscale then self:scale(self:getscale() + d.dscale) end
@@ -26,6 +27,22 @@ end
 function Dp:move(mv)
 
     self.__mv = mv
+    self.__iupds[move] = move
+    return self
+
+end
+
+
+function Dp:pausemove()
+
+    self.__iupds[move] = nil
+    return self
+
+end
+
+
+function Dp:resumemove()
+
     self.__iupds[move] = move
     return self
 

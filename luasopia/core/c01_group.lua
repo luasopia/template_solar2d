@@ -14,8 +14,8 @@ if _Gideros then
 
     function Group:init()
 
-      self.__bd = Snew()
-      return Disp.init(self)
+        self.__bd = Snew()
+        return Disp.init(self)
 
     end
 
@@ -29,19 +29,24 @@ if _Gideros then
 
     end
 
+
     -- Disp 베이스클래스의 remove()를 오버로딩
     function Group:remove()
-      -- (1) child들은 소멸자 호출 (__obj는 __bd를 가지는 객체)
-      -- 여기서 소멸자를 호출하여 그룹이 삭제되는 즉시 child들도 삭제토록 한다.
-      for k = self.__bd:getNumChildren(),1,-1 do
-        self.__bd:getChildAt(k).__obj:remove() -- 각 차일드의 소멸자 호출(즉시 삭제)
-      end
-      -- (2) 자신도 (부모그룹에서) 제거
-      return Disp.remove(self) -- 부모의 소멸자 호출
+
+        -- (1) child들은 소멸자 호출 (__obj는 __bd를 가지는 객체)
+        -- 여기서 소멸자를 호출하여 그룹이 삭제되는 즉시 child들도 삭제토록 한다.
+        for k = self.__bd:getNumChildren(),1,-1 do
+            self.__bd:getChildAt(k).__obj:remove() -- 각 차일드의 소멸자 호출(즉시 삭제)
+        end
+        -- (2) 자신도 (부모그룹에서) 제거
+        return Disp.remove(self) -- 부모의 소멸자 호출
+
     end
+
 
     -- Disp 베이스클래스의 pasuseTouch()를 오버로딩
     function Group:stoptouch()
+
         -- (1) child들은 소멸자 호출 (__obj는 body를 가지는 객체)
         for k = self.__bd:getNumChildren(),1,-1 do
           local obj = self.__bd:getChildAt(k).__obj
@@ -49,10 +54,13 @@ if _Gideros then
         end
         -- (2) 자신도 (부모그룹에서) 터치를 멈춤
         --return Disp.stoptouch(self)
+
     end
 
-      -- Disp 베이스클래스의 pasuseTouch()를 오버로딩
-    function Group:resumetouch() print('---group enabletch')
+
+    -- Disp 베이스클래스의 pasuseTouch()를 오버로딩
+    function Group:resumetouch() --print('---group enabletch')
+
         -- (1) child들은 소멸자 호출 (__obj는 body를 가지는 객체)
         for k = self.__bd:getNumChildren(),1,-1 do
           local obj = self.__bd:getChildAt(k).__obj
@@ -60,10 +68,13 @@ if _Gideros then
         end
         -- (2) 자신도 (부모그룹에서) 터치를 멈춤
         --return Disp.resumetouch(self)
+
     end
 
-      -- Disp 베이스클래스의 pasuseTouch()를 오버로딩
+
+    -- Disp 베이스클래스의 pasuseTouch()를 오버로딩
     function Group:stopupdate()
+
         -- (1) child들은 소멸자 호출 (__obj는 body를 가지는 객체)
         for k = self.__bd:getNumChildren(),1,-1 do
           local obj = self.__bd:getChildAt(k).__obj
@@ -71,10 +82,13 @@ if _Gideros then
         end
         -- (2) 자신도 (부모그룹에서) 터치를 멈춤
         return Disp.stopupdate(self)
+
     end
 
-        -- Disp 베이스클래스의 pasuseTouch()를 오버로딩
+
+    -- Disp 베이스클래스의 pasuseTouch()를 오버로딩
     function Group:resumeupdate()
+
         -- (1) child들은 소멸자 호출 (__obj는 body를 가지는 객체)
         for k = self.__bd:getNumChildren(),1,-1 do
           local obj = self.__bd:getChildAt(k).__obj
@@ -82,13 +96,17 @@ if _Gideros then
         end
         -- (2) 자신도 (부모그룹에서) 터치를 멈춤
         return Disp.resumeupdate(self)
+
     end
-  
+
+
     --2020/06/15 : 그룹자체는 유지하고 내용물들만 삭제함
     function Group:clear()
+
       for k = self.__bd:getNumChildren(),1,-1 do
         self.__bd:getChildAt(k).__obj:remove()
       end
+
     end
   
 --------------------------------------------------------------------------------
@@ -175,13 +193,16 @@ elseif _Corona then
     end
 
 
-    -- 2020/03/13: corona의 setFillColor는 group에는 적용되지 않는다.
+    -- 2020/03/13: corona의 setFillColor()는 group에는 적용되지 않는다.
     -- 따라서 모든 child를 순회하여 tint()함수를 호출한다.
+    -- (Gideros의 setColorTransform()은 그룹내 모든 객체에 적용된다)
     function Group:tint(...)
 
         for k = self.__bd.numChildren, 1, -1 do
             self.__bd[k].__obj:tint(...)
         end
+        
+        return self
 
     end
 

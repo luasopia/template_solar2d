@@ -314,6 +314,14 @@ function Display:set(arg)
     if arg.yscale   then self:setyscale(arg.yscale) end
     if arg.scale    then self:setscale(arg.scale) end
 
+    if arg.dx        then self:setdx(arg.dx) end
+    if arg.dy        then self:setdy(arg.dy) end
+    if arg.dalpha    then self:setdalpha(arg.dalpha) end
+    if arg.drot      then self:setdrot(arg.drot) end
+    if arg.dxscale   then self:setdxscale(arg.dxscale) end
+    if arg.dyscale   then self:setdyscale(arg.dyscale) end
+    if arg.dscale    then self:setdscale(arg.dscale) end
+
     return self
 
 end
@@ -388,6 +396,15 @@ if _Gideros then -- gideros
     end
 
 
+    function Display:setxyscale(xs, ys)
+
+        self.__bds, self.__bdxs, self.__bdys = (xs+ys)*0.5, xs, ys
+        self.__bd:setScale(xs, ys)
+        return self
+
+    end
+
+
     -- 2020/04/26 : alpha가 1초과면 1로 세팅한다.
     -- xs()와 ys()는 x and scale, y and scale로 혼동할 여지가 있어서 삭제
     function Display:setxscale(xs)
@@ -434,8 +451,10 @@ if _Gideros then -- gideros
     function Display:setvisible(v) self.__bd:setVisible(v); return self end
 
     function Display:tint(r,g,b)
+
         self.__bd:setColorTransform(r, g ,b)
-    return self
+        return self
+
     end
     
     --------------------------------------------------------------------------------
@@ -530,6 +549,15 @@ elseif _Corona then -- if coronaSDK
     end
 
 
+    function Display:setxyscale(xs, ys)
+
+        self.__bds, self.__bdxs, self.__bdys = (xs+ys)*0.5, xs, ys
+        self.__bd.xScale, self.__bd.yScale = xs, ys
+        return self
+
+    end
+
+
     function Display:setalpha(v)
         
         self.__bda = v
@@ -600,6 +628,7 @@ elseif _Corona then -- if coronaSDK
         dobjs[self] = nil
         -- ndobjs = ndobjs - 1
         if self.__tag ~=nil then tdobj[self.__tag][self] = nil end
+        
     end
 
     
@@ -618,8 +647,9 @@ end -- elseif _Corona then
 Display.x = Display.setx
 Display.y = Display.sety
 Display.rot = Display.setrot
-Display.scale = Display.setscale
 Display.alpha = Display.setalpha
+Display.scale = Display.setscale
+Display.xyscale = Display.setxyscale
 Display.xscale = Display.setxscale
 Display.yscale = Display.setyscale
 

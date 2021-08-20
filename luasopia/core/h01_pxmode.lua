@@ -26,26 +26,6 @@ function setpixelmode(mode)
     mode = mode or 5
     local scale = scales[mode]
 
-    
-    --[[
-    if _Corona then
-
-        _luasopia.scnlayer.__bd:scale(scale,scale)
-
-
-    elseif _Gideros then
-
-        -- clipping 된 영역도 흑색으로 채우려면 아래함수에0을 주면 된다.
-        -- _Gideros.application:setBackgroundColor(0x303030)
-
-        _luasopia.scnlayer.__bd:setScale(scale,scale)
-
-        -- 궂이 clipping할 필요가 있을까 싶은데 실행속도에 영향이 있으려나
-        -- _luasopia.scnlayer.__bd:setClip(0,0,50,50)
-        
-
-    end
-    --]]
     _luasopia.scnlayer:setscale(scale)
 
     screen.width = int(screen.width0/scale)

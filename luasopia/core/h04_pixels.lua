@@ -135,6 +135,8 @@ local function rsupd(self) -- rot and scale update
     if self.__rsupd then
         --print('rsupd')
         self:__setrs__() -- 이 안에서 self.__rsupd=false 로 된다
+        -- return self:__setrs__() 라고 하면 안 된다.
+        -- self:__setrs__()가 self를 return하기 때문이다
     end
 
 end
@@ -156,14 +158,19 @@ function Pixels:init(sht, seq)
 
     self.__bdrd, self.__bdrr = 0, 0 -- rotationa angle in deg(bdr) and radian(rotr)
     self.__bds, self.__bdxs, self.__bdys = 1, 1, 1
-    self.__dxsys = 0
-    self.__rdprv = 0 -- 직전에 그린 각도(degree)
+    self.__dxsys = 0 -- self.__bdxs - self.__bdys 계산값 저장
+    self.__rdprv = 0 -- 직전에 그린 각도(rot degree previous)
     self.__asnr = 0 -- abs(sin(rot))
 
 
     self:__setfrm__(1)
+    
+    --2021/08/20:충돌감지를 위해서 추가
+    local invh, invw = 1/self.__wdt, 1/self.__hgt
+    local hw, hh = self.__wdt*0.5, self.__hgt*0.5
+    self.__cpg = {-hw,-hh,invh,  hw,-hh,invw,  hw,hh,invh,  -hw,hh,invw}
+    
     Disp.init(self)
-
     return self:__addupd__(rsupd)
 
 end
@@ -220,9 +227,11 @@ function Pixels:__setrs__()
         -- xscale과 yscale이 서로 다른 경우도 있으므로
         -- 회전각에 따라서 이를 보정해주는 역할을 한다
         if xs ~= ys then
+
             local rotxsys = self.__dxsys*self.__asnr
             xsf = self.__bdxs - rotxsys -- 0도:xs -> 90도:ys
             ysf = self.__bdys + rotxsys -- 0도:ys -> 90도:xs
+
         end
         
         -- sclip =  1 + 0.37*abs(sin(2*rot))
@@ -344,7 +353,6 @@ function Pixels:remove()
     return Disp.remove(self)
     
 end
-
 
 
 --------------------------------------------------------------------------------

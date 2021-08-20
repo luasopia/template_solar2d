@@ -1,64 +1,98 @@
--- if not_required then return end -- This prevents auto-loading in Gideros
-local Display = Display
+--------------------------------------------------------------------------------
+-- 2021/08/20: Image클래스와 ImageRegion을 재구성
+--------------------------------------------------------------------------------
+local Disp = Display
 local rooturl = _luasopia.root .. '/' -- 2021/05/12
-
-ImageRegion = class(Display)
-
+local int = math.floor
+--------------------------------------------------------------------------------
+ImageRegion = class(Disp)
+--------------------------------------------------------------------------------
+local newImage
+--------------------------------------------------------------------------------
 if _Gideros then
-	-- print('core.imageRegion(Gid)')
+--------------------------------------------------------------------------------
 
-	local Texture_new = _Gideros.Texture.new
-	local Bitmap_new = _Gideros.Bitmap.new
-	local TextureRegion_new = _Gideros.TextureRegion.new
-	--============================================================================== 
-	-- sht = {x=n, y=n, width=n, height=n,
-	--	__textureRegion -- 첫 번째 호출에서 생성됨
-	-- }
-	-- __textureRegion은 첫 호출에서 저장한다.
-	-- 두 번째 이후에는 Texture.new()를 호출할 필요없이 저장된 것을 사용
-	--============================================================================== 
+    -- print('core.Image(gid)')
+    local newTxt = _Gideros.Texture.new
+	local newTxtRgn = _Gideros.TextureRegion.new
+    local newBmp = _Gideros.Bitmap.new
+    
+    local newGroup = _Gideros.Sprite.new
+    
+    newImage = function(self, url, rect)
 
-	--------------------------------------------------------------------------------
-	function ImageRegion:init(url, sht)
-		local tr = TextureRegion_new(Texture_new(rooturl..url), sht.x, sht.y, sht.width, sht.height)
-		self.__bd = Bitmap_new(tr)
-		self.__bd:setAnchorPoint(0.5, 0.5)
-		self.__sht = sht
+		self.__bd = newGroup()
+        local w,h=rect.width, rect.height
+        local txtr = newTxtRgn(newTxt(url), rect.x, rect.y, w, h)
+		local img = newBmp(txtr)
+        self.__bd:addChild(img)
 
-		-- 2021/05/28 added for Display:ishit() method
-		local w, h = sht.width, sht.height
-		local hw, hh = w/2, h/2
-		self.__cpg = {-hw,-hh,1/h,  hw,-hh,1/w,  hw,hh,1/h,  -hw,hh,1/w}
-		
-		return Display.init(self)
-	end
+		img:setPosition(-int((w-1)*0.5), -int((w-1)*0.5))
+        self.__wdt, self.__hgt = w, h
+        self.__img = img
 
+    end
+
+    --------------------------------------------------------------------------------
+    -- texture를 외부에서 따로 만들어서 여러 객체에서 공유하는 거나
+    -- 아래(init())와 같이 개별 객체에서 별도로 만드는 경우나 textureMemory의 차이가 없다.
+    --------------------------------------------------------------------------------
+    -- function Image:init(url) -- 2021/08/20:공통메서드로 밖으로 뺐다.
+
+
+--------------------------------------------------------------------------------
 elseif _Corona then
+--------------------------------------------------------------------------------
+    -- print('core.Image(cor)')
+    local newGroup = _Corona.display.newGroup
 
-	-- print('core.imageRegion(Cor)')
 	local newImgSht = _Corona.graphics.newImageSheet
-	local newImg =  _Corona.display.newImage
+    local newImg = _Corona.display.newImage
+    --------------------------------------------------------------------------------
 
-	function ImageRegion:init(url, sht)
-		local opt = {frames={[1]=sht}}
+	newImage = function(self, url, rect)
+
+        self.__bd = newGroup()
+		local opt = {frames={[1]=rect}}
 		-- {
 		-- 	{x=sht.x, y=sht.y, width=sht.width, height=sht.height} -- frame 1
 		-- }
-		local imgsht = newImgSht(rooturl..url, opt)
-		self.__bd = newImg(imgsht, 1)
-		self.__bd.anchorX, self.__bd.anchorY = 0.5, 0.5
-		self.__sht = sht
-
-		-- 2021/05/28 added for Display:ishit() method
-		local w, h = sht.width, sht.height
-		local hw, hh = w/2, h/2
-		self.__cpg = {-hw,-hh,1/h,  hw,-hh,1/w,  hw,hh,1/h,  -hw,hh,1/w}
+		local img = newImg( newImgSht(url, opt), 1)
 		
-		return Display.init(self)
-	end
+        local w,h = rect.width, rect.height
+		img.x, img.y = -int((w-1)*0.5), -int((h-1)*0.5)
+        
+		
+		self.__bd:insert(img)
+        self.__wdt, self.__hgt = w, h
+        self.__img = img
 
-end
+    end
 
---2020/08/26:added
-function ImageRegion:getwidth() return self.__sht.width end
-function ImageRegion:getheight() return self.__sht.height end
+    ImageRegion.tint = Image.tint
+end -- if _Gideros elseif _Corona
+--------------------------------------------------------------------------------
+
+function ImageRegion:init(url, rectinfo)
+
+	newImage(self, rooturl..url, rectinfo)
+
+	------------------------------------------------------------
+	--2021/05/09 : add info for collision box
+	local w, h = rectinfo.width, rectinfo.height
+	local hw, hh = w*0.5, h*0.5
+	local invw, invh = 1/w, 1/h
+	self.__cpg = {-hw,-hh,invh,  hw,-hh,invw,  hw,hh,invh,  -hw,hh,invw}
+	------------------------------------------------------------
+	self.__apx, self.__apy = 0.5, 0.5
+
+	return Disp.init(self)
+
+end 
+
+ImageRegion.__setimgxy__ = Image.__setimgxy__
+ImageRegion.remove = Image.remove
+
+
+ImageRegion.setanchor = Image.setanchor
+ImageRegion.anchor = ImageRegion.setanchor

@@ -319,3 +319,72 @@ function Disp:ishit(obj)
     end
 
 end
+
+
+--2021/08/20:디버깅을 위해서 추가된 메서드
+function _luasopia.drawHitArea(self)
+    
+    if self.__dbhit == nil then
+
+        self.__iupds[_luasopia.drawHitArea] = _luasopia.drawHitArea
+        
+    else
+        
+        for _, obj in ipairs(self.__dbhit) do
+            obj:remove()
+        end
+
+    end
+
+    self.__dbhit = {}
+    
+    if self.__cpg then 
+        
+        local cpg = self.__cpg
+
+        local x0, y0 = self:getglobalxy(cpg[1], cpg[2])
+
+        local x1,y1, x2, y2 = x0,y0
+        local len = #cpg
+
+        for k=4,len+1,3 do
+
+            -- print(k)
+            if k==len+1 then
+                x2, y2= x0,y0
+            else
+                x2, y2 = self:getglobalxy(cpg[k], cpg[k+1])
+            end
+
+            local ln=Line(x1,y1,x2,y2):color(Color.RED):width(2)
+            _luasopia.loglayer:add(ln)
+
+            x1,y1 = x2,y2
+            tins(self.__dbhit, ln)
+
+        end
+    
+    elseif self.__ccc then
+
+        local ccc = self.__ccc
+        local gx, gy = self:getglobalxy(ccc.x,ccc.y)
+        local dot = Rect(10,10,{fill=Color.RED})
+        _luasopia.loglayer:add(dot)
+        dot:xy(gx,gy)
+        tins(self.__dbhit, dot)
+
+        local circ = Circle(ccc.r,{strokewidth=2,strokecolor=Color.RED}):empty()
+        _luasopia.loglayer:add(circ)
+        circ:xy(gx,gy)
+        tins(self.__dbhit, circ)
+
+    elseif self.__cpt then
+
+
+    end
+
+
+    
+
+    return pts
+end
