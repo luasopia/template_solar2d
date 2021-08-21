@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- 2019/12/27: 작성 시작 : 60프레임, 화면 1080x1920 기준으로
+-- 2019/12/27: 작성 시작 : 해상도 1080x1920, 60프레임을 표준으로
 -- 2020/02/16: init.lua를 luasopia/init.lua로 옮김
 -- 2021/05/13: main 폴더를 기본폴더로 구조를 변경(require 'luasopia.init'를 없앰)
 --------------------------------------------------------------------------------
@@ -271,9 +271,10 @@ require 'luasopia.lib.maketile' -- 2020/06/24 added
 -------------------------------------------------------------------------------
 -- widget
 
-require 'luasopia.widget.button'
-require 'luasopia.widget.progressbar'
-require 'luasopia.widget.alert'
+require 'luasopia.widget.01_button'
+require 'luasopia.widget.02_progressbar'
+require 'luasopia.widget.03_alert'
+require 'luasopia.widget.04_entry'
 
 -------------------------------------------------------------------------------
 

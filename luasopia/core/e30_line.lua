@@ -47,18 +47,22 @@ if _Gideros then
 
 
     function Line:setwidth(w)
+
         self.__strkw = w
         self.__bd:removeChildAt(1)
         self.__bd:addChild(self:__draw(unpack(self.__ptsm)))
         return self
+
     end
 
     -- r,g,b는 0-255 범위의 정수
     function Line:setcolor(r,g,b)
+
         self.__strkc = Color(r,g,b)
         self.__bd:removeChildAt(1)
         self.__bd:addChild(self:__draw(unpack(self.__ptsm)))
         return self
+        
     end
 
 

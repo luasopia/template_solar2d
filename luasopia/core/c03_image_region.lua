@@ -62,14 +62,15 @@ elseif _Corona then
         local w,h = rect.width, rect.height
 		img.x, img.y = -int((w-1)*0.5), -int((h-1)*0.5)
         
-		
 		self.__bd:insert(img)
         self.__wdt, self.__hgt = w, h
         self.__img = img
 
     end
 
+    
     ImageRegion.tint = Image.tint
+
 end -- if _Gideros elseif _Corona
 --------------------------------------------------------------------------------
 

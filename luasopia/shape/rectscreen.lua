@@ -107,10 +107,16 @@ if _Gideros then
 
         --keyCode가 0 이어서 realCode로 구분해야 할 키들
         local realt = {
-            [45]='-',[61]='=',[91]='[',[93]=']',[59]=';',[39]="'",[92]="\\",
+            [45]='-',[61]='=',[91]='[',[93]=']',[59]=';',[39]="'",[92]='\\',
             [44]=',',[46]='.',[47]='/',[96]='`',
             [16777252]='capslock',
             [16777216]='esc',
+            --2021/08/21:예를 들어 [shift]+[1]을 누르면 keyCode==0,
+            -- realColde==36이 나온다.그래서 realCode로 키보드문자열을 만든다.
+            [126]='`',[33]='1',[64]='2',[35]='3',[36]='4',[37]='5',[94]=6,
+            [38]='7',[42]='8',[40]='9', [41]='0',[95]='-',[43]='=',
+            [123]='[',[125]=']',[58]=';',[34]="'",[60]=',',[62]='.',[63]='/',
+            [124]='\\'
         }
         return keyt, realt
 
@@ -187,6 +193,7 @@ elseif _Corona then
             local k = keyt[e.keyName] or e.keyName
             screen:onkeydown(k)
         end
+        
         return true
         
     end
@@ -195,7 +202,7 @@ elseif _Corona then
     function ls.enkeydown() -- enable key input
 
         Runtime:addEventListener('key', onkeydown)
-        -- print('enkeydown()')
+        screen.__keydown = true
 
     end
 
@@ -215,7 +222,7 @@ elseif _Corona then
     function ls.enkeyboth() -- enable key input
 
         Runtime:addEventListener('key', onkeyboth)
-        -- print('enkey()')
+        screen.__keyboth = true
 
     end
 

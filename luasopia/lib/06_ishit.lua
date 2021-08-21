@@ -285,9 +285,12 @@ end
 Disp.hitpoint = Disp.sethitpoint
 
 
+--2021/08/20:scale이 변할때마다 ccc.r, ccc.r2값은 변경시켜야 한다.
+-- 그래서 처음부터 ccc0 (원정보)는 보관해 두어야 한다.
 function Disp:sethitcircle(r, x, y)
 
     self.__cpg, self.__cpt, self.__cln = nil, nil, nil
+    self.__ccc0 = {r=r, x=x or 0, y=y or 0, r2=r*r}
     self.__ccc = {r=r, x=x or 0, y=y or 0, r2=r*r}
     self.ishit = ishit_cc
     return self
@@ -320,24 +323,19 @@ function Disp:ishit(obj)
 
 end
 
-
+--------------------------------------------------------------------------------
 --2021/08/20:디버깅을 위해서 추가된 메서드
-function _luasopia.drawHitArea(self)
+--------------------------------------------------------------------------------
+local dblayer =  _luasopia.loglayer -- debug layer
+
+
+local function drawhitborder(self)
     
-    if self.__dbhit == nil then
-
-        self.__iupds[_luasopia.drawHitArea] = _luasopia.drawHitArea
-        
-    else
-        
-        for _, obj in ipairs(self.__dbhit) do
-            obj:remove()
-        end
-
+    for k = #self.__htbrdr,1,-1 do
+        self.__htbrdr[k]:remove()
+        self.__htbrdr[k]=nil
     end
 
-    self.__dbhit = {}
-    
     if self.__cpg then 
         
         local cpg = self.__cpg
@@ -356,11 +354,11 @@ function _luasopia.drawHitArea(self)
                 x2, y2 = self:getglobalxy(cpg[k], cpg[k+1])
             end
 
-            local ln=Line(x1,y1,x2,y2):color(Color.RED):width(2)
-            _luasopia.loglayer:add(ln)
+            local ln=Line(x1,y1,x2,y2):color(self.__dbhlc):width(self.__dbhlw)
+            dblayer:add(ln)
 
             x1,y1 = x2,y2
-            tins(self.__dbhit, ln)
+            tins(self.__htbrdr, ln)
 
         end
     
@@ -369,22 +367,59 @@ function _luasopia.drawHitArea(self)
         local ccc = self.__ccc
         local gx, gy = self:getglobalxy(ccc.x,ccc.y)
         local dot = Rect(10,10,{fill=Color.RED})
-        _luasopia.loglayer:add(dot)
+        dblayer:add(dot)
         dot:xy(gx,gy)
-        tins(self.__dbhit, dot)
+        tins(self.__htbrdr, dot)
 
-        local circ = Circle(ccc.r,{strokewidth=2,strokecolor=Color.RED}):empty()
-        _luasopia.loglayer:add(circ)
+        local circ = Circle(ccc.r,{
+            strokewidth = self.__dbhlw,
+            strokecolor = self.__dbhlc
+        }):empty()
+        dblayer:add(circ)
         circ:xy(gx,gy)
-        tins(self.__dbhit, circ)
+        tins(self.__htbrdr, circ)
 
     elseif self.__cpt then
 
+        local cpt = self.__cpt
+        local gx, gy = self:getglobalxy(cpt.x, cpt.y)
+        local dotr = self.__dbhlw*5
+        local dot = Rect(10,10,{fill = self.dbhlc})
+        dblayer:add(dot)
+        dot:xy(gx,gy)
+        tins(self.__htbrdr, dot)
+
+    end
+
+end
+
+
+function _showhitborder(color, width)
+
+    local init0 = Display.init
+    local remove0 = Display.remove
+
+    Display.init = function(self)
+        
+        init0(self) 
+        self.__dbhlw = width or 3 -- hit line width
+        self.__dbhlc = color or Color.RED
+        self.__iupds[drawhitborder] = drawhitborder
+        self.__htbrdr = {}
+
+        return self
 
     end
 
 
-    
+    Display.remove = function(self)
 
-    return pts
+        for k = #self.__htbrdr,1,-1 do
+            self.__htbrdr[k]:remove()
+        end
+
+        remove0(self)
+
+    end
+    
 end

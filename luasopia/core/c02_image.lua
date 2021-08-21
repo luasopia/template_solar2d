@@ -1,16 +1,17 @@
 --------------------------------------------------------------------------------
+-- 2020/08/23: Image클래스의 인수를 url 한 개만으로
 -- 2021/08/13:group안에 img를 넣고 anchor를 img의 위치(x,y)를 조절하게 변경
 -- 내부img는 anchor를 (0,0)으로 고정해놓아야 사용자앵커값에서 x,y를 계산하기 쉽다
 -- 그리고 x,y는 int()로 변환하여 설정해야 pixel모드에서도 위치가 정확해진다
--- 2020/08/23: Image클래스의 인수를 url 한 개만으로
 --------------------------------------------------------------------------------
 local Disp = Display
 local rooturl = _luasopia.root .. '/' -- 2021/05/12
 local int = math.floor
+
+local newImage
 --------------------------------------------------------------------------------
 Image = class(Disp)
 --------------------------------------------------------------------------------
-local newImage
 --------------------------------------------------------------------------------
 if _Gideros then
 --------------------------------------------------------------------------------
@@ -19,7 +20,12 @@ if _Gideros then
     local newTxt = _Gideros.Texture.new
     local newBmp = _Gideros.Bitmap.new
     local newGroup = _Gideros.Sprite.new
+
     
+    ----------------------------------------------------------------------------
+    -- texture를 외부에서 따로 만들어서 여러 객체에서 공유하는 거나
+    -- 아래(init())와 같이 개별 객체에서 별도로 만드는 경우나 textureMemory의 차이가 없다.
+    ----------------------------------------------------------------------------
     newImage = function(self, url)
 
         self.__bd = newGroup()
@@ -38,13 +44,6 @@ if _Gideros then
     end
 
     
-    --------------------------------------------------------------------------------
-    -- texture를 외부에서 따로 만들어서 여러 객체에서 공유하는 거나
-    -- 아래(init())와 같이 개별 객체에서 별도로 만드는 경우나 textureMemory의 차이가 없다.
-    --------------------------------------------------------------------------------
-    -- function Image:init(url) -- 2021/08/20:공통메서드로 밖으로 뺐다.
-
-
     function Image:__setimgxy__(x,y)
 
         self.__img:setPosition(x,y)
@@ -61,14 +60,14 @@ if _Gideros then
     end
 
     
-
 --------------------------------------------------------------------------------
 elseif _Corona then
 --------------------------------------------------------------------------------
-    -- print('core.Image(cor)')
+
     local newImg = _Corona.display.newImage
     local newGroup = _Corona.display.newGroup
-    --------------------------------------------------------------------------------
+
+    
     newImage = function(self, url)
 
         self.__bd = newGroup()
@@ -155,7 +154,7 @@ function Image:setanchor(ax, ay)
         --     -hw +x0, hh +y0, invw
         -- }
         for k=1,#self.__cpg0,3 do
-            print(k)
+            -- print(k)
             cpg[k] = cpg0[k]+x0
             cpg[k+1] = cpg0[k+1]+y0
             cpg[k+2] = cpg0[k+2]
@@ -166,15 +165,22 @@ function Image:setanchor(ax, ay)
 
     elseif self.__ccc then
 
-        if self.__ccc0 == nil then self.__ccc0 = self.__ccc end
-        local ccc0 = self.__ccc0
+        --- self.__ccc0는 처음부터 항상 있다.
+        local ccc, ccc0 = self.__ccc, self.__ccc0
         local x0, y0 = int((0.5-ax)*w_1), int((0.5-ay)*h_1)
 
-        local ccc = {x=ccc0.x+x0, y=ccc0.y+y0, r=ccc0.r, r2=ccc0.r2}
+        ccc.x, ccc.y = ccc0.x+x0, ccc0.y+y0
+        -- ccc.r = ccc0.r*self.__bds -- r과 r2는 setscale()내에서 조정된다
+        -- ccc.r2 = ccc.r^2
         self.__ccc = ccc
         
     elseif self.__cpt then
-        
+
+        if self.__cpt0 == nil then self.__cpt0 = self.__cpt end
+        local cpt0 = self.__cpt0
+        local x0, y0 = int((0.5-ax)*w_1), int((0.5-ay)*h_1)
+        self.__cpt = {x=cpt0.x+x0, y=cpt0.y+y0}
+
     end
     
     return self:__setimgxy__(-int(ax*w_1), -int(ay*h_1))

@@ -24,7 +24,7 @@ if _Gideros then
 
         child.__pr = self
         self.__bd:addChild(child.__bd)
-        child:xy(0,0) --2021/08/14:__bdx,__bdy를 위해서 반드시 이렇게
+        child:xy(0,0) --2021/08/14:__bdx,__bdy를 갱신하기 위해서 이렇게 해야함
         return self
 
     end
@@ -38,6 +38,7 @@ if _Gideros then
         for k = self.__bd:getNumChildren(),1,-1 do
             self.__bd:getChildAt(k).__obj:remove() -- 각 차일드의 소멸자 호출(즉시 삭제)
         end
+
         -- (2) 자신도 (부모그룹에서) 제거
         return Disp.remove(self) -- 부모의 소멸자 호출
 
@@ -49,8 +50,8 @@ if _Gideros then
 
         -- (1) child들은 소멸자 호출 (__obj는 body를 가지는 객체)
         for k = self.__bd:getNumChildren(),1,-1 do
-          local obj = self.__bd:getChildAt(k).__obj
-          obj:stoptouch() -- 차일드 각각의 touchOff() 호출
+            local obj = self.__bd:getChildAt(k).__obj
+            obj:stoptouch() -- 차일드 각각의 touchOff() 호출
         end
         -- (2) 자신도 (부모그룹에서) 터치를 멈춤
         --return Disp.stoptouch(self)
@@ -63,8 +64,8 @@ if _Gideros then
 
         -- (1) child들은 소멸자 호출 (__obj는 body를 가지는 객체)
         for k = self.__bd:getNumChildren(),1,-1 do
-          local obj = self.__bd:getChildAt(k).__obj
-          obj:resumetouch() -- 차일드 각각의 소멸자 호출
+            local obj = self.__bd:getChildAt(k).__obj
+            obj:resumetouch() -- 차일드 각각의 소멸자 호출
         end
         -- (2) 자신도 (부모그룹에서) 터치를 멈춤
         --return Disp.resumetouch(self)
@@ -77,8 +78,8 @@ if _Gideros then
 
         -- (1) child들은 소멸자 호출 (__obj는 body를 가지는 객체)
         for k = self.__bd:getNumChildren(),1,-1 do
-          local obj = self.__bd:getChildAt(k).__obj
-          obj:stopupdate() -- 차일드 각각의 소멸자 호출
+            local obj = self.__bd:getChildAt(k).__obj
+            obj:stopupdate() -- 차일드 각각의 소멸자 호출
         end
         -- (2) 자신도 (부모그룹에서) 터치를 멈춤
         return Disp.stopupdate(self)
@@ -91,9 +92,10 @@ if _Gideros then
 
         -- (1) child들은 소멸자 호출 (__obj는 body를 가지는 객체)
         for k = self.__bd:getNumChildren(),1,-1 do
-          local obj = self.__bd:getChildAt(k).__obj
-          obj:resumeupdate() -- 차일드 각각의 소멸자 호출
+            local obj = self.__bd:getChildAt(k).__obj
+            obj:resumeupdate() -- 차일드 각각의 소멸자 호출
         end
+
         -- (2) 자신도 (부모그룹에서) 터치를 멈춤
         return Disp.resumeupdate(self)
 
@@ -103,9 +105,9 @@ if _Gideros then
     --2020/06/15 : 그룹자체는 유지하고 내용물들만 삭제함
     function Group:clear()
 
-      for k = self.__bd:getNumChildren(),1,-1 do
-        self.__bd:getChildAt(k).__obj:remove()
-      end
+        for k = self.__bd:getNumChildren(),1,-1 do
+            self.__bd:getChildAt(k).__obj:remove()
+        end
 
     end
   
@@ -129,10 +131,10 @@ elseif _Corona then
 
     function Group:add(child)
 
-      child.__pr = self
-      self.__bd:insert(child.__bd)
-      child:xy(0,0) --2021/08/14:__bdx,__bdy를 위해서 반드시 이렇게
-      return self
+        child.__pr = self
+        self.__bd:insert(child.__bd)
+        child:xy(0,0) --2021/08/14:__bdx,__bdy를 갱신 하기 위해서 이렇게 해야함
+        return self
     
     end
 
@@ -147,6 +149,7 @@ elseif _Corona then
         for k = self.__bd.numChildren, 1, -1 do
             self.__bd[k].__obj:remove() -- 차일드 각각의 소멸자 호출(즉시 삭제)
         end
+
         -- (2) 자신도 (부모그룹에서) 제거
         return Disp.remove(self) -- 부모의 소멸자 호출
 
@@ -158,6 +161,7 @@ elseif _Corona then
         for k = self.__bd.numChildren, 1, -1 do
             self.__bd[k].__obj:stoptouch()
         end
+
         return Disp.stoptouch(self)
 
     end
@@ -168,6 +172,7 @@ elseif _Corona then
         for k = self.__bd.numChildren, 1, -1 do
             self.__bd[k].__obj:resumetouch()
         end
+
         return Disp.resumetouch(self)
 
     end
@@ -178,6 +183,7 @@ elseif _Corona then
         for k = self.__bd.numChildren, 1, -1 do
             self.__bd[k].__obj:stopupdate()
         end
+
         return Disp.stopupdate(self)
 
     end
@@ -188,6 +194,7 @@ elseif _Corona then
         for k = self.__bd.numChildren, 1, -1 do
             self.__bd[k].__obj:resumeupdate()
         end
+
         return Disp.resumeupdate(self)
 
     end
@@ -215,5 +222,6 @@ elseif _Corona then
         end
       
     end
+    
 
 end

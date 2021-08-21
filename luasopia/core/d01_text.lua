@@ -36,8 +36,8 @@ end
 --------------------------------------------------------------------------------
 Text = class(Disp)
 --------------------------------------------------------------------------------
--- local fontcolor0 = {255,255,255} -- r,g,b
---------------------------------------------------------------------------------
+
+
 function Text.setDefaultFont(fontname)
 
 	if assert(isvalid(fontname), errmsg()) then
@@ -46,11 +46,13 @@ function Text.setDefaultFont(fontname)
 
 end
 
+
 function Text.setDefaultFontSize(size)
 
 	fontsize0 = size
 
 end
+
 --------------------------------------------------------------------------------
 if _Gideros then -- for Gideros ###############################################
 --------------------------------------------------------------------------------
@@ -64,7 +66,9 @@ if _Gideros then -- for Gideros ###############################################
 	-- 에서 y값(보정값)을 구하는 함수 (corona에서는 자동으로 중점이 잡힌다.)
 	-- local apys = {[0] = -0.35, 0.15, 0.27, 0.34, 0.36, 0.4, 0.41}
 	-- 2021/06/08일 apys값들 다시 보정
-	local apys = {[0] = -0.52, 0.132, 0.28, 0.34, 0.36, 0.4, 0.41}
+	-- local apys = {[0] = -0.52, 0.132, 0.28, 0.34, 0.36, 0.4, 0.41}
+	local apys = {[0] = -0.35, 0.132, 0.28, 0.34, 0.36, 0.4, 0.41}
+
 	local function getya(str) -- 보정할 anchorY값을 구한다.
 
 		local nn = select(2, str:gsub('\n', '\n')) -- number of '\n' character
@@ -167,6 +171,35 @@ if _Gideros then -- for Gideros ###############################################
 	end
 
 
+	--2021/08/21:str 내용 그대로 문자열로. entry위젯에서 사용된다.
+	--왜냐면 문자열에 '%'문자가 포함되면 string.format에서 오류가 나기 때문이다.
+	function Text:settext(str)
+
+		local text = self.__tbd
+
+		self.__str = str
+		text:setText(self.__str)
+
+		self.__wdt, self.__hgt = text:getWidth(), text:getHeight()
+		
+		--entry에서 문자를 입력할때마다 위치가 변경되는것을 막기위해서
+		--아래를 블락처리했다.
+		--[[
+		self.__hwdt, self.__hhgt = self.__wdt*0.5, self.__hgt*0.5
+		
+		-- 보정을 해서 anchor point가 문자열의 중심점이 되도록 한다.
+		text:setAnchorPoint(0.5, getya(self.__str)) -- 1:-0.35,  2:0.15, 3:0.27, 4:0.34
+		
+		-- anchor point는 group내에서의 xy좌표를 조절해서 설정
+		text:setX( self.__hwdt*(1-2*self.__apx) )
+		text:setY( self.__hhgt*(1-2*self.__apy) )
+		--]]
+		return self
+
+	end
+
+
+
 	function Text:setfontsize(v)
 
 		self.__fsz = v
@@ -200,11 +233,16 @@ if _Gideros then -- for Gideros ###############################################
 elseif _Corona then
 -------------------------------------------------------------------------------
 
-	-- local fontcolor0 = {1,1,1} -- white
-	function Text.setDefaultColor(r,g,b) fontcolor0={r/255,g/255,b/255} end
+	function Text.setDefaultColor(r,g,b)
+
+		fontcolor0={r/255,g/255,b/255}
+	
+	end
+
 
 	local newText = _Corona.display.newText
 	local newGroup =  _Corona.display.newGroup
+
 
 	function Text:__mktxt__()
 
@@ -279,6 +317,22 @@ elseif _Corona then
 
 		return self
 	end
+
+
+	--2021/08/21:str 내용 그대로 문자열로. entry위젯에서 사용된다.
+	--왜냐면 문자열에 '%'문자가 포함되면 string.format에서 오류가 난다
+	function Text:settext(str)
+
+		self.__str = str
+		self.__tbd.text = self.__str  --<<== C stack overflow
+
+		-- string이 변경되었다면 anchor point도 다시 잡아줘야된다.
+		self.__tbd.x = 0.5*self:getwidth()*(1-2*self.__apx)
+		self.__tbd.y = 0.5*self:getheight()*(1-2*self.__apy)
+
+		return self
+	end
+
 	
 	-- r, g, b는 0-255 범위의 정수, (r이 color객체일 수도 있음)
 	-- function Text:setcolor(r,g,b)
@@ -304,30 +358,42 @@ elseif _Corona then
 
 	function Text:getfontsize() return self.__tbd.size end
 	
-	function Text:setanchor(apx, apy)
 
-		-- self.__tbd.anchorX, self.__tbd.anchorY = xa, ya
+	function Text:setanchor(apx, apy)
 
 		self.__apx, self.__apy = apx, apy
 		self.__tbd.x = 0.5*self:getwidth()*(1-2*apx)
 		self.__tbd.y = 0.5*self:getheight()*(1-2*apy)
 
 		return self
+
 	end
 
+
 	-- 2020/08/26 added
-	function Text:getwidth() return self.__bd.width end
+	function Text:getwidth()
+
+		return self.__bd.width
+
+	end
 	
 	-- 2020/08/26 Gideros와 같이 문자열 영역을 정확히 계산하기위해서
 	-- 높이를 아래와 같이 보정 (solar2d는 실제 높이보다 더 큰수를 반환함)
 	function Text:getheight() 
-		return self.__bd.height - 0.6*self.__fsz
+
+		return self.__bd.height - 0.45*self.__fsz -- 0.6
+
 	end
 	
 end
 
+
 --2020/11/06 added
-function Text:getstring() return self.__str end
+function Text:getstring()
+
+	return self.__str
+
+end
 
 --2021/05/24 added
 Text.font = Text.setfont

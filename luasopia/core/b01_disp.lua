@@ -74,7 +74,7 @@ function Display:init()
     -- __bdx,__bdy 저장된 (실수)값을 int()변환하여 설정한다.
     self.__bda = 1  -- alpha of the body
     self.__bdrd = 0 -- rotational angle in deg of the body
-    self.__bds, self.__bdxs, self.__bdys = 1, 1, 1
+    self.__bds, self.__bdxs, self.__bdys = 1, 1, 1 -- scale, xscale, yscale
 
 end
 
@@ -120,10 +120,16 @@ end
 Display.timer = Display.addtimer -- will be deprecaed in future
 
 
---2020/06/26 refactoring removeafter() method
+--2020/06/26: refactoring removeafter() method
+--2021/08/21: self.remove can be changed after rmafter() called
+local function rmnow(self) self:remove() end
 function Display:removeafter(ms)
 
-    self:addtimer(ms, self.remove)
+    -- rmafter()호출 이후 self.remove가 변경됬다면 아래는
+    -- self:addtimer(ms, self.remove) 
+    -- 변경되기 전의 self.remove가 호출되 버린다. 따라서 아래와 같이 수정
+
+    self:addtimer(ms, rmnow)
     return self
 
 end
@@ -391,6 +397,12 @@ if _Gideros then -- gideros
 
         self.__bds, self.__bdxs, self.__bdys = s, s, s
         self.__bd:setScale(s)
+
+        if self.__ccc then -- 2021/08/21:added
+            local r = self.__ccc0.r*s
+            self.__ccc.r, self.__cccr2 = r, r*r
+        end
+
         return self
 
     end
@@ -544,6 +556,12 @@ elseif _Corona then -- if coronaSDK
 
         self.__bds, self.__bdxs, self.__bdys = s, s, s
         self.__bd.xScale, self.__bd.yScale = s, s
+
+        if self.__ccc then -- 2021/08/21:added
+            local r = self.__ccc0.r*s
+            self.__ccc.r, self.__cccr2 = r, r*r
+        end
+
         return self
 
     end
@@ -656,10 +674,3 @@ Display.yscale = Display.setyscale
 Display.xy = Display.setxy
 Display.xyrot = Display.setxyrot
 Display.anchor = Display.setanchor
-
---2021/04/22 :get메서드의 축명함수들 추가
---Display.getr = Display.getrot
---Display.gets = Display.getscale
---Display.geta = Display.getalpha
---Display.getxs = Display.getxscale
---Display.getys = Display.getyscale

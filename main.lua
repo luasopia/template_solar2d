@@ -13,3 +13,12 @@ require 'luasopia.init'
 -- The '/root/main.lua' file is firstly executed.
 return require 'main' -- root/main.lua 파일로 점프(goto)
 
+
+--[[
+local myText = display.newText( "0", 500, 200, native.systemFont, 50 )
+local count = 0
+timer.performWithDelay(20, function()
+    count = count + 1
+    myText.text = string.format('This function has been called %d times',count)
+end, 0)
+--]]
