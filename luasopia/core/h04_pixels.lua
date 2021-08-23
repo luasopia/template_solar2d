@@ -152,9 +152,14 @@ function Pixels:init(sht, seq)
     self.__wdt, self.__hgt = sht.__frmwdt, sht.__frmhgt
     self.__wdt1, self.__hgt1 = sht.__frmwdt-1, sht.__frmhgt-1
     
-    -- anchor를 고려했을 때의 원점 좌표
-    self.__xoffs = floor(0.5*self.__wdt1 + 0.5)
-    self.__yoffs = floor(0.5*self.__hgt1 + 0.5)
+    -- anchor를 고려했을 때 px의 원점(0,0)이 위치할 그룹의 좌표
+    self.__xoffs = -floor(0.5*self.__wdt1 + 0.5)
+    self.__yoffs = -floor(0.5*self.__hgt1 + 0.5)
+
+    -- self(그룹)내에서 픽셀들의 정중심점 좌표
+    -- __getgxy__()에서 사용된다,
+    self.__x0, self.__y0 = 0,0 --(0.5-ax)*w_1, (0.5-ay)*h_1
+
 
     self.__bdrd, self.__bdrr = 0, 0 -- rotationa angle in deg(bdr) and radian(rotr)
     self.__bds, self.__bdxs, self.__bdys = 1, 1, 1
@@ -162,15 +167,25 @@ function Pixels:init(sht, seq)
     self.__rdprv = 0 -- 직전에 그린 각도(rot degree previous)
     self.__asnr = 0 -- abs(sin(rot))
 
-
+    -- self.__pxs = {} -- 점객체를 모아놓는 테이블
     self:__setfrm__(1)
     
     --2021/08/20:충돌감지를 위해서 추가
-    local invh, invw = 1/self.__wdt, 1/self.__hgt
     local hw, hh = self.__wdt*0.5, self.__hgt*0.5
-    self.__cpg = {-hw,-hh,invh,  hw,-hh,invw,  hw,hh,invh,  -hw,hh,invw}
+    local xoffs=0.5
+    self.__cpg = {
+        -hw+xoffs,-hh+xoffs,
+        hw+xoffs,-hh+xoffs,
+        hw+xoffs,hh-xoffs,
+        -hw+xoffs,hh-xoffs,
+    }
     
     Disp.init(self)
+
+
+    self.__snr, self.__csr = 0, 1
+
+    
     return self:__addupd__(rsupd)
 
 end
@@ -193,18 +208,21 @@ function Pixels:__setfrm__(id)
 
         -- 앵커가 반영된 점의 좌표만 저장
         -- wdt1, hgt1을 사용해야 anchor(1,1)로 지정했을 때 정확히 우하점이 된다.
-        -- self.__xoffs =  floor(self.__apx*self.__wdt1 + 0.5)
-        -- self.__yoffs =  floor(self.__apy*self.__hgt1 + 0.5)
+        -- self.__xoffs =  -floor(self.__apx*self.__wdt1 + 0.5)
+        -- self.__yoffs =  -floor(self.__apy*self.__hgt1 + 0.5)
         -- 위 값들은 미리 계산되어 있다.
-        local x0 = px.x0 - self.__xoffs
-        local y0 = px.y0 - self.__yoffs
+        local x0 = px.x0 + self.__xoffs
+        local y0 = px.y0 + self.__yoffs
 
-        tins(pxs, self:__mkpx__(x0, y0, px.c))
+        --tins(pxs, self:__mkpx__(x0, y0, px.c))
+        pxs[k] = self:__mkpx__(x0, y0, px.c)
 
     end
 
     self.__idfrm = id
     self.__pxs = pxs
+
+    
 
     return self:__setrs__()
 
@@ -219,6 +237,7 @@ function Pixels:__setrs__()
     --if r==0 and xs==1 and ys==1 then return end
 
     local xsf, ysf = xs, ys
+    local snr, csr
     
     -- (xscale, yscale)벡터를 r만큼 회전시킨 후 그것의 x,y성분을 뽑아낸다 
     if r~=0 then
@@ -237,19 +256,20 @@ function Pixels:__setrs__()
         -- sclip =  1 + 0.37*abs(sin(2*rot))
         -- 45도에 가까워질수록 xs,ys를 조금씩 늘려서 점들 사이의 공간을 메운다
         local sclip = self.__sclip
-        xsf = xsf*sclip
-        ysf = ysf*sclip
+        xsf, ysf = xsf*sclip, ysf*sclip
+        
+        -- 다음 반복문에서 사용할 sin(r), cos(r)
+        snr, csr = self.__snr, self.__csr
 
     end
 
-    local snr, csr = self.__snr, self.__csr
 
     for k = 1, self.__npxs do
 
         local px = self.__pxs[k]
         local xf, yf = px.x0*xs, px.y0*ys
 
-        -- r을 가장 나중에 변경시켜야 한다
+        -- r은 scale을 고려한 다음에 반영시켜야 한다
         if r~=0 then
             xf, yf = xf*csr-yf*snr, xf*snr+yf*csr --rot(px.x0,px.y0, rotr)
         end
@@ -337,10 +357,14 @@ end
 function Pixels:setanchor(ax, ay)
 
     self.__apx, self.__apy = ax, ay
+    local w_1, h_1 = self.__wdt1, self.__hgt1
+    -- anchor를 고려했을 때의 픽셀(0,0)의 상대좌표
+    self.__xoffs = -floor(ax*self.__wdt1 + 0.5)
+    self.__yoffs = -floor(ay*self.__hgt1 + 0.5)
 
-    -- anchor를 고려했을 때의 원점 좌표
-    self.__xoffs = floor(ax*self.__wdt1 + 0.5)
-    self.__yoffs = floor(ay*self.__hgt1 + 0.5)
+    -- self(그룹)내에서 픽셀들의 정중심점 좌표
+    -- __getgxy__()에서 사용된다,
+    self.__x0, self.__y0 = (0.5-ax)*w_1, (0.5-ay)*h_1
 
     return self:__setfrm__(self.__idfrm)
 
@@ -378,6 +402,33 @@ local function timerfunc(self)
     return self:__setfrm__(self.__frms[self.__idfrm])
 
 end
+
+
+-- pxmode에서 pixels객체는 자체적으로 확대/회전을 하기 때문에
+-- pxmode에서 getglobalxy()메서드를 오버라이드해야 한다.
+-- 항상 __bd의 원점(0,0)이 앵커점이다. 따라서 이 중심으로 회전시키면 된다.
+function Pixels:__getgxy__(x,y)
+
+    -- -- (새로운)앵커점을 원점으로 했을 때의 image 중심의 좌표를 계산
+    -- local w_1, h_1 = self.__wdt-1, self.__hgt-1
+    -- local ax, ay = self.__apx, self.__apy
+    -- local x0, y0 = (0.5-ax)*w_1, (0.5-ay)*h_1
+
+
+    x = ((x or 0)+self.__x0)*self.__bdxs
+    y = ((y or 0)+self.__y0)*self.__bdys
+
+
+
+    if self.__bdrd ~=0 then
+        local snr, csr = self.__snr, self.__csr
+        x, y = x*csr-y*snr, x*snr+y*csr --rot(px.x0,px.y0, rotr)
+    end
+
+    return Disp.getglobalxy(self, x, y)
+
+end
+
 
 Pixels.play = Sprite.play
 Pixels.pause = Sprite.pause

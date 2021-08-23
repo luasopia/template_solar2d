@@ -98,9 +98,13 @@ function Display:__upd__()
     --2020/07/01 내부갱신함수들이 있다면 호출
     -- self.__iupds가 nil인지를 check하는 것이 성능에 별로 효과가 없을 것 같다
     for _, fn in _nxt, self.__iupds do
+
         if fn(self) then -- 만약 fn(self)==true 라면 곧바로 삭제하고 리턴
+
             return self:remove()
+            
         end
+
     end
 
 end
@@ -616,9 +620,12 @@ elseif _Corona then -- if coronaSDK
 
     
     -- 추상메서드:차일드에서 각자 구현해야한다
-    function Display:setanchor(x,y)
+    function Display:setanchor(x, y)
+
+        self.__apx, self.__apy = ax, ay
         self.__bd.anchorX, self.__bd.anchorY = x,y
         return self
+
     end
 
     -- 2020/02/18 ---------------------------------------------------------
@@ -657,6 +664,15 @@ elseif _Corona then -- if coronaSDK
         return self.__bd:localToContent(x or 0,y or 0)
         
     end
+
+
+    function Display:tint(r,g,b)
+
+        self.__bd:setFillColor(r,g,b)
+        return self
+        
+    end
+
 
 end -- elseif _Corona then
 

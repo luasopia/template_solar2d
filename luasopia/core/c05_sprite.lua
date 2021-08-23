@@ -16,22 +16,30 @@ if _Gideros then
     function Sprite:init(sht, seq)
     
         self.__bd = sprtNew()
-        self.__sht = sht
-        self.__seq = seq
+        local bmp = bmpNew(sht.__txts[1])
+        self.__bd:addChild(bmp)
+        
+        local w, h = sht.__frmwdt, sht.__frmhgt
+        local w_1, h_1 = w-1, h-1
+        local hw1, hh1 = w_1*0.5, h_1*0.5
+        bmp:setPosition(-int(hw1),-int(hh1))
+        self.__hw1, self.__hh1 = hw1, hh1
+        
+        ---------
 
+        self.__wdt, self.__hgt = w,h
+        self.__wdt1, self.__hgt1 = w_1, h_1
+
+        self.__sht, self.__seq = sht, seq
         self.__apx, self.__apy = 0.5, 0.5
 
-        local bmp = bmpNew(self.__sht.__txts[1])
-        
-        -- bmp:setAnchorPoint(0.5,0.5)
-        self.__wdt, self.__hgt = sht.__frmwdt, sht.__frmhgt
-        
-        -- __wdt1, __hgt1은 앵커포인트를 계산하는 데 사용된다.
-        self.__wdt1, self.__hgt1 = sht.__frmwdt-1, sht.__frmhgt-1
-        bmp:setPosition(-int(self.__wdt1*0.5),-int(self.__hgt1*0.5))
-
-        self.__bd:addChild(bmp)
         self.__img = bmp
+
+        ------------------------------------------------------------
+        --2021/08/23 : add info for collision box
+        -- local hw, hh = w_1*0.5, h_1*0.5
+        self.__cpg = {-hw1,-hh1,  hw1,-hh1,  hw1,hh1,  -hw1,hh1}
+        ------------------------------------------------------------
 
         return Disp.init(self) --return self:superInit()
 
@@ -76,6 +84,14 @@ if _Gideros then
     end
     
 
+    -- 2021/09/23: self.__img의 앵커점은 항상 (0,0)이다.
+    function Sprite:__getgxy__(x,y)
+
+        -- x,y는 꼭지점의 좌표가 들어오므로 nil은 확실히 아니다.
+        x, y = x+self.__hw1, y+self.__hh1
+        return self.__img:localToGlobal(x,y)
+
+    end
 
 
 --------------------------------------------------------------------------------
@@ -84,27 +100,39 @@ elseif _Corona then
     
     local newGrp = _Corona.display.newGroup
     local newImg = _Corona.display.newImage
+
+    local function init(self, sht)
+
+    end
     
     function Sprite:init(sht, seq)
     
         self.__bd = newGrp()
-        self.__sht = sht
-        self.__seq = seq
+        local img = newImg(sht.__txts,1) -- default anchor : (0,0)
+        self.__bd:insert(img)
+
+        local w, h  = sht.__frmwdt, sht.__frmhgt
+        local w_1, h_1 = w-1, h-1
+        local hw1, hh1 = w_1*0.5, h_1*0.5
+        img.x, img.y = -int(hw1), -int(hh1)
+        
+        
+        ------
+
+        
+
+        self.__wdt, self.__hgt = w, h
+        self.__wdt1, self.__hgt1 = w_1, h_1
+
+        self.__sht, self.__seq = sht, seq
         self.__apx, self.__apy = 0.5, 0.5
 
-        local img = newImg(sht.__txts,1)
-        -- img.anchorX, img.anchrorY = 0,0
-
-        self.__wdt, self.__hgt = sht.__frmwdt, sht.__frmhgt
-        
-        --앵커포인터를 계산하는데 사용된다.
-        self.__wdt1, self.__hgt1 = sht.__frmwdt-1, sht.__frmhgt-1
-
-        img.x, img.y = -int(self.__wdt1*0.5), -int(self.__hgt1*0.5)
-
-        self.__bd:insert(img)
         self.__img = img
-
+        ------------------------------------------------------------
+        --2021/08/23 : add info for collision box
+        -- local hw, hh = w_1*0.5, h_1*0.5
+        self.__cpg = {-hw1,-hh1,  hw1,-hh1,  hw1,hh1,  -hw1,hh1}
+        ------------------------------------------------------------
 
         return Disp.init(self) --return self:superInit()
     
@@ -141,6 +169,15 @@ elseif _Corona then
         self.__img.x, self.__img.y = -int(apx*self.__wdt1), -int(apy*self.__hgt1)
         return self
 
+    end
+
+
+    -- solar2d는 image의 앵커점과 상광 없이 localToContent()는
+    -- 중심점을 원점으로 잡는다
+    function Sprite:__getgxy__(x,y)
+
+        return self.__img:localToContent(x,y)
+        
     end
 
 end -- if _Corono then ... elseif _Gideros then

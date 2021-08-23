@@ -5,64 +5,52 @@ local Disp = Display
 local tins = table.insert
 local INF, abs, sqrt = math.huge, math.abs, math.sqrt
 local RED = Color.RED
-local _nxt = next
 --------------------------------------------------------------------------------
 -- 2021/05/09 분리축이론(SAT)를 이용한 충돌판정 구현
--- 2021/08/23:점간 거리를 실시간으로 계산하기로. (cpg에서 거리정보는 뺀다)
 -- 객체의 모양은 다음과 같은 내부필드로 구분한다.
--- polygon  : __cpg = {x1,y1,  x2,y2,  x3,y3, ...} 꼭지점들의 좌표
+-- polygon  : __cpg = {x1,y1,_1_len1, x2,y2,_1_len2. ...}
+--            여기서 _1_lenk는 (xk_1, yk_1)->(xk, yk) 벡터의 길이의 역수
+--            (곱셈이 나눗셈보다 시간이 덜 걸리므로 미리 역수를 계산해둔다)
 -- circle   : __ccc = {x, y, r, r2} -- (x,y)중심점 좌표, r2=r^2
 -- point    : __cpt = {x, y}
 
 -- line     : __cln = {x1,y1, x2,y2, len}, len은 선분의 길이
 --------------------------------------------------------------------------------
 
--- (x1,y1)~(x2,y2) 간 거리의 역수를 구하는 함수
-local function invdist(x1,y1, x2,y2)
-
-    local dx, dy = x1-x2, y1-y2
-    return 1/sqrt(dx*dx+dy*dy)
-
-end
 
 
 -- 2021/05/09: 꼭지점의 전역좌표(gpts)와 각 변의 단위법선벡터(vecs)를 계산
 -- 2021/05/25: 충돌판정만 할 경우라도 반드시 *단위*법선벡터를 만들어야 한다.
 -- (왜나면 원의 중심을 프로젝션할 때 반지름의 길이가 왜곡되 판정오류가 나기 때문임)
--- 2021/08/23: 점간 거리는 실시간으로 구하기로
--- (xscale/yscale이 변하면 점간 거리도 변하기 때문에 미리 계산해 두는 것이 비효율적이고,
--- rot까지 같이 고려하려면 미리 계산하는 게 거의 불가능)
 local function gvec_pg(self)
 
     local pts = self.__cpg
     local gpts, vecs = {}, {}
 
     -- 첫 번째 점을 따로 저장한다
-    local gx1, gy1 = self:__getgxy__(pts[1], pts[2])
-    -- local len1 = pts[3] -- 이 점과 전 점간의 거리의 역수
-    gpts[1]=gx1 -- tins(gpts, gx1)
-    gpts[2]=gy1 -- tins(gpts, gy1)
+    local gx1, gy1 = self:getglobalxy(pts[1], pts[2])
+    local len1 = pts[3] -- 이 점과 전 점간의 거리의 역수
+    tins(gpts, gx1)
+    tins(gpts, gy1)
 
     -- 점들을 순환하면서 단위벡터를 계산한다
     local gxk_1, gyk_1 = gx1, gy1  
-    for k=3, #pts, 2 do -- {x,y,len}이므로 3씩 증가시킨다
+    for k=4, #pts, 3 do -- {x,y,len}이므로 3씩 증가시킨다
         
-        local gxk, gyk = self:__getgxy__(pts[k], pts[k+1])
-        local invlen = invdist(gxk,gyk, gxk_1,gyk_1) --pts[k+2] -- 이 점과 전 점간의 거리의 역수
-        gpts[k] = gxk --  tins(gpts, gxk)
-        gpts[k+1]= gyk -- tins(gpts, gyk)
+        local gxk, gyk = self:getglobalxy(pts[k], pts[k+1])
+        local lenk = pts[k+2] -- 이 점과 전 점간의 거리의 역수
+        tins(gpts, gxk)
+        tins(gpts, gyk)
     
         -- vector (k_1)->(k) 의 (도형 바깥 방향)법선벡터를 계산하여 저장
-        tins(vecs, (gyk-gyk_1)*invlen ) -- vxk
-        tins(vecs, (gxk_1-gxk)*invlen ) -- vyk
+        tins(vecs, (gyk-gyk_1)*lenk ) -- vxk
+        tins(vecs, (gxk_1-gxk)*lenk ) -- vyk
         --print(vxk, vyk)
 
         gxk_1, gyk_1 = gxk, gyk
     end
-
-    local invlen = invdist(gx1,gy1, gxk_1,gyk_1)
-    tins(vecs, (gy1-gyk_1)*invlen) -- vxn
-    tins(vecs, (gxk_1-gx1)*invlen) -- vyn
+    tins(vecs, (gy1-gyk_1)*len1) -- vxn
+    tins(vecs, (gxk_1-gx1)*len1) -- vyn
     --print(vecs[7], vecs[8])
 
     return gpts, vecs
@@ -78,7 +66,7 @@ local function gvec_cc(circ, pgpts)
 
     -- 원의 중심점을 따로 저장한다
     local ccc = circ.__ccc
-    local gx, gy = circ:__getgxy__(ccc.x, ccc,y)
+    local gx, gy = circ:getglobalxy(ccc.x, ccc,y)
     tins(gpts, gx)
     tins(gpts, gy)
     tins(gpts, ccc.r) -- gpts[3]에는 반지름을 저장한다.
@@ -198,14 +186,14 @@ local function proj_pg2pt(pg, pt)
 
     -- (1) pg 꼭지점들의 전역좌표를 구한다.
     local pts, gpts = pg.__cpg, {}
-    for k=1, #pts, 2 do -- 2021/08/23:{x,y}이므로 2씩 증가시킨다
-        local gxk, gyk = pg:__getgxy__(pts[k], pts[k+1])
+    for k=1, #pts, 3 do -- {x,y,len}이므로 3씩 증가시킨다
+        local gxk, gyk = pg:getglobalxy(pts[k], pts[k+1])
         tins(gpts, gxk)
         tins(gpts, gyk)
     end
 
     --(2) pt의 전역좌표를 구한다
-    local gx, gy = pt:__getgxy__(pt.__cpt.x, pt.__cpt.y)
+    local gx, gy = pt:getglobalxy(pt.__cpt.x, pt.__cpt.y)
 
     --(3) 내부여부 판단. 알고리듬은 아래 사이트 참조.
     -- https://demonstrations.wolfram.com/AnEfficientTestForAPointToBeInAConvexPolygon/
@@ -238,8 +226,8 @@ local function proj_cc2cc(circ1, circ2)
     local cc1, cc2 = circ1.__ccc, circ2.__ccc -- {r,x,y} circle table
 
     local r12 = cc1.r + cc2.r
-    local gcx1, gcy1 = circ1:__getgxy__(cc1.x,cc1.y)
-    local gcx2, gcy2 = circ2:__getgxy__(cc2.x,cc2.y)
+    local gcx1, gcy1 = circ1:getglobalxy(cc1.x,cc1.y)
+    local gcx2, gcy2 = circ2:getglobalxy(cc2.x,cc2.y)
     local dx, dy = gcx1-gcx2, gcy1-gcy2
     return dx*dx+dy*dy <= r12*r12
 
@@ -250,8 +238,8 @@ local function proj_cc2pt(circ, point)
 
     local ccc = circ.__ccc -- {r,x,y} circle table
     local cpt = point.__cpt -- {x,y} point table
-    local gcx1, gcy1 = circ:__getgxy__(ccc.x, ccc.y)
-    local gcx2, gcy2 = point:__getgxy__(cpt.x, cpt.y)
+    local gcx1, gcy1 = circ:getglobalxy(ccc.x, ccc.y)
+    local gcx2, gcy2 = point:getglobalxy(cpt.x, cpt.y)
     local dx, dy = gcx1-gcx2, gcy1-gcy2
     return dx*dx+dy*dy <= ccc.r2
 
@@ -350,38 +338,6 @@ function Disp:ishit(obj)
 
 end
 
-
-
-function Disp:collecthit(tag)
-
-    local allt = Display.__tdobj[tag] -- Display Tagged OBJect
-    if allt==nil or self.__nohit then return end
-
-    local hit = {}
-
-    for _, obj in _nxt, allt do
-
-        if not obj.__nohit then
-            if self:ishit(obj) then
-                tins(hit, obj)
-            end
-        end
-
-    end
-
-    if #hit==0 then return end
-    return hit
-
-end
-
-
-function Disp:nohit()
-
-    self.__nohit = true
-    return self
-    
-end
-
 --------------------------------------------------------------------------------
 --2021/08/20:디버깅을 위해서 추가된 메서드
 --------------------------------------------------------------------------------
@@ -427,7 +383,7 @@ local function drawhitborder(self)
     elseif self.__ccc then
 
         local ccc = self.__ccc
-        local gx, gy = self:__getgxy__(ccc.x,ccc.y)
+        local gx, gy = self:getglobalxy(ccc.x,ccc.y)
         local dot = Rect(10,10,{fill=self.dbhlc})
         dblayer:add(dot)
         dot:xy(gx,gy)
@@ -444,7 +400,7 @@ local function drawhitborder(self)
     elseif self.__cpt then
 
         local cpt = self.__cpt
-        local gx, gy = self:__getgxy__(cpt.x, cpt.y)
+        local gx, gy = self:getglobalxy(cpt.x, cpt.y)
         local dotr = self.__htblw*5
         local dot = Rect(10,10,{fill = self.dbhlc})
         dblayer:add(dot)
@@ -506,6 +462,3 @@ function Disp:showhitborder(color,width)
     return self
 
 end
-
-
-

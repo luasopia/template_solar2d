@@ -229,6 +229,8 @@ require 'luasopia.core.c04_getsheet'
 require 'luasopia.core.c05_sprite'
 
 require 'luasopia.core.d01_text'
+require 'luasopia.core.d02_text1'
+
 require 'luasopia.core.e02_shape'
 require 'luasopia.core.e30_line' -- required refactoring
 

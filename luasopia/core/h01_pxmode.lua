@@ -47,5 +47,6 @@ function setpixelmode(mode)
     Pixels.setscale, Pixels.scale = Pixels.__sets__, Pixels.__sets__
     Pixels.setxscale, Pixels.xscale = Pixels.__setxs__, Pixels.__setxs__
     Pixels.setyscale, Pixels.yscale = Pixels.__setys__, Pixels.__setys__
+    Pixels.getglobalxy = Pixels.__getgxy__
 
 end

@@ -1,14 +1,18 @@
---2021/08/20:created
+--------------------------------------------------------------------------------
+--2021/08/21:created. CAPSLOCK은 항상 꺼져있다고 인식함
+--2021/08/22:Text1클래스를 사용. 앵커점은 (0,1)좌하점이다.
+--------------------------------------------------------------------------------
 local Disp = Display
 local Group = Group
 
-local fontsize0= 50
+local fontsize0= 45
+local blinktm = 1000
 
 local shift = {
     ['space']={' ', ' '},
     ['a']={'a', 'A'}, ['b']={'b', 'B'}, ['c']={'c', 'C'}, ['d']={'d', 'D'},
     ['e']={'e', 'E'}, ['f']={'f', 'F'}, ['g']={'g', 'G'}, ['h']={'h', 'H'},
-    ['i']={'i', 'I'}, ['j']={'j', 'J'}, ['k']={'k', 'K'}, ['l']={'l', 'M'},
+    ['i']={'i', 'I'}, ['j']={'j', 'J'}, ['k']={'k', 'K'}, ['l']={'l', 'L'},
     ['m']={'m', 'M'}, ['n']={'n', 'N'}, ['o']={'o', 'O'}, ['p']={'p', 'P'},
     ['q']={'q', 'Q'}, ['r']={'r', 'R'}, ['r']={'r', 'R'}, ['s']={'s', 'S'},
     ['t']={'t', 'T'}, ['u']={'u', 'U'}, ['v']={'v', 'V'}, ['w']={'w', 'W'},
@@ -24,9 +28,9 @@ local shift = {
 
 local undershift = 1
 
-local yoffs1, yoffs2 = 0, 0
-if _Gideros then yoffs1, yoffs2=7,14 end
-print(yoffs)
+-- local yoffs1, yoffs2 = 0, 0
+-- if _Gideros then yoffs1, yoffs2=7,14 end
+-- print(yoffs)
 
 Entry = class(Group)
 
@@ -58,6 +62,14 @@ local function onkey(_, key, phase) -- 첫번째 인자는 screen
 
             entry.__onenter(entry.__txtin:getstring())
 
+        elseif key=='home' then
+
+            entry:__setcaretx__(1)
+
+        elseif key=='end' then
+
+            entry:__setcaretx__(entry.__endx)
+
         else
 
             local keyshifted = shift[key]
@@ -87,26 +99,22 @@ function Entry:init(onenter, opt)
     screen.onkey = onkey
 
     self.__fsz = fontsize or fontsize0
-    self.__chgap = self.__fsz*(3/5) -- 문자간격
+    self.__chgap = self.__fsz*0.555 -- 문자간격
 
     print(self.__chgap) -- charecter gap
     
     if header then
-        self.__txthdr = Text(header,{font='typed', fontsize=self.__fsz}):addto(self)
-        self.__txthdr:setanchor(0, 0.5):sety(yoffs1)
-        -- self:add(self.__txthdr)
+        self.__txthdr = Text1(header,{fontsize=self.__fsz}):addto(self)
         self.__hdr=header
     end
     
     -- __entry는 text와 caret이 들어가는 그룹
     self.__entry = Group():addto(self):setx(#header*self.__chgap)
     
-    self.__txtin = Text('',{font='typed', fontsize=self.__fsz}):addto(self.__entry)
-    self.__txtin:setanchor(0, 0.5):sety(yoffs2)--:setx(#header*self.__chgap)
-    
+    self.__txtin = Text1('',{fontsize=self.__fsz}):addto(self.__entry)
     
     self.__caret = Rect(4,self.__fsz):addto(self.__entry) -- 먼저 add()해야 한다.
-    self.__caret:blink(1000,INF)
+    self.__caret:anchor(0,0.75):blink(blinktm)
     self.__endx = 1 -- caret의 맨 우측값
     self:__setcaretx__(1) -- caretx의 가장 작은 값은 1이다.
     self.__shift = 1
@@ -125,7 +133,7 @@ function Entry:__inschar__(char)
     local left = text:sub(1,x-1)
     local right = text:sub(x,len)
     -- print(string.format("'%s','%s','%s'", text, left, right))
-    self.__txtin:settext(left..char..right)
+    self.__txtin:setstr(left..char..right)
 
     self:__setcaretx__(x+1, true)
 
@@ -144,7 +152,7 @@ function Entry:__delback__()
     local left = text:sub(1,x-2)
     local right = text:sub(x,len)
     -- print(string.format("'%s','%s','%s'", text, left, right))
-    self.__txtin:settext(left..right)
+    self.__txtin:setstr(left..right)
 
     self:__setcaretx__(x-1)
     self.__endx = self.__endx-1
@@ -164,9 +172,10 @@ function Entry:__del__()
     local left = text:sub(1,x-1)
     local right = text:sub(x+1,len)
     -- print(string.format("'%s','%s','%s'", text, left, right))
-    self.__txtin:settext(left..right)
+    self.__txtin:setstr(left..right)
 
     self.__endx = self.__endx-1
+    self.__caret:blink(blinktm)
 
 end
 
@@ -179,7 +188,9 @@ function Entry:__setcaretx__(x, inc_endx)
         x=1
     end
 
-    if inc_endx then self.__endx = x end
+    if inc_endx then -- caret의 우측최대값을 x값으로 변경(증가)
+        self.__endx = x
+    end
 
     if x>self.__endx then
         x=self.__endx
@@ -187,4 +198,6 @@ function Entry:__setcaretx__(x, inc_endx)
 
     self.__caretx = x
     self.__caret:setx((x-1)*self.__chgap)
+    self.__caret:blink(blinktm)
+
 end
