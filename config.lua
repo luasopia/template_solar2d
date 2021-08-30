@@ -10,7 +10,7 @@ application =
 		width = 1080, height = 1920, -- default resolution
 		-- width = 180, height = 320, -- pixel mode
 		scale = "letterbox",
-		fps = 60,
+		fps = 60, -- 60
 		
 		--[[
 		imageSuffix =
