@@ -67,13 +67,14 @@ local function isout(self)
     elseif self.__ccc then
 
         -- 원주위의 네 점의 좌표가 하나로도 화면 안에 있다면 false반환
-        local ccc = self.__ccc
-        local offs = {-ccc.r,0,  ccc.r,0,  0,-ccc.r,  0,ccc.r}
+        -- local ccc = self.__ccc
+        local x,y,r = self.__ccc.x, self.__ccc.y, self.__ccc.r
+        local offs = {-r,-r,  r,-r,  r,r,  -r,r}
         for k=1,#offs,2 do
 
-            local x, y = self:__getgxy__(ccc.x+offs[k], ccc.y+offs[k+1])
+            local gx, gy = self:__getgxy__(x+offs[k], y+offs[k+1])
 
-            if x0<=x and x<=endx and y0<=y and y<=endy then
+            if x0<=gx and gx<=endx and y0<=gy and gy<=endy then
 
                 return false
                 

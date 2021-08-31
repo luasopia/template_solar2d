@@ -5,8 +5,8 @@
 -- 2020/06/23 : Rect클래스를 리팩토링한 후 여기로 옮김
 -- 2021/08/09 : screen:onkeydown(k) 메서드 처리 추가
 --------------------------------------------------------------------------------
-local ls = _luasopia
-local x0, y0, endx, endy = ls.x0, ls.y0, ls.endx, ls.endy
+local luasp = _luasopia
+local x0, y0, endx, endy = luasp.x0, luasp.y0, luasp.endx, luasp.endy
 local int = math.floor
 
 --2020/05/06 Rect(screen)가 safe영역 전체를 덮도록 수정
@@ -15,11 +15,11 @@ screen = Rect(endx-x0+1, endy-y0+1, {fill=Color.BLACK})
 screen.__nocnt = true
 screen:addto(_luasopia.bglayer) -- 2021/08/17
 
-screen:setxy(int(ls.centerx), int(ls.centery))
+screen:setxy(int(luasp.centerx), int(luasp.centery))
 
 --2021/08/14
-screen.width0 = ls.width -- original width
-screen.height0 = ls.height -- original width
+screen.width0 = luasp.width -- original (content) width
+screen.height0 = luasp.height -- original (contetn) height
 
 --2021/08/14:screen.width, screen.height는 pixelmode에서 변할 수 있다.
 screen.width = screen.width0
@@ -27,14 +27,14 @@ screen.height = screen.height0
 
 
 
-screen.centerx = int(ls.centerx)
-screen.centery = int(ls.centery)
-screen.fps = ls.fps
+screen.centerx = int(luasp.centerx)
+screen.centery = int(luasp.centery)
+screen.fps = luasp.fps
 -- added 2020/05/05
-screen.devicewidth = ls.devicewidth
-screen.deviceheight = ls.deviceheight
+screen.devicewidth = luasp.devicewidth
+screen.deviceheight = luasp.deviceheight
 -- orientations: 'portrait', 'portraitUpsideDown', 'landscapeLeft', 'landscapeRight'
-screen.orientation = ls.orientation 
+screen.orientation = luasp.orientation 
 -- added 2020/05/06
 screen.x0, screen.y0, screen.endx, screen.endy = x0, y0, endx, endy
 -------------------------------------------------------------------------------
@@ -125,7 +125,7 @@ if _Gideros then
 
 
     -- key가 눌렸을 때에만 onkeydown()이 콜백되도록 함
-    function ls.enkeydown() -- enable key input
+    function luasp.enkeydown() -- enable key input
         
         local keyt, realt = mkkeytbl()
 
@@ -141,7 +141,7 @@ if _Gideros then
 
 
     -- key가 눌렸을 때와 뗐을 때 모두 onkey()가 콜백되도록 함
-    function ls.enkeyboth()
+    function luasp.enkeyboth()
 
         local stage, Event = _Gideros.stage, _Gideros.Event
         local keyt, realt = mkkeytbl()
@@ -200,7 +200,7 @@ elseif _Corona then
     end
 
 
-    function ls.enkeydown() -- enable key input
+    function luasp.enkeydown() -- enable key input
 
         Runtime:addEventListener('key', onkeydown)
         screen.__keydown = true
@@ -220,7 +220,7 @@ elseif _Corona then
     end
 
     
-    function ls.enkeyboth() -- enable key input
+    function luasp.enkeyboth() -- enable key input
 
         Runtime:addEventListener('key', onkeyboth)
         screen.__keyboth = true
@@ -237,12 +237,12 @@ local function checkkey(self)
     -- print('ckd')
 
     if self.onkeydown then
-        ls.enkeydown()
+        luasp.enkeydown()
         screen:__rmupd__(checkkey)
     end
 
     if self.onkey then
-        ls.enkeyboth()
+        luasp.enkeyboth()
         screen:__rmupd__(checkkey)
     end
 

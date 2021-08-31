@@ -52,7 +52,7 @@ end
 
 -- pico-8 과 같이 해상도를 128x128로 맞춘다
 -- 나머지 영역은 clip
-function setpixelmode() -- setpixelmode()
+function pixelmode() -- setpixelmode()
 
     -- mode 5: 135x240 (scale=8) -- default mode
     local scale = 8

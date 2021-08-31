@@ -264,7 +264,7 @@ require 'luasp.shape.arrow'
 
 require 'luasp.lib.01_move'
 require 'luasp.lib.02_shift'
-
+require 'luasp.lib.03_puts'
 require 'luasp.lib.04_blink' -- 2020/07/01, 2021/05/14 lib로 분리됨
 require 'luasp.lib.05_wavescale' -- 2020/07/01, 2021/05/14 lib로 분리됨
 require 'luasp.lib.06_ishit'
@@ -291,23 +291,28 @@ local enterframedbg = require 'luasp.core.z01_enterframe' -- 맨 마지막에 �
 
 
 
+--[[
 -- 2021/05/13 전역 puts()함수 정의
 -- puts()함수를 한 번도 호출하지 않는다면 loglayer가 hide()로 유지된다
 
 function puts(str, ...)
 
     if not _luasopia.loglayer:isvisible() then
+
         _luasopia.loglayer:show()
+
     end
 
     if not _luasopia.logf then
+
         _luasopia.logf = _req 'luasp.lib.03_puts'
+
     end
 
     _luasopia.logf(str,...)
     
 end
-
+--]]
 
 
 function setdebug(args)
@@ -320,9 +325,9 @@ function setdebug(args)
     end
 
     -- 2020/05/30: added
-    puts("(content)width:%d, height:%d", screen.width, screen.height)
-    puts("(device)width:%d, height:%d", screen.devicewidth, screen.deviceheight)
-    puts("orientation:'%s', fps:%d", screen.orientation, screen.fps)
+    printf("(content)width:%d, height:%d", screen.width, screen.height)
+    printf("(device)width:%d, height:%d", screen.devicewidth, screen.deviceheight)
+    printf("orientation:'%s', fps:%d", screen.orientation, screen.fps)
     -- puts("endx:%d, endy:%d", screen.endx, screen.endy)
     
     enterframedbg()
