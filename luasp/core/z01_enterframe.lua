@@ -75,12 +75,16 @@ local function setdebug() -- 디버그모드일 경우 호출됨
 
 	local dbgupd = function(e)
 
-		local txtmem = getTxtMem()
-		local mem = collectgarbage('count')
-		mtxts[1]:setstrf('memory:%d kb,texture memory:%d kb', mem, txtmem)
-		local ndisp = Disp.__getNumObjs() -- - logf.__getNumObjs() - 2
-		mtxts[2]:setstrf('Display objects:%d, Timer objects:%d', ndisp, Timer.__getNumObjs())
-		mtxts[3]:setstrf('fps:%d', getFps(e))
+		-- if not luasp.isoddfrm then
+
+			local txtmem = getTxtMem()
+			local mem = collectgarbage('count')
+			mtxts[1]:setstrf('memory:%d kb,texture memory:%d kb', mem, txtmem)
+			local ndisp = Disp.__getNumObjs() -- - logf.__getNumObjs() - 2
+			mtxts[2]:setstrf('Display objects:%d, Timer objects:%d', ndisp, Timer.__getNumObjs())
+			mtxts[3]:setstrf('fps:%d', getFps(e))
+			
+		-- end
 
 		return upd()
 		

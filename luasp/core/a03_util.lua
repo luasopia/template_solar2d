@@ -164,7 +164,7 @@ end
 -- import 'blink' 라고 하면 된다
 local liburl = _luasopia.root .. '.lib.'
 function import(libname)
-    return _req(liburl..libname..'.'..libname)
+    return _require0(liburl..libname..'.'..libname)
 end
 
 

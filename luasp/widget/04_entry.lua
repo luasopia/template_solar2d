@@ -2,11 +2,12 @@
 --2021/08/21:created. CAPSLOCK은 항상 꺼져있다고 인식함
 --2021/08/22:Text1클래스를 사용. 앵커점은 (0,1)좌하점이다.
 --------------------------------------------------------------------------------
-local Disp = Display
-local Group = Group
-
 local fontsize0= 45
 local blinktm = 1000
+--------------------------------------------------------------------------------
+
+local Disp = Display
+local Group = Group
 
 local shift = {
     ['space']={' ', ' '},
@@ -31,9 +32,9 @@ local undershift = 1
 -- local yoffs1, yoffs2 = 0, 0
 -- if _Gideros then yoffs1, yoffs2=7,14 end
 -- print(yoffs)
-
+--------------------------------------------------------------------------------
 Entry = class(Group)
-
+--------------------------------------------------------------------------------
 
 local entry
 local function onkey(_, key, phase) -- 첫번째 인자는 screen
@@ -45,7 +46,7 @@ local function onkey(_, key, phase) -- 첫번째 인자는 screen
     
     else
 
-        print(key)
+        -- print(key)
         if key == 'right' then
             entry:__setcaretx__(entry.__caretx+1)
         elseif key == 'left' then
@@ -60,7 +61,10 @@ local function onkey(_, key, phase) -- 첫번째 인자는 screen
 
         elseif key=='enter' then
 
-            entry.__onenter(entry.__txtin:getstring())
+            entry.__entered = true
+            if entry.__onenter then
+                entry.__onenter(entry)
+            end
 
         elseif key=='home' then
 
@@ -86,14 +90,16 @@ end
 --------------------------------------------------------------------------------
 -- opt = {fontsize, header, borderwidth, bordercolor, soundeffect,}
 --------------------------------------------------------------------------------
-function Entry:init(onenter, opt)
+local nilfunc = function() end
+
+function Entry:init(header, onenter, opt)
 
     Group.init(self)
 
-    self.__onenter = onenter
+    -- header = header or ''
+    self.__onenter = onenter or nilfunc
     opt = opt or {}
 
-    local header = opt.header or ''
 
     entry = self
     screen.onkey = onkey
@@ -101,20 +107,22 @@ function Entry:init(onenter, opt)
     self.__fsz = fontsize or fontsize0
     self.__chgap = self.__fsz*0.555 -- 문자간격
 
-    print(self.__chgap) -- charecter gap
+    -- print(self.__chgap) -- charecter gap
     
     if header then
         self.__txthdr = Text1(header,{fontsize=self.__fsz}):addto(self)
         self.__hdr=header
+    else
+        self.__hdr=''
     end
     
     -- __entry는 text와 caret이 들어가는 그룹
-    self.__entry = Group():addto(self):setx(#header*self.__chgap)
+    self.__entry = Group():addto(self):setx(#self.__hdr*self.__chgap)
     
     self.__txtin = Text1('',{fontsize=self.__fsz}):addto(self.__entry)
     
     self.__caret = Rect(4,self.__fsz):addto(self.__entry) -- 먼저 add()해야 한다.
-    self.__caret:anchor(0,0.75):blink(blinktm)
+    self.__caret:setanchor(0,0.75):blink(blinktm)
     self.__endx = 1 -- caret의 맨 우측값
     self:__setcaretx__(1) -- caretx의 가장 작은 값은 1이다.
     self.__shift = 1
@@ -199,5 +207,12 @@ function Entry:__setcaretx__(x, inc_endx)
     self.__caretx = x
     self.__caret:setx((x-1)*self.__chgap)
     self.__caret:blink(blinktm)
+
+end
+
+
+function Entry:getstring()
+
+    return self.__txtin:getstring()
 
 end

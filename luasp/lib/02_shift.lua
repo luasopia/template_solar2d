@@ -85,13 +85,13 @@ local function shift(self) -- tr == self.__trInfo
     
     else
 
-        if tr.dx then self:x(self:getx()+tr.dx) end
-        if tr.dy then self:y(self:gety()+tr.dy) end
-        if tr.dr then self:rot(self:getrot()+tr.dr) end
-        if tr.ds then self:scale(self:getscale()+tr.ds) end
-        if tr.dxs then self:xscale(self:getxscale()+tr.dxs) end
-        if tr.dys then self:yscale(self:getyscale()+tr.dys) end
-        if tr.da then self:alpha(self:getalpha()+tr.da) end
+        if tr.dx then self:setx(self:getx()+tr.dx) end
+        if tr.dy then self:sety(self:gety()+tr.dy) end
+        if tr.dr then self:setrot(self:getrot()+tr.dr) end
+        if tr.ds then self:setscale(self:getscale()+tr.ds) end
+        if tr.dxs then self:setxscale(self:getxscale()+tr.dxs) end
+        if tr.dys then self:setyscale(self:getyscale()+tr.dys) end
+        if tr.da then self:setalpha(self:getalpha()+tr.da) end
     
     end
 

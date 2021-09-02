@@ -1,7 +1,8 @@
 --------------------------------------------------------------------------------
 -- magic methods : init(), remove()
 --------------------------------------------------------------------------------
-local nilfunc = function() end
+_luasopia.nilfunc = function() end
+local nilfunc = _luasopia.nilfunc
 
 --[[
 --2020/02/15 class 테이블에 __id__ 필드를 추가하고
@@ -17,7 +18,7 @@ end
 
 -- 어떤 객체가 클래스의 객체인지를 판단하는 (전역)함수
 -- 2020/06/10 : 수정
-function isobj(obj, cls)
+function isobject(obj, cls)
 	return type(obj)=='table' and obj.__clsid == cls.__id__
 end
 

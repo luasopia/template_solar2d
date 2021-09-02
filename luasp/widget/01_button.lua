@@ -5,8 +5,10 @@
 -- default values
 local marginratio = 0.5 -- side margin == fontsize*marginratio0
 local strokewidthratio0 = 0.15 -- strokewidth == fontsize*strokewidthratio0
-local fillcolor0 = Color.GREEN
-local strokecolor0 = Color.LIGHT_GREEN
+
+local strokecolor0 = Color(1,130,176) --Color.LIGHT_GREEN
+local fillcolor0 = Color(4,85,138) --Color.GREEN
+
 local fontsize0 = 50 -- the same as Text class default value
 local textcolor0 = Color.WHITE
 local nilfunc = function() end
@@ -65,19 +67,23 @@ function Button:init(str, func, opt)
     
     -- (1) background rect must be firsly generated
     if self.__shp == 'rect' then
+
         self.__shpbd = Rect(3,3,{
             fill = fillcolor,
             strokecolor = strokecolor,
             strokewidth = strokewidth
         }):addto(self)
+
     elseif self.__shp == 'circle' then
+
         self.__shpbd = Circle(3,{
             fill = fillcolor,
             strokecolor = strokecolor,
             strokewidth = strokewidth
         }):addto(self)
+
     end
-    self.__shpbd.__btn = self
+    -- self.__shpbd.__btn = self
 
     -- (2) then, text object
     self.__txt = Text(str,{
@@ -101,16 +107,29 @@ function Button:init(str, func, opt)
     --(3) register tap() method
     self.__shpbd.onpush = func -- **rect의 필드**로 저장해야한다
 
+
+    local parent = self
+
     function self.__shpbd:ontap(e)
 
         if effect then
-            self.__btn:scale(0.97) -- 0.97
-            self.__btn:addtimer(100, function(self) self:scale(1) end)
+
+            -- self.__btn:setscale(0.97) -- 0.97
+            -- self.__btn:addtimer(100, function(self)
+            --     self:setscale(1)
+            -- end)
+
+            local scale0 = parent.__bds
+            parent:setscale(0.97*scale0) -- 0.97
+            parent:addtimer(100, function(self)
+                self:setscale(scale0)
+            end)
+
         end
 
         -- btn:onpush(e) 가 정의되어 있을 경우
-        if self.__btn.onpush then
-            self.__btn.onpush(self.__btn, e)
+        if parent.onpush then
+            parent.onpush(parent, e)
         end
 
     end

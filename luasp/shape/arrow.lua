@@ -19,9 +19,9 @@ function Arrow:__mkpts__()
     local x7, y7 = -0.5*w,      0
 
     -- x,y,1/변의길이(단위벡터를 계산하는 데 필요함)
-    local _1_len1 = 1/sqrt(hhgt*hhgt+w*w*0.25)
-    local _1_len2 = 1/sqrt(thgt*thgt+(w-twdt)*(w-twdt)*0.25)
-    self.__cpg = {x1,y1,_1_len1,  x2,y2,_1_len1,  x4,y4,_1_len2,  x5,y5,1/twdt,  x7,y7,_1_len2}
+    -- local _1_len1 = 1/sqrt(hhgt*hhgt+w*w*0.25)
+    -- local _1_len2 = 1/sqrt(thgt*thgt+(w-twdt)*(w-twdt)*0.25)
+    self.__cpg = {x1,y1,  x2,y2,  x4,y4,  x5,y5,  x7,y7,}
 
     self.__sctx, self.__scty = 0, (thgt-hhgt)*0.5
     self.__hwdt, self.__hhgt = w*0.5, (hhgt+thgt)*0.5
@@ -31,7 +31,7 @@ function Arrow:__mkpts__()
 end
 
 
-function Arrow:init(width, opt)
+function Arrow:init(width, opt) 
     
     self.__wdt = width --width of the head
     

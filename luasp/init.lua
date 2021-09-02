@@ -94,7 +94,7 @@ if gideros then -- in the case of using Gideros
     _luasopia.loglayer = {
         __bd = Sprite.new(),
         add = function(self, child) return self.__bd:addChild(child.__bd) end,
-        --2020/03/15 isobj(_loglayer, Group)==true 이려면 아래 두 개 필요
+        --2020/03/15 isobject(_loglayer, Group)==true 이려면 아래 두 개 필요
         --__clsid = Group.__id__,
         
         isvisible = function(self) return self.__bd:isVisible() end,
@@ -176,7 +176,7 @@ elseif coronabaselib then -- in the case of using solar2d
     _luasopia.loglayer = {
         __bd = display.newGroup(),
         add = function(self, child) return self.__bd:insert(child.__bd) end,
-        --2020/03/15 isobj(_loglayer, Group)가 true가 되려면 아래 두 개 필요
+        --2020/03/15 isobject(_loglayer, Group)가 true가 되려면 아래 두 개 필요
         --__clsid = Group.__id__
         isvisible = function(self) return self.__bd.isVisible end,
         hide = function(self) self.__bd.isVisible = false; return self end,
@@ -378,9 +378,9 @@ end
 
 --------------------------------------------------------------------------------
 -- 2021/05/13: require함수를 치환 (_req는 lua의 original require함수)
-_req = require
+_require0 = require
 local rooturl = _luasopia.root .. '.'
-function require(url) return _req(rooturl..url) end
+function require(url) return _require0(rooturl..url) end
 --------------------------------------------------------------------------------
 
 -- 2020/04/12: 사용자가 _G에 변수를 생성하는 것을 막는다

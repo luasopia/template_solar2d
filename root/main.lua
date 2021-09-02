@@ -1,4 +1,2 @@
---setdebug{grid=true}
-
 Heart(100):fill(Color.RED):wavescale()
-print('hello luasopia')
+print('luasopia 1.0.0')

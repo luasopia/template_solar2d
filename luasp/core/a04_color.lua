@@ -9,7 +9,7 @@ Color = class() --:is'Color'
 if _Gideros then
 
     function Color:init(r, g, b, a)
-        if isobj(r, Color) then
+        if isobject(r, Color) then
             self.__r, self.__g, self.__b = r.__r, r.__g, r.__b
             self.hex = r.hex
             self.a = g or r.a or 1 -- in this case, 2nd argument is an alpha
@@ -26,7 +26,7 @@ elseif _Corona then
     
     function Color:init(r, g, b, a)
 
-        if isobj(r,Color) then
+        if isobject(r,Color) then
             self.__r, self.__g, self.__b = r.__r, r.__g, r.__b
             self.r, self.g, self.b = r.r, r.g, r.b
             self.a = g or r.a or 1 -- in this case, 2nd argument is an alpha
