@@ -1,8 +1,50 @@
+--[[ scene file template
+local scene = Scene()
+
+function scene:create(stage) ... end
+
+function scene:beforeshow(stage) ... end
+
+function scene:aftershow(stage) ... end
+
+function scene:beforehide(stage) ... end
+
+function scene:afterhide(stage) ... end
+
+return scene
+--]]
+--------------------------------------------------------------------------------
 local Group = Group
 local time0 = 300
 local luasp = _luasopia
 local x0, y0, endx, endy = luasp.x0, luasp.y0, luasp.endx, luasp.endy
 local scnlayer = luasp.scnlayer
+
+--------------------------------------------------------------------------------
+-- 2021/09/04 loglayer에 cover를 씌워서 터치를 방지
+local cover 
+local function disabletouch()
+
+    print('mkcover ')
+
+    cover = Rect(screen.width,screen.height):setalpha(0):addto(luasp.loglayer)
+        -- solar2d는 alpha가 0이면 기본적으로 touch 이벤트가 불능이 된다.
+        -- alpha가 0임에도 터치이벤트가 발생토록 하려면 아래와 같이 한다.
+    if _Corona then cover.__bd.isHitTestable = true end -- solar2d에서만 필요
+    -- gideros는 alpha가 0이어도 터치이벤트가 발생한다.
+    cover.ontouch = luasp.nilfunc
+
+end
+
+local function enabletouch()
+
+    if cover and not cover:isremoved() then
+        print('rmcover ')
+        cover:remove()
+    end
+
+end
+
 --------------------------------------------------------------------------------
 -- private static methods
 --------------------------------------------------------------------------------
@@ -27,22 +69,25 @@ local function beforeshow(scn)
     
     --stage:resumetouch()
     --2021/08/11:퇴장 효과(애니) 동안 커버 생성
-    scn:__mkcover__()
+    -- scn:__mkcover__()
+    disabletouch()
 
 end
+
 
 --화면에서 입장하는 효과가 다 끝나고 완전히 자리잡으면 호출되는 함수
 local function aftershow(scn)
 
     local stage = scn.__stg 
-
-    --2021/08/11:입장효과가 다 끝나면 cover를 제거한다.
-    scn:__rmcover__()
-
+    
     luasp.stage = stage
     stage:set{x=0,y=0,scale=1,rot=0,alpha=1}:show()
-
+    
     scn:aftershow(stage)
+    
+    --2021/08/11:입장효과가 다 끝나면 cover를 제거한다.
+    -- scn:__rmcover__()
+    enabletouch()
 
 end
 
@@ -51,9 +96,6 @@ local function beforehide(scn)
 
     luasp.stage = scn.__stg
     scn:beforehide(scn.__stg)
-
-    --2021/08/11:퇴장 효과(애니) 동안 커버 생성
-    scn:__mkcover__()
 
 end
 
@@ -98,7 +140,8 @@ function Scene:afterhide() end -- called just after hiding
 -- 2021/08/11:입장/퇴장 효과(애니메이션) 도중에 터치(탭)가 발생하는 것을 막기위해서
 -- 아래의 두 개의 내부메서드가 사용된다.
 
-function Scene:__mkcover__()
+--[[
+function Scene:__mkcover0__()
 
     self.tag=self.tag or 'scn0'
 
@@ -117,7 +160,7 @@ function Scene:__mkcover__()
 
 end
 
-function Scene:__rmcover__()
+function Scene:__rmcover0__()
 
     self.tag=self.tag or 'scn0'
     
@@ -127,12 +170,14 @@ function Scene:__rmcover__()
     end
 
 end
+--]]
+
 
 --------------------------------------------------------------------------------
 -- Scene.goto(url [,effect [,time] ])
 -- effect = 'fade', 'slideRight'
 --------------------------------------------------------------------------------
-function Scene.goto(url, effect, time)
+function Scene.__goto0(url, effect, time)
 
     -- print('scene.goto')
 
@@ -145,7 +190,7 @@ function Scene.goto(url, effect, time)
     -- scenes테이블에 없다면 create를 이용하여 새로 생성하고 scenes에 저장
     inScene = scenes[url]
     if inScene == nil then
-        inScene = require(url) -- stage를 새로운 Scene 객체로 교체한다
+        inScene = _require0(url) -- stage를 새로운 Scene 객체로 교체한다
         scenes[url] = inScene
         create(inScene)
     end

@@ -1,21 +1,3 @@
---------------------------------------------------------------------------------
--- 2020/08/27: created
--- modified : 2021/06/07
---------------------------------------------------------------------------------
--- default values
-local marginratio = 0.5 -- side margin == fontsize*marginratio0
-local strokewidthratio0 = 0.15 -- strokewidth == fontsize*strokewidthratio0
-
-local strokecolor0 = Color(1,130,176) --Color.LIGHT_GREEN
-local fillcolor0 = Color(4,85,138) --Color.GREEN
-
-local fontsize0 = 50 -- the same as Text class default value
-local textcolor0 = Color.WHITE
-local nilfunc = function() end
-local shape0 = 'rect'
-local max = math.max
---------------------------------------------------------------------------------
-Button = class(Group)
 --[[
     local btn = Button('string' [ ,func [,opt]  ])
     
@@ -39,6 +21,25 @@ Button = class(Group)
     }
 --]]
 --------------------------------------------------------------------------------
+-- 2020/08/27: created
+-- modified : 2021/06/07
+--------------------------------------------------------------------------------
+-- default values
+local marginratio = 0.5 -- side margin == fontsize*marginratio0
+local strokewidthratio0 = 0.15 -- strokewidth == fontsize*strokewidthratio0
+
+local strokecolor0 = Color(1,130,176) --Color.LIGHT_GREEN
+local fillcolor0 = Color(4,85,138) --Color.GREEN
+
+local fontsize0 = 50 -- the same as Text class default value
+local textcolor0 = Color.WHITE
+local nilfunc = function() end
+local shape0 = 'rect'
+local max = math.max
+--------------------------------------------------------------------------------
+Button = class(Group)
+--------------------------------------------------------------------------------
+
 function Button:init(str, func, opt)
     
     Group.init(self)

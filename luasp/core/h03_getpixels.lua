@@ -1,7 +1,8 @@
 -- 2021/08/15:created
-
+local luasp = _luasopia
 local tins = table.insert
 
+--------------------------------------------------------------------------------
 --pico-8 palette
 local palette ={
     --'0' means transparent (or empty)
@@ -23,6 +24,8 @@ local palette ={
     ['p'] = Color(255,204,170),                          -- peach
 }
 
+luasp.pxpalette = palette
+--------------------------------------------------------------------------------
 
 function getpixels(...) --decode maps table
 

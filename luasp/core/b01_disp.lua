@@ -10,6 +10,7 @@ local luasp = _luasopia
 local _nxt = next
 
 local int, min = math.floor, math.min
+local rand = rand
 --------------------------------------------------------------------------------
 -- 2020/02/06: 모든 set함수는 self를 반환하도록 수정됨
 -- 향후: 내부코드는 속도를 조금이라도 높이기 위해서 self.__bd객체를 직접 접근한다
@@ -24,17 +25,28 @@ Display.__dobjs = dobjs
 -- tagged display object (tdobj) 들의 객체를 저장하는 테이블
 local tdobj = {}  -- Display Tagged OBJect
 Display.__tdobj = tdobj
--- local ndobjs = 0
 -------------------------------------------------------------------------------
 -- static public method
 -------------------------------------------------------------------------------
 --2020/06/20 dobj[self]=self로 저장하기 때문에 self:remove()안에서 바로 삭제 가능
 -- 따라서 updateAll()함수의 구조가 (위의 함수와 비교해서) 매우 간단해 진다
-Display.updateAll = function()
+Display.updateAll = function(isoddfrm)
 
     -- for _, obj in pairs(dobjs) do --for k = #dobjs,1,-1 do local obj = dobjs[k]
     for _, obj in _nxt, dobjs do
+
         obj:__upd__()
+
+        -- 2021/09/03: 홀수프레임과 짝수 프레임에서만 호출할 upd함수들 실행
+        -- 궂이 매프레임마다 호출할 필요가 없는 update함수는
+        -- iupd1, iupd2 둘 중 하나를 임의로 선정해서 거기에 집어넣는다
+        for _, fn in _nxt, obj.__iupd12[isoddfrm] do
+            if fn(obj) then -- 만약 fn(self)==true 라면 곧바로 삭제하고 리턴
+                obj:remove()
+                break
+            end
+        end
+        
     end
 
 end
@@ -71,7 +83,11 @@ function Display:init()
     self.__bd.__obj = self -- body에 원객체를 등록 (_Grp의 __del함수에서 사용)
     
     dobjs[self] = self
-    self.__iupds = {} -- 내부 update함수들을 저장할 테이블
+    self.__iupds = {} -- 내부 update함수들을 저장할 테이블(모든 frame에서 호출)
+    self.__iupd12 = {
+        [true]={},  -- 홀수frm(isoddfrm==true)에 호출될 update함수들을 저장할 테이블
+        [false]={},  -- 짝수frm(isoddfrm==false)에 호출될 update함수들을 저장할 테이블
+    }
     
     --2021/08/14:pixel모드에서 xy값을 정위치에 놓기위해
     -- __bdx,__bdy 저장된 (실수)값을 int()변환하여 설정한다.
@@ -170,6 +186,15 @@ function Display:__addupd__( fn )
 
     -- self.__iupds = self.__iupds or {}
     self.__iupds[fn] = fn
+    return self
+
+end
+
+--2021/09/03 : 격프레임마다 호출되는 함수 등록
+-- 홀수프레임, 짝수프레임 어느 쪽일지는 성능 분산을 위해서 임의로 정한다
+function Display:__addupd12__( fn )
+
+    self.__iupd12[rand(2)==1][fn] = fn -- rand(2)는 1과 2중 하나만 발생
     return self
 
 end

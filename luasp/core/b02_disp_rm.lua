@@ -88,7 +88,7 @@ local function isout(self)
     elseif self.__cpt then
 
         local cpt=self.__cpt
-        local x, y = self:__getgxy__(ccc.x+offs[k], ccc.y+offs[k+1])
+        local x, y = self:__getgxy__(cpt.x, cpt.y)
 
         if x0<=x and x<=endx and y0<=y and y<=endy then
 
@@ -105,7 +105,8 @@ end
 
 local function add_isout(self)
 
-    self.__iupds[isout] = isout
+    -- self.__iupds[isout] = isout
+    self:__addupd12__(isout) -- 격프레임마다 체크한다.
 
 end
 

@@ -99,18 +99,6 @@ if _Gideros then
         -- (2) (add new) 새로운 shp/strk를 생성해서 추가한다
         local pts, opt = self.__pts, self.__sopt
 
-        --[[
-        -- 원좌표계에서의 중심점의 좌표와 너비/2, 높이/2를 구한다
-        local xmn, xmx, ymn, ymx = pts[1], pts[1], pts[2], pts[2]
-        for k=3, #pts, 2 do
-            local x, y = pts[k], pts[k+1]
-            if x>xmx then xmx = x elseif x<xmn then xmn = x end
-            if y>ymx then ymx = y elseif y<ymn then ymn = y end
-        end
-        local ctx, cty = (xmx+xmn)*0.5, (ymx+ymn)*0.5
-        self.__hwdt, self.__hhgt = (xmx-xmn)*0.5, (ymx-ymn)*0.5
-        --]]
-
         -- solar2d와 동일한 원점을 가지게끔 하기 위해서
         -- pts좌표들을 중심점이 원점이 되도록 이동시킨다.
         -- (solar2d는 이 연산이 내부적으로 수행되므로 따로 할 필요가 없음)
@@ -135,7 +123,12 @@ if _Gideros then
         -- 2021/06/02 gideros에서 shp(내부)와 strk(외곽선)을 분리함
 
         local shp = GShape.new() -- 내부
-        shp:setFillStyle(GShape.SOLID, opt.fc.hex, opt.fc.a)
+
+        --shp:setFillStyle(GShape.SOLID, opt.fc.hex, opt.fc.a)
+        --2021/09/04:bugfix 초기색을 WHITE로 설정해야 setColorTransform()이
+        --제대로 동작한다.
+        shp:setFillStyle(GShape.SOLID, WHITE.hex, 1) -- 2021/09/04
+        
         shp:beginPath()
         shp:moveTo(pts[1], pts[2]) -- starting at upmost point
         for k=3,#pts,2 do
@@ -143,6 +136,19 @@ if _Gideros then
         end
         shp:lineTo(pts[1], pts[2])
         shp:endPath() -- ending at the starting point
+
+
+        -- 2021/09/04:shp를 처음에는 흰색으로 채워놓고
+        -- 그다음 색을 아래와 같이 설정한다.
+        -- 이렇게 해야 fill()메서드가 제대로 동작한다.
+        local fc = opt.fc
+        shp:setColorTransform(
+            fc.__r*inv255,
+            fc.__g*inv255,
+            fc.__b*inv255,
+            fc.a
+        )
+
         
         -- gideros의 shape는 자동으로 원점(0,0)이 anchor point가 된다
         -- shp는 1번 자리, strk는 2번자리에 고정시킨다

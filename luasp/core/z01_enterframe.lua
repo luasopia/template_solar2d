@@ -13,7 +13,7 @@ local upd = function()
 	
 	luasp.isoddfrm = not luasp.isoddfrm -- 2021/08/23
 	Tmr.updateAll()
-	Disp.updateAll()
+	Disp.updateAll(luasp.isoddfrm)
 	
 end
 
@@ -195,5 +195,7 @@ function luasp.fpsTo30()
 
 end
 --]]
+
+
 
 return setdebug

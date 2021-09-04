@@ -106,6 +106,27 @@ if gideros then -- in the case of using Gideros
     stage:addChild(_luasopia.loglayer.__bd)
     
     
+    --[[ 2021/09/03: 'Windows' or 'Mac OS' means simulator
+        Returns information about device.
+        for iOS, returns 5 values: "iOS", iOS version, device type, user interface idiom and device model
+        for Android, returns 4 values: "Android", Android version, manufacturer and model information
+        for Windows returns 1 value: "Windows"
+        for Mac OS X returns 1 value: "Mac OS"
+        for Win32 returns 1 value: "Win32"
+        for HTML5 returns 2 values: "Web", Browser ID string
+    --]]
+    local env = application:getDeviceInfo()
+    if env == 'Windows' or evn =='Mac OS' then
+        _luasopia.environment = 'simulator'
+    elseif env == 'Web' then
+        _luasopia.environment = 'browser'
+    else
+        _luasopia.environment = 'device'
+    end
+
+    print(_luasopia.environment)
+
+
     _Gideros = moveg()
     
 --------------------------------------------------------------------------------
@@ -186,6 +207,8 @@ elseif coronabaselib then -- in the case of using solar2d
         
     _Corona = moveg()
 
+    --2021/09/03:'simulator','device','browser'
+    _luasopia.environment = system.getInfo('environment')
 
 elseif love then-- in the case of using LOVE2d
 
@@ -201,20 +224,15 @@ math.randomseed(os.time())
 rand = math.random
 INF = -math.huge -- infinity constant (일부러 -를 앞에 붙임)
 _luasopia.debug = false
-lib = {} -- 2020/03/07 added
-ui = {} -- 2020/03/07 added
-
--- -- 2020/04/21 Disp.__getNumObjs 에서 빼야될  수
--- -- enterframe.lua에서 screen 객체(Rect)가 생성되기 때문에 초기값은 1
--- _luasopia.dcdobj = 1 
-
+-- lib = {} -- 2020/03/07 added
+-- ui = {} -- 2020/03/07 added
 --------------------------------------------------------------------------------
 -- 2021/05/12: luasp 프로젝트를 root폴더 안에서 작성하기로 변경함
 _luasopia.root = 'root'
 --------------------------------------------------------------------------------
 --2021/08/27:added
 _luasopia.dtmfrm = 1000/_luasopia.fps
-print('dtmfrm:'.._luasopia.dtmfrm)
+-- print('dtmfrm:'.._luasopia.dtmfrm)
 --------------------------------------------------------------------------------
 -- load luasp core files
 
@@ -269,12 +287,11 @@ require 'luasp.lib.04_blink' -- 2020/07/01, 2021/05/14 lib로 분리됨
 require 'luasp.lib.05_wavescale' -- 2020/07/01, 2021/05/14 lib로 분리됨
 require 'luasp.lib.06_ishit'
 
-require 'luasp.lib.push'
-require 'luasp.lib.path'
-require 'luasp.lib.track' -- 2021/05/14 lib로 분리됨
-
-require 'luasp.lib.tail' -- 2020/06/18 added
-require 'luasp.lib.maketile' -- 2020/06/24 added
+-- require 'luasp.lib.push'
+-- require 'luasp.lib.path'
+-- require 'luasp.lib.track' -- 2021/05/14 lib로 분리됨
+-- require 'luasp.lib.tail' -- 2020/06/18 added
+-- require 'luasp.lib.maketile' -- 2020/06/24 added
 
 -------------------------------------------------------------------------------
 -- widget
@@ -289,31 +306,8 @@ require 'luasp.widget.04_entry'
 require 'luasp.core.g01_scene'-- scene0생성(이후 scene0.__stg__에 객체가 생성)
 local enterframedbg = require 'luasp.core.z01_enterframe' -- 맨 마지막에 로딩해야 한다
 
-
-
---[[
--- 2021/05/13 전역 puts()함수 정의
--- puts()함수를 한 번도 호출하지 않는다면 loglayer가 hide()로 유지된다
-
-function puts(str, ...)
-
-    if not _luasopia.loglayer:isvisible() then
-
-        _luasopia.loglayer:show()
-
-    end
-
-    if not _luasopia.logf then
-
-        _luasopia.logf = _req 'luasp.lib.03_puts'
-
-    end
-
-    _luasopia.logf(str,...)
-    
-end
---]]
-
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 function setdebug(args)
     
@@ -379,8 +373,10 @@ end
 --------------------------------------------------------------------------------
 -- 2021/05/13: require함수를 치환 (_req는 lua의 original require함수)
 _require0 = require
-local rooturl = _luasopia.root .. '.'
-function require(url) return _require0(rooturl..url) end
+-- local rooturl = _luasopia.root .. '.'
+function require(url) return _require0(_luasopia.root ..'.'.. url) end
+--------------------------------------------------------------------------------
+
 --------------------------------------------------------------------------------
 
 -- 2020/04/12: 사용자가 _G에 변수를 생성하는 것을 막는다
@@ -396,7 +392,3 @@ setmetatable(_G, {
     end
 --]]
 })
-
-
-
-return init
