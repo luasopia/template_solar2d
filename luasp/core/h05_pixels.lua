@@ -155,32 +155,10 @@ function Pixels:init(sht, seq)
 
     self.__apx, self.__apy = 0.5, 0.5
     
-    self.__wdt, self.__hgt = sht.__frmwdt, sht.__frmhgt
-    self.__wdt1, self.__hgt1 = sht.__frmwdt-1, sht.__frmhgt-1
-    
-    -- (anchor가 반영된) px 원점<0,0>이 위치할 그룹(self)좌표계의 좌표
-    self.__x0 = -floor(0.5*self.__wdt1 + 0.5)
-    self.__y0 = -floor(0.5*self.__hgt1 + 0.5)
-
-    -- self(그룹)내에서 픽셀들의 정중심점 좌표
-    -- __getgxy__()에서 사용된다,
-    self.__xc, self.__yc = 0, 0 --(0.5-ax)*w_1, (0.5-ay)*h_1
-
-    self.__bdrr = 0 -- 각도를 라디안으로 변경한 값
-
-    --2021/08/20:충돌감지를 위해서 추가
-    local hw, hh = self.__wdt*0.5, self.__hgt*0.5
-    local xoffs=0.5
-    self.__cpg = {
-        -hw+xoffs,-hh+xoffs,
-        hw+xoffs,-hh+xoffs,
-        hw+xoffs,hh-xoffs,
-        -hw+xoffs,hh-xoffs,
-    }
-    
     
     if pxmode then
         
+        self.__bdrr = 0 -- 각도를 라디안으로 변경한 값
         self.__dxsys = 0 -- self.__bdxs - self.__bdys 계산값 저장
         self.__rdprv = 0 -- 직전에 그린 각도(rot degree previous)
         self.__asnr = 0 -- abs(sin(rot))
@@ -198,6 +176,44 @@ function Pixels:init(sht, seq)
 
 
 end
+
+
+-- 2021/09/05: frame마다 w/h가 변할 수 있으므로
+-- w/h값에 의해서 변경되어야 할 값들을 여기에서 계산한다
+function Pixels:__setwh__(w,h,forced)
+
+    -- anchor만 변했을 수도 있으므로 아래는 살리면 안된다
+    if self.__wdt == w and self.__hgt == h and not forced then return end
+
+    local w_1, h_1 = w-1, h-1
+    local ax, ay = self.__apx, self.__apy
+
+    self.__wdt, self.__hgt = w, h
+    self.__wdt1, self.__hgt1 = w_1, h_1
+    
+    -- (앵커가 반영된) 픽셀아트의 원점<0.0>의 그룹(self) 죄표계에서의 좌표
+    self.__x0 = -floor(ax*w_1 + 0.5)
+    self.__y0 = -floor(ay*h_1 + 0.5)
+
+    -- (__xc,__yc)는 그룹(self) 죄표계에서 픽셀들의 정중앙점 좌표
+    -- __getgxy__()에서 사용된다,
+    self.__xc = (0.5-ax)*w_1
+    self.__yc = (0.5-ay)*h_1
+
+    --2021/08/20:충돌감지를 위해서 추가
+    if self.__cpg then -- self.__ccc나 self.__cpt인 경우는 스킵
+        local hw, hh = w*0.5, h*0.5
+        local xoffs=0.5
+        self.__cpg = {
+            -hw+xoffs,-hh+xoffs,
+            hw+xoffs,-hh+xoffs,
+            hw+xoffs,hh-xoffs,
+            -hw+xoffs,hh-xoffs,
+        }
+    end
+
+end
+
 
 
 -- 2021/08/25:pxmode로 전환되었을 때 Pixels에서 취해야 할 동작들
@@ -219,16 +235,19 @@ function Pixels.__setpxmode__()
 end
 
 
+function Pixels:__setfrm__(id, forced)
 
+    if self.__idfrm == id and not forced then return self end
 
-function Pixels:__setfrm__(id)
-
+    
     self:__rmpxs__() -- 이전에 그려진 모든 점들을 제거한다
 
     local sht = self.__sht.__txts[id] -- pixel_sheet
-    local pxs = {}              -- PiXelS
-    -- for k, px in ipairs(pxs) do
 
+    --2021/09/05: 아래에서 변경되어야 할 값들을 계산
+    self:__setwh__(sht.width, sht.height, forced) 
+
+    local pxs = {}              -- PiXelS
     self.__npxs = #sht -- number of pixels
     
     for k=1,self.__npxs do
@@ -248,8 +267,8 @@ function Pixels:__setfrm__(id)
 
     end
 
-    self.__idfrm = id
     self.__pxs = pxs
+    self.__idfrm = id
 
     
     if pxmode then
@@ -309,7 +328,6 @@ function Pixels:__setrs__()
 end
 --]]
 
--- function Pixels:setrot(deg)
 --2021/08/17:pxmode일 때 setrot() (and rot()) 함수가 아래로 교체된다
 -- 항상 __bd의 원점(0,0)이 앵커점이다.
 function Pixels:__setr__(deg)
@@ -372,6 +390,7 @@ function Pixels:__setys__(ys)
 
 end
 
+
 function Pixels:__setxys__(xs, ys)
 
     self.__bdxs, self.__bdys = xs, ys
@@ -389,17 +408,12 @@ end
 function Pixels:setanchor(ax, ay)
 
     self.__apx, self.__apy = ax, ay
-    local w_1, h_1 = self.__wdt1, self.__hgt1
 
-    -- (앵커가 반영된) 픽셀들의 원점<0.0>의 그룹(self) 죄표계에서의 좌표
-    self.__x0 = -floor(ax*self.__wdt1 + 0.5)
-    self.__y0 = -floor(ay*self.__hgt1 + 0.5)
+    -- 변경되어야 할 값들은 self:__setwh__()에서
+    -- (__setfrm__() 안에서 호출) 계산된다.
 
-    -- (__xc,__yc)는 그룹(self) 죄표계에서 픽셀들의 정중앙점 좌표
-    -- __getgxy__()에서 사용된다,
-    self.__xc, self.__yc = (0.5-ax)*w_1, (0.5-ay)*h_1
-
-    return self:__setfrm__(self.__idfrm)
+    -- 두 번째 인자는 강제로 다시 그리라는 것임
+    return self:__setfrm__(self.__idfrm, true)
 
 end
 
@@ -426,6 +440,7 @@ function Pixels:__getgxypx__(x,y)
 
 end
 
+
 -- pxmode에서 pixels객체는 자체적으로 확대/회전을 하기 때문에
 -- pxmode에서 getglobalxy()메서드를 오버라이드해야 한다.
 function Pixels:getglobalxy(x,y)
@@ -447,7 +462,7 @@ Pixels.__getgxy__ = Pixels.getglobalxy
 -- 2021/08/18:added for animation
 --------------------------------------------------------------------------------
 
-local timerfunc = luasp.tmrfnsprt
+-- local timerfunc = luasp.tmrfnsprt
 Pixels.play = Sprite.play
 Pixels.pause = Sprite.pause
 Pixels.resume = Sprite.resume

@@ -87,15 +87,15 @@ function Button:init(str, func, opt)
     -- self.__shpbd.__btn = self
 
     -- (2) then, text object
-    self.__txt = Text(str,{
+    self.__txtbd = Text(str,{
         fontsize=fontsize,
         color=textcolor}
     ):addto(self)
     
     -- 2021/06/04 opt의 width/height가 사용자에게 주어졌다면 그것을 사용하고
     -- 아니라면 text의 폭과 높이값을 고려한 계산치를 사용한다.
-    local wdt = self.__txt:getwidth()  + 2*margin
-    local hgt = self.__txt:getheight() + 2*margin
+    local wdt = self.__txtbd:getwidth()  + 2*margin
+    local hgt = self.__txtbd:getheight() + 2*margin
     self.__wdt, self.__hgt = self.__wdt0 or wdt, self.__hgt0 or hgt
     self.__rds = self.__rds0 or max(self.__wdt, self.__hgt)*0.5
 
@@ -135,19 +135,22 @@ function Button:init(str, func, opt)
 
     end
 
+
+    self.__apx, self.__apy=0.5, 0.5
+
 end
 
 
 -- 2020/11/14: (text)string, fontsize가 변경되면 rect사이즈도 조절한다.
 local function resizerect(self)
 
-    local margin = self.__txt:getfontsize()*marginratio
+    local margin = self.__txtbd:getfontsize()*marginratio
 
     -- 2021/06/04 opt의 width/height가 사용자에게 주어졌다면 그것을 사용하고
     -- 아니라면 text의 폭과 높이값을 고려한 계산치를 사용한다.
     -- 사용자에게서 주어진 width/height는 self.__wdt0, self.__hgt0에 저장되어 있다.
-    local wdt = self.__txt:getwidth()  + 2*margin
-    local hgt = self.__txt:getheight() + 2*margin
+    local wdt = self.__txtbd:getwidth()  + 2*margin
+    local hgt = self.__txtbd:getheight() + 2*margin
     self.__wdt, self.__hgt = self.__wdt0 or wdt, self.__hgt0 or hgt
 
     --print(self.__wdt, self.__hgt)
@@ -160,7 +163,7 @@ end
 
 function Button:setfontsize(n)
 
-    self.__txt:fontsize(n)
+    self.__txtbd:fontsize(n)
     return resizerect(self)
 
 end
@@ -168,7 +171,7 @@ end
 
 function Button:setstring(...)
 
-    self.__txt:string(...)
+    self.__txtbd:string(...)
     return resizerect(self)
 
 end
@@ -198,7 +201,7 @@ end
 
 function Button:settextcolor(tc)
 
-    self.__txt:color(tc)
+    self.__txtbd:color(tc)
     return self
 
 end
@@ -234,19 +237,31 @@ function Button:setradius(r)
 end
 
 
-function Button:getstring() return self.__txt:getstring() end
-function Button:getfontsize() return self.__txt:getfontsize() end
+function Button:getstring() return self.__txtbd:getstring() end
+function Button:getfontsize() return self.__txtbd:getfontsize() end
+
+
+--2021/09/04 added
+function Button:setanchor(apx, apy)
+
+    self.__apx, self.__apy=apx, apy
+    self.__shpbd:setanchor(apx, apy)
+    self.__txtbd:setanchor(apx, apy)
+    return self
+
+end
 
 
 --2021/06/04: method alaias
-Button.string = Button.setstring
-Button.fontsize = Button.setfontsize
-Button.strokewidth = Button.setstrokewidth
-Button.strokecolor = Button.setstrokecolor
+-- Button.string = Button.setstring
+-- Button.fontsize = Button.setfontsize
+-- Button.strokewidth = Button.setstrokewidth
+-- Button.strokecolor = Button.setstrokecolor
 
-Button.textcolor = Button.settextcolor
-Button.strokecolor = Button.setstrokecolor
-Button.strokewidth = Button.setstrokewidth
+-- Button.textcolor = Button.settextcolor
+-- Button.strokecolor = Button.setstrokecolor
+-- Button.strokewidth = Button.setstrokewidth
 
-Button.width = Button.setwidth
-Button.height = Button.setheight
+-- Button.width = Button.setwidth
+-- Button.height = Button.setheight
+

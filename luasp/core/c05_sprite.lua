@@ -143,12 +143,16 @@ elseif _Corona then
     -- 현재 그룹내 Img를 제거하고 새로운 Img를 넣는다
     function Sprite:__setfrm__(idframe)
 
+        if self.__idfrm == idframe then return end
+
         self.__bd[1]:removeSelf()
         local img = newImg(self.__sht.__txts, idframe)
         -- 앵커포인트를 고려한 xy좌표값 설정
         img.x, img.y = -int(self.__apx*self.__wdt1), -int(self.__apy*self.__hgt1)
         self.__bd:insert(img)
         self.__img = img
+
+        self.__idfrm = idframe
         -- return self
 
     end
@@ -187,11 +191,11 @@ end -- if _Corono then ... elseif _Gideros then
 
 local function timerfunc(self)
 
-    self.__idfrm = self.__idfrm + 1
+    self.__idsubfrm = self.__idsubfrm + 1
 
-    if self.__idfrm > self.__maxidfrm then
+    if self.__idsubfrm > self.__maxidfrm then
 
-        self.__idfrm = 1
+        self.__idsubfrm = 1
         self.__loopcnt = self.__loopcnt + 1
 
         if self.__loopcnt == self.__loops then
@@ -200,7 +204,7 @@ local function timerfunc(self)
 
     end
 
-    return self:__setfrm__(self.__frms[self.__idfrm])
+    return self:__setfrm__(self.__frms[self.__idsubfrm])
 
 end
 
@@ -228,7 +232,8 @@ function Sprite:play(id)
     
     local tmgap = seq.time/self.__maxidfrm
     
-    self.__idfrm, self.__loopcnt = 1, 0
+    -- self.__idsubfrm은 self.__frms의 인덱스이다
+    self.__idsubfrm, self.__loopcnt = 1, 0
     self:__setfrm__(self.__frms[1])
     
     self.__tmrsprt = self:addtimer(tmgap, timerfunc, INF)
@@ -279,5 +284,5 @@ function Sprite:setframe(idfrm)
 
 end
 
-Sprite.anchor = Sprite.setanchor
 luasp.tmrfnsprt = timerfunc
+-- Sprite.anchor = Sprite.setanchor
