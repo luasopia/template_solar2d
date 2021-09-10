@@ -5,11 +5,21 @@ if _Gideros then
 
     
     local function tapfn(self, event) --printf('%s touch begin', self.name)
+
         local t = event.touch
+
+        --2021/09/06:마우스우버튼 혹은 마우스휠버튼을 클릭한 경우 회피
+        if t.mouseButton==2 or t.mouseButton==4 then 
+            event:stopPropagation()
+            return
+        end
+        
+        
         if self.__bd:hitTestPoint(t.x, t.y) and self.ontap~=nil then
             self:ontap{id=t.id, x=t.x, y=t.y}
             event:stopPropagation()
         end
+
     end
 
     function Display:__tapon() --print('try tap')

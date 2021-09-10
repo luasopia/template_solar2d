@@ -160,7 +160,7 @@ local function getpxs(tbl)
         pxs.width, pxs.height = maxnrow, ncol -- width는 nrow들 중 가장 큰것으로
         pxsht.__txts[idfrm] = pxs
         pxsht.__allfrms[idfrm] = idfrm
-        print('idfrm:',idfrm)
+        --print('idfrm:',idfrm)
 
     end -- for idfrm = 1,nfrms do
 

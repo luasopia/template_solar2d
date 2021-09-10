@@ -5,9 +5,17 @@ if _Gideros then
 
 
     local function tchBegin(self, event) --printf('%s touch begin', self.name)
-
+        
         if self.__tch == nil then return end
         local t = event.touch
+
+        -- 2021/09/06: Gideros는 마우스우클릭을 해도 터치이벤트가 발생한다.
+        -- 마우스우버튼 혹은 마우스휠버튼을 클릭한 경우 회피
+        if t.mouseButton==2 or t.mouseButton==4 then 
+            event:stopPropagation()
+            return
+        end
+
         if self.__bd:hitTestPoint(t.x, t.y) then
             self.__tch[t.id] = {id=t.id, phase='begin', x=t.x, y=t.y, dx=0, dy=0}
             self:ontouch(self.__tch[t.id])

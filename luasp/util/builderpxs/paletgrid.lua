@@ -19,11 +19,11 @@ for numkey,color in ipairs(palette) do
     
 
     function colorbox:onpush(e)
-        luasp.pxcolor = {numkey=self.numkey, color=self.color}
+        luasp.pxidcolor = self.numkey
     end
 
 end
 
-luasp.pxcolor={numkey=8, color=palette[8]}
+luasp.pxidcolor = 8
 
 luasp.paletgrid = paletgrid

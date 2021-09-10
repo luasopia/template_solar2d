@@ -48,6 +48,8 @@ end
 -- pico-8 color palette
 local pxp = Palette()
 
+pxp[0] = Color(0,0,0,0)
+
 pxp[1] = Color.BLACK
 pxp[2] = Color(29,43,83)
 pxp[3] = Color(126,37,83)      -- dark purple

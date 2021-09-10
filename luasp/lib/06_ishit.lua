@@ -430,7 +430,7 @@ end
 --------------------------------------------------------------------------------
 --2021/08/20:디버깅을 위해서 추가된 메서드
 --------------------------------------------------------------------------------
-local dblayer =  _luasopia.loglayer -- debug layer
+local dblayer =  _luasopia.esclayer -- debug layer
 
 
 local function drawhitborder(self)
@@ -461,7 +461,7 @@ local function drawhitborder(self)
                 x2, y2 = self:__getgxy__(cpg[k], cpg[k+1])
             end
 
-            local ln=Line(x1,y1,x2,y2):color(self.__htblc):width(self.__htblw)
+            local ln=Line1(x1,y1,x2,y2,{color=self.__htblc, width = self.__htblw})
             dblayer:add(ln)
 
             x1,y1 = x2,y2
@@ -541,7 +541,7 @@ end
 function Disp:showhitborder(color,width)
 
     self.__htblc = color or RED
-    self.__htblw = width or 5 -- hit line width
+    self.__htblw = width or 2 -- hit line width
 
     self.__iupds[drawhitborder] = drawhitborder
     self.__htbrdr = {}

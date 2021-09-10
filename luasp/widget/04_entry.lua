@@ -2,10 +2,11 @@
 --2021/08/21:created. CAPSLOCK은 항상 꺼져있다고 인식함
 --2021/08/22:Text1클래스를 사용. 앵커점은 (0,1)좌하점이다.
 --------------------------------------------------------------------------------
-local fontsize0= 45
+local fontsize0 = 45
+local fontcolor = Color.WHITE
 local blinktm = 1000
 --------------------------------------------------------------------------------
-
+local luasp = _luasopia
 local Disp = Display
 local Group = Group
 
@@ -36,7 +37,7 @@ local undershift = 1
 Entry = class(Group)
 --------------------------------------------------------------------------------
 
-local entry
+local entryActivated
 local function onkey(_, key, phase) -- 첫번째 인자는 screen
     if phase == 'up' then
         if key == 'shift' then
@@ -48,37 +49,39 @@ local function onkey(_, key, phase) -- 첫번째 인자는 screen
 
         -- print(key)
         if key == 'right' then
-            entry:__setcaretx__(entry.__caretx+1)
+            entryActivated:__setcaretx__(entryActivated.__caretx+1)
         elseif key == 'left' then
-            entry:__setcaretx__(entry.__caretx-1)
+            entryActivated:__setcaretx__(entryActivated.__caretx-1)
         elseif key == 'back' then
-            entry:__delback__()
+            entryActivated:__delback__()
         elseif key == 'del' then
-            entry:__del__()
+            entryActivated:__del__()
 
         elseif key == 'shift' then
             undershift = 2
 
         elseif key=='enter' then
 
-            entry.__entered = true
-            if entry.__onenter then
-                entry.__onenter(entry)
+            -- entryActivated.__entered = true
+            if entryActivated.__onenter then
+                entryActivated.__onenter(entryActivated)
             end
+            -- entryActivated:focus(false)
 
+            
         elseif key=='home' then
 
-            entry:__setcaretx__(1)
+            entryActivated:__setcaretx__(1)
 
         elseif key=='end' then
 
-            entry:__setcaretx__(entry.__endx)
+            entryActivated:__setcaretx__(entryActivated.__endx)
 
         else
 
             local keyshifted = shift[key]
             if keyshifted then 
-                entry:__inschar__(keyshifted[undershift])
+                entryActivated:__inschar__(keyshifted[undershift])
             end
         
         end
@@ -100,17 +103,14 @@ function Entry:init(header, onenter, opt)
     self.__onenter = onenter or nilfunc
     opt = opt or {}
 
-
-    entry = self
-    screen.onkey = onkey
-
-    self.__fsz = fontsize or fontsize0
+    self.__fsz = opt.fontsize or fontsize0
+    self.__fc = opt.fontcolor or fontcolor0
     self.__chgap = self.__fsz*0.555 -- 문자간격
 
     -- print(self.__chgap) -- charecter gap
     
     if header then
-        self.__txthdr = Text1(header,{fontsize=self.__fsz}):addto(self)
+        self.__txthdr = Text1(header,{fontsize=self.__fsz,color=self.__fc}):addto(self)
         self.__hdr=header
     else
         self.__hdr=''
@@ -119,13 +119,16 @@ function Entry:init(header, onenter, opt)
     -- __entry는 text와 caret이 들어가는 그룹
     self.__entry = Group():addto(self):setx(#self.__hdr*self.__chgap)
     
-    self.__txtin = Text1('',{fontsize=self.__fsz}):addto(self.__entry)
+    self.__txtin = Text1('',{fontsize=self.__fsz,color=self.__fc}):addto(self.__entry)
     
-    self.__caret = Rect(4,self.__fsz):addto(self.__entry) -- 먼저 add()해야 한다.
+    self.__caret = Rect(4,self.__fsz,{fill=self.__fc}):addto(self.__entry) -- 먼저 add()해야 한다.
     self.__caret:setanchor(0,0.75):blink(blinktm)
     self.__endx = 1 -- caret의 맨 우측값
     self:__setcaretx__(1) -- caretx의 가장 작은 값은 1이다.
     self.__shift = 1
+
+
+    self:focus()
 
     return self
 
@@ -140,10 +143,11 @@ function Entry:__inschar__(char)
 
     local left = text:sub(1,x-1)
     local right = text:sub(x,len)
-    -- print(string.format("'%s','%s','%s'", text, left, right))
-    self.__txtin:setstr(left..char..right)
+    local newstr = left..char..right
+    self.__txtin:setstr(newstr)
+    self.__endx = #newstr+1
 
-    self:__setcaretx__(x+1, true)
+    self:__setcaretx__(x+1)
 
 end
 
@@ -159,11 +163,12 @@ function Entry:__delback__()
 
     local left = text:sub(1,x-2)
     local right = text:sub(x,len)
-    -- print(string.format("'%s','%s','%s'", text, left, right))
-    self.__txtin:setstr(left..right)
+    local newstr = left..right
+    self.__txtin:setstr(newstr)
+    self.__endx = #newstr+1
 
     self:__setcaretx__(x-1)
-    self.__endx = self.__endx-1
+    -- self.__endx = self.__endx-1
 
 end
 
@@ -179,28 +184,20 @@ function Entry:__del__()
 
     local left = text:sub(1,x-1)
     local right = text:sub(x+1,len)
-    -- print(string.format("'%s','%s','%s'", text, left, right))
-    self.__txtin:setstr(left..right)
+    local newstr = left..right
+    self.__txtin:setstr(newstr)
+    self.__endx = #newstr+1
 
-    self.__endx = self.__endx-1
     self.__caret:blink(blinktm)
 
 end
 
 
-
-
-function Entry:__setcaretx__(x, inc_endx)
+function Entry:__setcaretx__(x)
     
     if x<1 then
         x=1
-    end
-
-    if inc_endx then -- caret의 우측최대값을 x값으로 변경(증가)
-        self.__endx = x
-    end
-
-    if x>self.__endx then
+    elseif x>self.__endx then
         x=self.__endx
     end
 
@@ -214,5 +211,40 @@ end
 function Entry:getstring()
 
     return self.__txtin:getstring()
+
+end
+
+
+function Entry:focus(focused)
+
+    if focused ==nil then focused = true end
+
+    if focused then
+
+        if entryActivated then
+            entryActivated:focus(false)
+        end
+
+        self.__caret:show():blink(blinktm)
+        entryActivated = self
+        luasp.changeKeyFunc(onkey)    
+        
+    else -- entry:focus(false) 라고 호출하면
+
+        self.__caret:stopblink()
+        self.__caret:hide()
+        entryActivated = nil
+        luasp.restoreKeyUser()
+    
+    end
+
+end
+
+
+function Entry:remove()
+
+    entryActivated = nil
+    luasp.restoreKeyUser()
+    Group.remove(self)
 
 end

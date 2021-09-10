@@ -5,34 +5,24 @@
 local linespace = 1.15 -- 줄간격을 0.3으로 설정(너무 붙으면 가독성이 떨어짐)
 local botmargin = 20 -- gap from bottom and last line
 local leftmargin = 10 
-local color0 = Color.SILVER --DARK_GRAY
+local color0 = Color.LIGHT_GREEN --DARK_GRAY
 --------------------------------------------------------------------------------
 local luasp = _luasopia
+local esclayer = luasp.esclayer
+
 local tIn, tRm = table.insert, table.remove
 local int = math.floor
 local strf = string.format
 local nilfunc = luasp.nilfunc
 local stdoutlayer = luasp.stdoutlayer
 --------------------------------------------------------------------------------
-local stdout = Group():addto(stdoutlayer)
-stdout:setxy(leftmargin, screen.height0-botmargin)
-stdout.__nocnt = true -- debugmode에서 display obj의 개수로 카운트하지 않는다
+local cli = Group():addto(esclayer)
+cli:setxy(leftmargin, screen.height0-botmargin)
+cli.__nocnt = true -- debugmode에서 display obj의 개수로 카운트하지 않는다
 local lineHeight =  Text1.getfontsize0()*linespace
 local maxlines = int(screen.height0/lineHeight)-3 -- -1
 local txtobjs = {}
 local numlines = 0
-
-
-local function initcheck()
-
-    if not stdoutlayer:isvisible() then
-
-        -- stdoutlayer:show()
-
-    end
-
-end
-
 
 -- print()함수의 출력과 유사한 문자열을 얻는 함수
 -- 콤마로 구분된 인자들을 \t 효과를 유사하게 구현했다.
@@ -101,28 +91,24 @@ local function puts(str, no_new_line)
     end
 
     --(3) 새로운 줄을 추가한다.
-    local txtobj = Text1(str,{color=color0}):addto(stdout) -- (0,0)에 자동으로 맞춰진다
+    local txtobj = Text1(str,{color=color0}):addto(cli) -- (0,0)에 자동으로 맞춰진다
     txtobj.__nocnt = true
     tIn(txtobjs, txtobj)
     numlines = numlines + 1
 
 end
 
-
-_print0 = print
--- local logf = setmetatable({},{__call=function(_, str,...)
-function print(...)
-
-    initcheck()
+local function print(...)
     
     local str = get_print(...)
     puts(str)
     _print0(str)
-
-    return stdout
-
+    
+    return cli
+    
 end
 
+--[[
 
 function printf(...)
 
@@ -131,18 +117,18 @@ function printf(...)
     puts(str)
     _print0(str)
 
-    return stdout
+    return cli
 
 end
-
+--]]
 
 local function onend_input(entry)
 
     local str_in = entry:getstring()
     local str_hdr = entry.__hdr
-    entry:remove()                  -- entry를 삭제한 후
-    puts(str_hdr .. str_in, true)   -- 그자리에 문자열만 표시한다
-    stdout.__endin(str_in)
+    entry:remove()
+    puts(str_hdr .. str_in, true)
+    cli.__endin(str_in)
 
 end
 
@@ -150,17 +136,18 @@ end
 function input(header, onenter)
 
     newline()
-    stdout.__endin = onenter or nilfunc
-    local entry = Entry(header, onend_input):addto(stdout)
+    cli.__endin = onenter or nilfunc
+    local entry = Entry(header, onend_input):addto(cli)
 
 end
 
---[[
+
 --------------------------------------------------------------------------------
--- 2021/09/02:stdout added
+-- 2021/09/02:cli added
 --------------------------------------------------------------------------------
 local env = setmetatable({},{__index=_G})
 
+-- 첫번째 인수가 entry이다.
 local function execstr(entry)
 
     local str_in = entry:getstring()
@@ -175,41 +162,34 @@ local function execstr(entry)
         setfenv(f, env)()
     end
 
-    runcli()
+    -- cli.newcommand()
 
 end
 
 
-function runcli()
+function cli.newcommand()
 
     newline()
-    Entry('> ', execstr):addto(stdout)
+    cli.entry = Entry('> ', execstr, {fontcolor=color0}):addto(cli)
 
 end
 
 
-function stdout:clear()
-    
-    for k=#txtobjs,1,-1 do local v = txtobjs[k]
-        
-        tRm(txtobjs,k)
-        v:remove()
-        
+cli.newcommand()
+
+function cli.print(...)
+
+    if cli.entry and not cli.entry:isremoved() then
+        cli.entry:remove()
     end
-    
-    
-end
 
+    local str = get_print(...)
+    puts(str)
+    _print0(str)
 
-logf.setnumlines = function(n)
-
-    if n == INF then numlines = maxlines
-    else numlines = n end
+    cli.newcommand()
 
 end
---]]
-
--- logf.__getNumObjs = function() return #txtobjs end
 
 
--- luasp.stdout = stdout
+luasp.cli = cli

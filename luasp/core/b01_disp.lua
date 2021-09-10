@@ -190,6 +190,22 @@ function Display:__addupd__( fn )
 
 end
 
+
+
+--2021/08/09 : remove internal update function
+function Display:__rmupd__( fn )
+
+    -- if self.__iupds == nil or fn==nil then return end
+    if fn==nil then return self end
+    self.__iupds[fn] = nil
+
+    -- if self.__iupds is empty then set that nil
+    -- if _nxt(self.__iupds) == nil then  self.__iupds = nil  end
+
+    return self
+
+end
+
 --2021/09/03 : 격프레임마다 호출되는 함수 등록
 -- 홀수프레임, 짝수프레임 어느 쪽일지는 성능 분산을 위해서 임의로 정한다
 function Display:__addupd12__( fn )
@@ -199,16 +215,14 @@ function Display:__addupd12__( fn )
 
 end
 
+--2021/09/07
+function Display:__rmupd12__(fn)
 
---2021/08/09 : remove internal update function
-function Display:__rmupd__( fn )
-
-    -- if self.__iupds == nil or fn==nil then return end
-    if fn==nil then return end
-    self.__iupds[fn] = nil
-
-    -- if self.__iupds is empty then set that nil
-    -- if _nxt(self.__iupds) == nil then  self.__iupds = nil  end
+    if fn==nil then return self end
+    -- 어느 쪽일지 모르므로 둘 다 삭제한다
+    self.__iupd12[true][fn] = nil
+    self.__iupd12[false][fn] = nil
+    return self
 
 end
 

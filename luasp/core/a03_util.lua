@@ -1,7 +1,9 @@
 --------------------------------------------------------------------------------
 -- utility functions for debug
 --------------------------------------------------------------------------------
-
+local luasp=_luasopia
+luasp.util = {}
+local util = luasp.util
 
 --[[
 -- this loads main.lua in 'luasopialib' folder
@@ -24,15 +26,15 @@ function runutil(utilname) -- runutil
 end
 --]]
 
-function _luasopia.copytable(t)
+function util.copytable(t)
     local clone = {}
     for k, v in next, t do  clone[k] = v end
     return clone
 end
 
-_luasopia.puts = function(...) print(string.format(...)) end
+-- _luasopia.putsf = function(...) print(string.format(...)) end
 
-_luasopia.showt = function(node)
+function util.showt(node)
     local cache, stack, output = {},{},{}
     local depth = 1
     local output_str = "{\n"
@@ -108,13 +110,13 @@ _luasopia.showt = function(node)
     table.insert(output,output_str)
     output_str = table.concat(output)
 
-    print(output_str)
+    _print0(output_str)
 end
 
 --------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------
-_luasopia.showg = function()
+function util.showg()
 
 
     ----[[ print global variables that are added by user
@@ -142,6 +144,21 @@ _luasopia.showg = function()
     --]]
 end
 
+----[[
+-- 2021/08/09 table(t)이 empty일 경우 true를 반환
+local _nxt = next
+function util.isempty(t)
+    if _nxt(t) == nil then
+        return true
+    end
+    return false
+end
+--]]
+
+--------------------------------------------------------------------------------
+-- global functions
+--------------------------------------------------------------------------------
+
 -- 2021/05/13 : file url로부터 현재폴더(문자열)을 구하는 함수
 -- 파일의 첫 줄에 local here = gethere(...) 라고 호출하면
 -- 현재폴더의 url을 구할 수 있다.(ex: 'root.lib.mod' -> 'lib/')
@@ -168,13 +185,56 @@ function import(libname)
 end
 
 
-----[[
--- 2021/08/09 table(t)이 empty일 경우 true를 반환
-local _nxt = next
-function isempty(t)
-    if _nxt(t) == nil then
-        return true
+
+
+local dataurls = {
+    ['bird.png'] = 'https://raw.githubusercontent.com/luasopia/data/master/png/bird.png'
+}
+
+function getfile(name)
+
+    local url = dataurls[name]
+    if url == nil then
+        luasp.cli.print('Error: unknown file')
+        return
     end
-    return false
+
+
+    local rootpath
+    if _Gideros then
+        --gideros는 rootpath에 한글(utf8)이 들어가면 안된다
+        --(solar2d는 상관없음)
+        rootpath='C:/Users/sales/OneDrive - 목포대학교/_coding/_luasopia/template_gideros/assets/root/'
+        --rootpath='C:/Users/sales/'
+
+
+    elseif _Corona then
+
+        rootpath = system.pathForFile( "root/main.lua", system.ResourceDirectory )
+        rootpath = string.gsub(rootpath, 'main.lua','')
+        print(rootpath)
+    
+    end
+
+
+
+
+
+
+    
+
+    -- print( os.execute('cd/d "'..rootpath..'" && curl -LJO "'..dataurls[name]..'"')
+    -- if 0== os.execute( 'cd/d "'..rootpath..'" && curl -LJO "'..url..'"') then
+    local comm = 'chcp 65001 && curl -o "'..rootpath..name..'" "'..url..'"'
+    print(comm)
+    if 0== os.execute(comm ) then
+        -- luasp.cli.print('download success!')
+        print('download success!')
+    else
+        -- luasp.cli.print('Error: fail to download')
+        print('Error: fail to download')
+    end
+
+
 end
---]]
+

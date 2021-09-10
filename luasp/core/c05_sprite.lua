@@ -50,7 +50,6 @@ if _Gideros then
     -- 현재 그룹내 Img를 제거하고 새로운 Img를 넣는다
     function Sprite:__setfrm__(idfrm)
 
-        -- print('idfrm '..idfrm)
 
         self.__bd:removeChildAt(1)
 

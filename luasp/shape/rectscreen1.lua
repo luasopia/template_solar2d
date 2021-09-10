@@ -3,7 +3,7 @@
 -- 2020/02/23 : screen 에 touch()를 직접붙이기 위해서 Rect를 screen으로 생성해서
 -- bglayer에 등록
 -- 2020/06/23 : Rect클래스를 리팩토링한 후 여기로 옮김
--- 2021/08/09 : screen:onkey(k) 메서드 처리 추가
+-- 2021/08/09 : screen:onkeydown(k) 메서드 처리 추가
 --------------------------------------------------------------------------------
 local luasp = _luasopia
 
@@ -39,14 +39,14 @@ screen.x0, screen.y0, screen.endx, screen.endy = x0, y0, endx, endy
 
 --------------------------------------------------------------------------------
 --2021/08/09: (아래 코드는) 키보드 입력을 처리하기 위해서 작성
---2021/09/08: onkeydown은 없애고 onkey(both)만 남기기로 함
 --------------------------------------------------------------------------------
-local _keyfunc
-local enkey
+local _keybothfunc, _keydownfunc
+local enkeyboth, enkeydown
+local onkeyboth, onkeydown
 --------------------------------------------------------------------------------
 if _Gideros then
-    --------------------------------------------------------------------------------
-    
+--------------------------------------------------------------------------------
+
     -- local function mkkeytbl()
 
         local KeyCode = _Gideros.KeyCode
@@ -101,39 +101,43 @@ if _Gideros then
     --     return keyt, realt
 
     -- end
-    local function onkeydown(e)
-        local k = keyt[e.keyCode] or (realt[e.realCode] or 'unknown')
-        _keyfunc(screen, k,'down')
-    -- puts('keyCode:%d,realCode:%d',e.keyCode, e.realCode)
-    end
 
 
-    local function onkeyup(e)
-        local k = keyt[e.keyCode] or (realt[e.realCode] or 'unknown')
-        _keyfunc(screen, k,'up')
+    -- key가 눌렸을 때에만 onkeydown()이 콜백되도록 함
+    enkeydown = function() -- enable key input
+        
+        -- local keyt, realt = mkkeytbl()
+
+        local stage, Event = _Gideros.stage, _Gideros.Event
+        stage:addEventListener(Event.KEY_DOWN, function(e)
+
+            local k = keyt[e.keyCode] or (realt[e.realCode] or 'unknown')
+            screen:onkeydown(k)
+            
+        end)
+        
+        -- print('enkeydown()')
     end
 
 
     -- key가 눌렸을 때와 뗐을 때 모두 onkey()가 콜백되도록 함
-    enkey = function(func)
-        
+    function luasp.enkeyboth()
+
         local stage, Event = _Gideros.stage, _Gideros.Event
+        -- local keyt, realt = mkkeytbl()
 
-        -- enkey()로 호출한 경우 키이벤트 제거
-        if func==nil and screen.__onkey then
-            stage:removeEventListener(Event.KEY_DOWN, onkeydown)
-            stage:removeEventListener(Event.KEY_UP, onkeyup)
-            screen.__onkey = false
-            return
-        end
+        stage:addEventListener(Event.KEY_DOWN, function(e)
+            local k = keyt[e.keyCode] or (realt[e.realCode] or 'unknown')
+            screen:onkey(k,'down')
+            -- puts('keyCode:%d,realCode:%d',e.keyCode, e.realCode)
+        end)
+        
+        stage:addEventListener(Event.KEY_UP, function(e)
+            local k = keyt[e.keyCode] or (realt[e.realCode] or 'unknown')
+            screen:onkey(k,'up')
+        end)
 
-        _keyfunc = func -- 콜백함수 교체
-        if screen.__onkey then return end --키이벤트가 이미 등록되었다면 종료
-
-        stage:addEventListener(Event.KEY_DOWN, onkeydown)
-        stage:addEventListener(Event.KEY_UP, onkeyup )
-        screen.__onkey = true
-
+        -- print('enkeyboth()')
     end
 
 
@@ -180,60 +184,68 @@ elseif _Corona then
             ['escape'] = 'esc',
     }    
 
-    local function onkey(e)
+    onkeydown = function(e)
+
+        if e.phase=='down' then
+            local k = keyt[e.keyName] or e.keyName
+            -- screen:onkeydown(k)
+            _keydownfunc(screen, k)
+        end
+        
+        return true
+    end
+
+    enkeydown = function(func) -- enable key input
+
+        _keydownfunc = screen.onkeydown
+        if screen.__keydown then return end
+
+        Runtime:addEventListener('key', onkeydown)
+        screen.__keydown = true
+
+    end
+
+
+    onkeyboth = function(e)
 
         local k = keyt[e.keyName] or e.keyName
         -- screen:onkey(k, e.phase)
-        _keyfunc(screen, k, e.phase)
+        _keybothfunc(screen, k, e.phase)
         return true
 
     end
 
     -- key가 눌렸을 때와 뗐을 때 모두 콜백됨
-    enkey = function(func)
+    enkeyboth = function(func)
 
-        -- enkey()로 호출한 경우 키이벤트 제거
-        if func==nil and screen.__onkey then
-            Runtime:removeEventListener('key', onkey)
-            screen.__onkey = false
-            return
-        end
+        _keybothfunc = func
+        if screen.__keyboth then return end
 
-        _keyfunc = func -- 콜백함수 교체
-        if screen.__onkey then return end --이벤트가 이미 등록되었다면 반환
-
-        Runtime:addEventListener('key', onkey)
-        screen.__onkey = true
+        Runtime:addEventListener('key', onkeyboth)
+        screen.__keyboth = true
 
     end
 
     
-    --2021/09/07:simulator일 경우에 실행되는 함수
-    --'esc'를 누르면 console이 실행된다
+    --2021/08/07:simulator일 경우에 실행되는 함수
+    --'esc'를 누르면 cli가 실행되고, '`'를 누르면 builder가 실행된다.
     function luasp.enkeydownsim()
 
         Runtime:addEventListener('key', function(e)
-
             if e.phase=='down' then
-
                 local k = keyt[e.keyName] or e.keyName
-
                 if k=='esc' then
 
                     if luasp.showConsole==nil then
-
                         _require0('luasp.util.console')
                         luasp.showConsole(true)
-
                     else
                         luasp.showConsole(not luasp.esclayer:isvisible())
                     end
 
                 end
             end
-
             return true
-
         end)
 
     end
@@ -247,8 +259,14 @@ local tmrkeycheck
 local function checkkeyfunc(self)
 
     -- print('ckd')
+
+    if screen.onkeydown then
+        enkeydown(screen.onkeydown)
+        tmrkeycheck:remove()
+    end
+
     if screen.onkey then
-        enkey(screen.onkey)
+        enkeyboth(screen.onkey)
         tmrkeycheck:remove()
     end
 
@@ -257,16 +275,17 @@ tmrkeycheck = Timer(200, checkkeyfunc, INF)
 tmrkeycheck.__nocnt = true
 
 
-function luasp.changeKeyFunc(func)
-
-    enkey(func)
+function luasp.changeKeyBothFunc(func)
+    enkeyboth(func)
     
+    if screen.__keydown then
+    end
 end
 
+function luasp.changeKeyDownFunc(func)
+    enkeydown(func)
+end
 
 function luasp.restoreKeyUser()
-
-    enkey(screen.onkey)
-
 end
 

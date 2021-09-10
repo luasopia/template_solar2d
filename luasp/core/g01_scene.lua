@@ -25,12 +25,13 @@ local scnlayer = luasp.scnlayer
 local cover 
 local function disabletouch()
 
-    print('mkcover ')
+    --print('mkcover ')
 
     cover = Rect(screen.width,screen.height):setalpha(0):addto(luasp.loglayer)
         -- solar2d는 alpha가 0이면 기본적으로 touch 이벤트가 불능이 된다.
         -- alpha가 0임에도 터치이벤트가 발생토록 하려면 아래와 같이 한다.
-    if _Corona then cover.__bd.isHitTestable = true end -- solar2d에서만 필요
+        -- cover.__bd(Gruop)가 아니라 cover.__shp에 적용해야 한다
+    if _Corona then cover.__shp.isHitTestable = true end -- solar2d에서만 필요
     -- gideros는 alpha가 0이어도 터치이벤트가 발생한다.
     cover.ontouch = luasp.nilfunc
 
@@ -39,7 +40,7 @@ end
 local function enabletouch()
 
     if cover and not cover:isremoved() then
-        print('rmcover ')
+        --print('rmcover ')
         cover:remove()
     end
 

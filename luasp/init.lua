@@ -72,40 +72,46 @@ if gideros then -- in the case of using Gideros
         fps = fps,
     }
 
+
+    local function newlayer(enableHide)
+
+        local layer = {
+            __bd = Sprite.new(),
+            add = function(self, child)
+                return self.__bd:addChild(child.__bd)
+            end,
+        }
+        stage:addChild(layer.__bd)
+
+        if enableHide then
+            
+            layer.isvisible = function(self) return self.__bd:isVisible() end
+            layer.hide = function(self) self.__bd:setVisible(false); return self end
+            layer.show = function(self) self.__bd:setVisible(true); return self end
+        end
+        
+        return layer
+    end
+
+
     --2021/08/17:screen객체를 넣기 위한 레이어
-    _luasopia.bglayer = {
-        __bd = Sprite.new(),
-        add = function(self, child) return self.__bd:addChild(child.__bd) end,
-    }
-    stage:addChild(_luasopia.bglayer.__bd)
-    
+    _luasopia.bglayer = newlayer()
+
     -- scene들을 놓기 위한 레이어
     -- pxmode로 진입할 때 scnlayer만 확대한다.
-    _luasopia.scnlayer = {
-        __bd = Sprite.new(),
-        add = function(self, child) return self.__bd:addChild(child.__bd) end,
-        --2021/08/17:setpixelmode()에서 사용할 setscale() 추가
-        setscale = function(self, s) self.__bd:setScale(s) end
+    _luasopia.scnlayer = newlayer()
+    _luasopia.scnlayer.setscale = function(self, s) self.__bd:setScale(s) end
 
-    }
-    stage:addChild(_luasopia.scnlayer.__bd)
+    -- print(), printf()함수의 출력(standard output)이 표시되는 레이어
+    _luasopia.stdoutlayer = newlayer(true)
+    --_luasopia.stdoutlayer:hide()
 
-    
-    _luasopia.loglayer = {
-        __bd = Sprite.new(),
-        add = function(self, child) return self.__bd:addChild(child.__bd) end,
-        --2020/03/15 isobject(_loglayer, Group)==true 이려면 아래 두 개 필요
-        --__clsid = Group.__id__,
-        
-        isvisible = function(self) return self.__bd:isVisible() end,
-        hide = function(self) self.__bd:setVisible(false); return self end,
-        show = function(self) self.__bd:setVisible(true); return self end,
-    }
-    _luasopia.loglayer:hide() -- 처음에는 숨겨놓는다.
-    
-    stage:addChild(_luasopia.loglayer.__bd)
+    _luasopia.esclayer = newlayer(true)
+    _luasopia.esclayer:hide() -- 처음에는 숨겨놓는다.
     
     
+    
+    -- 2021/09/07: simulator가 실행되는 환경을 검색
     --[[ 2021/09/03: 'Windows' or 'Mac OS' means simulator
         Returns information about device.
         for iOS, returns 5 values: "iOS", iOS version, device type, user interface idiom and device model
@@ -116,15 +122,17 @@ if gideros then -- in the case of using Gideros
         for HTML5 returns 2 values: "Web", Browser ID string
     --]]
     local env = application:getDeviceInfo()
-    if env == 'Windows' or evn =='Mac OS' then
-        _luasopia.environment = 'simulator'
+    if application:isPlayerMode() and env == 'Windows' then
+        _luasopia.env = 'simulatorWin'
+    elseif application:isPlayerMode() and env =='Mac OS' then
+        _luasopia.env = 'simulatorMac'
     elseif env == 'Web' then
-        _luasopia.environment = 'browser'
+        _luasopia.env = 'web'
     else
-        _luasopia.environment = 'device'
+        _luasopia.env = 'device'
     end
-
-    print(_luasopia.environment)
+    
+    print('env:',_luasopia.env)
 
 
     _Gideros = moveg()
@@ -178,68 +186,118 @@ elseif coronabaselib then -- in the case of using solar2d
     }
 
 
-    -- 2021/08/17: screen객체를 놓기 위한 레이어
-    _luasopia.bglayer = {
-        __bd = display.newGroup(),
-        add = function(self, child) return self.__bd:insert(child.__bd) end,
-    }
+    --2021/09/07:새로운 레이어를 만드는 함수를 작성
+    local function newlayer(enableHide)
+        local layer = {
+            __bd = display.newGroup(),
+            add = function(self, child) return self.__bd:insert(child.__bd) end,
+        }
+        if enableHide then
+            layer.isvisible = function(self) return self.__bd.isVisible end
+            layer.hide = function(self) self.__bd.isVisible = false; return self end
+            layer.show = function(self) self.__bd.isVisible = true; return self end
+        end
+        return layer
+    end
+
+
+    -- 2021/08/17: screen객체를 놓기 위한 맨 밑바닥 레이어
+    _luasopia.bglayer = newlayer()
     
     -- scene들을 놓기 위한 레이어
+    _luasopia.scnlayer = newlayer()
+    --2021/08/17:setpixelmode()에서 사용할 setscale() 추가
     -- pxmode로 진입할 때 scnlayer만 확대한다.
-    _luasopia.scnlayer = {
-        __bd = display.newGroup(),
-        add = function(self, child) return self.__bd:insert(child.__bd) end,
-        --2021/08/17:setpixelmode()에서 사용할 setscale() 추가
-        setscale = function(self, s) self.__bd.xScale,self.__bd.yScale = s,s end
-    }
+    _luasopia.scnlayer.setscale = function(self, s)
+        self.__bd.xScale,self.__bd.yScale = s,s
+    end
         
-        
-    _luasopia.loglayer = {
-        __bd = display.newGroup(),
-        add = function(self, child) return self.__bd:insert(child.__bd) end,
-        --2020/03/15 isobject(_loglayer, Group)가 true가 되려면 아래 두 개 필요
-        --__clsid = Group.__id__
-        isvisible = function(self) return self.__bd.isVisible end,
-        hide = function(self) self.__bd.isVisible = false; return self end,
-        show = function(self) self.__bd.isVisible = true; return self end
-    }
-    _luasopia.loglayer:hide()
+    -- print(), printf()함수의 출력(standard output)이 표시되는 레이어
+    _luasopia.stdoutlayer = newlayer(true) 
+    --_luasopia.stdoutlayer:hide() 
+    
+    -- esc키를 눌렀을 때 표시되는 레이어
+    _luasopia.esclayer = newlayer(true)
+    _luasopia.esclayer:hide()
         
     _Corona = moveg()
 
-    --2021/09/03:'simulator','device','browser'
-    _luasopia.environment = system.getInfo('environment')
+    -- 2021/09/07: simulator가 실행되는 환경을 검색
+    -- system.getInfo('environment') returns the environment that the app is running in.
+    -- 'simulator' for the Solar2D Simulator.
+    -- 'device' for iOS, the Xcode iOS Simulator, Android devices, the Android emulator, macOS desktop apps, and Windows desktop apps.
+    -- 'browser' for HTML5 apps.
+    local env = system.getInfo('environment')
+
+    --[[
+    -- system.getInfo('platform') returns the OS platform tag, which can be one of:
+    -- 'android' — all Android devices and the Android emulator.
+    -- 'ios' — all iOS devices and the Xcode iOS Simulator.
+    -- 'macos' — macOS desktop apps.
+    -- 'tvos' — Apple's tvOS (Apple TV).
+    -- 'win32' — Win32 desktop apps.
+    -- 'html5' — HTML5 apps.
+    -- 시뮬레이터 스킨에 따라서 위값들이 정해진다.
+    local platf = system.getInfo('platform')
+    print(env, platf)
+    --]]
+
+    local archi = system.getInfo('architectureInfo')
+    -- print(env, platf, archi)
+
+    if env == 'simulator' then
+        if archi=='x86' or archi=='x64' or archi=='IA64' or archi=='ARM' then
+            _luasopia.env = 'simulatorWin'
+        elseif archi=='i386' or archi=='x86_64' or archi=='ppc' or archi=='ppc64' then
+            _luasopia.env = 'simulatorMac'
+        end
+    elseif env == 'browser' then
+        _luasopia.env = 'web'
+    else
+        _luasopia.env = 'device'
+    end
+
+    print('env:',_luasopia.env)
 
 elseif love then-- in the case of using LOVE2d
 
 end
+--------------------------------------------------------------------------------
+local luasp = _luasopia
+
 
 -- 2020/06/23 먼저 아래와 같이 저장한 후 나중에 scene0.__stg__로 교체
 -- 이렇게 해야 scene0나 screen 객체를 맨 처음 생성할 때 오류가 발생하지 않음
-_luasopia.stage = _luasopia.scnlayer
+luasp.stage = luasp.scnlayer
 
 --------------------------------------------------------------------------------
 -- global constants -- 이 위치여야 한다.(위로 옮기면 안됨)
 math.randomseed(os.time())
 rand = math.random
 INF = -math.huge -- infinity constant (일부러 -를 앞에 붙임)
-_luasopia.debug = false
+luasp.isdebug = false
 -- lib = {} -- 2020/03/07 added
 -- ui = {} -- 2020/03/07 added
 --------------------------------------------------------------------------------
 -- 2021/05/12: luasp 프로젝트를 root폴더 안에서 작성하기로 변경함
-_luasopia.root = 'root'
+luasp.root = 'root'
 --------------------------------------------------------------------------------
 --2021/08/27:added
-_luasopia.dtmfrm = 1000/_luasopia.fps
+luasp.dtmfrm = 1000/luasp.fps
 -- print('dtmfrm:'.._luasopia.dtmfrm)
 --------------------------------------------------------------------------------
+
 -- load luasp core files
 
 require 'luasp.core.a01_class'
 require 'luasp.core.a02_timer'
 require 'luasp.core.a03_util'
 require 'luasp.core.a04_color'
+
+------------------------------------------------------------
+-- 2021/09/08: 환경변수들을 따로 config.lua파일에서 관리
+require (luasp.root..'.config')
+------------------------------------------------------------
 
 require 'luasp.core.b01_disp'
 require 'luasp.core.b02_disp_rm'
@@ -257,6 +315,7 @@ require 'luasp.core.d02_text1'
 
 require 'luasp.core.e02_shape'
 require 'luasp.core.e30_line' -- required refactoring
+require 'luasp.core.e31_line1' -- (내부용) 단순선
 
 require 'luasp.core.f01_sound'
 
@@ -305,18 +364,18 @@ require 'luasp.widget.04_entry'
 -------------------------------------------------------------------------------
 
 require 'luasp.core.g01_scene'-- scene0생성(이후 scene0.__stg__에 객체가 생성)
-local enterframedbg = require 'luasp.core.z01_enterframe' -- 맨 마지막에 로딩해야 한다
+require 'luasp.core.z01_enterframe' -- 맨 마지막에 로딩해야 한다
 
 -------------------------------------------------------------------------------
 -------------------------------------------------------------------------------
-
+--[[
 function setdebug(args)
     
-    _luasopia.debug = true
+    luasp.isdebug = true
     --if args.loglines then logf.setNumLines(args.loglines) end
     
-    if not _luasopia.loglayer:isvisible() then
-        _luasopia.loglayer:show()
+    if not luasp.loglayer:isvisible() then
+        luasp.loglayer:show()
     end
 
     -- 2020/05/30: added
@@ -343,45 +402,26 @@ function setdebug(args)
         
         end 
 
-        -- 2020/04/21 그리드선 추가
-        if args.grid then
-            local grid = args.grid
-            if type(grid) ~= 'table' then grid = {} end
-
-            local xgap = grid.xgap or 100
-            local ygap = grid.ygap or 100
-            local color = grid.color or linecolor
-            local width = grid.width or 2
-
-            for x = xgap, screen.width0, xgap do
-                local g = Line(x, 0, x, screen.height0, {width=width, color=color})
-                g:addto(_luasopia.loglayer)
-                g.__nocnt = true
-            end
-
-            for y = ygap, screen.height0, ygap do
-                local g = Line(0, y, screen.width0, y, {width=width, color=color})
-                g:addto(_luasopia.loglayer)
-                g.__nocnt = true
-            end
-
-        end
-
     end
 
 end
-
+--]]
 --------------------------------------------------------------------------------
 -- 2021/05/13: require함수를 치환 (_req는 lua의 original require함수)
 _require0 = require
 -- local rooturl = _luasopia.root .. '.'
-function require(url) return _require0(_luasopia.root ..'.'.. url) end
+function require(url) return _require0(luasp.root ..'.'.. url) end
 --------------------------------------------------------------------------------
+
+if luasp.env =='simulatorWin' or luasp.env =='simulatorMac' then
+    luasp.enkeydownsim()
+end
+
 
 --------------------------------------------------------------------------------
 
 -- 2020/04/12: 사용자가 _G에 변수를 생성하는 것을 막는다
--- 모든 사용자 전역변수는 global테이블에 만들어야 한다.
+-- 대신 모든 사용자 전역변수는 global테이블에 만들어야 한다.
 global = {} 
 setmetatable(_G, {
     __newindex = function(_,n)
@@ -393,3 +433,4 @@ setmetatable(_G, {
     end
 --]]
 })
+

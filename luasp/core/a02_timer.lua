@@ -111,8 +111,10 @@ end
 function Timer.__getNumObjs()
 
 	local cnt = 0
-	for _, _ in pairs(timers) do
-		cnt = cnt + 1
+	for _, tmr in pairs(timers) do
+		if not tmr.__nocnt then
+			cnt = cnt + 1
+		end
 	end
 	return cnt
 
