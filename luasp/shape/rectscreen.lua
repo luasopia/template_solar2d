@@ -41,7 +41,7 @@ screen.x0, screen.y0, screen.endx, screen.endy = x0, y0, endx, endy
 --2021/08/09: (아래 코드는) 키보드 입력을 처리하기 위해서 작성
 --2021/09/08: onkeydown은 없애고 onkey(both)만 남기기로 함
 --------------------------------------------------------------------------------
-local _keyfunc
+local _keyfunc -- 키가 눌렸을 때 호출되는 콜백함수
 local enkey
 --------------------------------------------------------------------------------
 if _Gideros then
@@ -139,7 +139,7 @@ if _Gideros then
 
         --2021/08/07:simulator일 경우에 실행되는 함수
     --'esc'를 누르면 cli가 실행되고, '`'를 누르면 builder가 실행된다.
-    function luasp.enkeydownsim()
+    function luasp.allowEsc()
 
         -- local keyt, realt = mkkeytbl()
 
@@ -149,11 +149,11 @@ if _Gideros then
             local k = keyt[e.keyCode] or (realt[e.realCode] or 'unknown')
             if k=='esc' then
                 
-                if luasp.showConsole==nil then
-                    _require0('luasp.util.console')
-                    luasp.showConsole(true)
+                if luasp.console==nil then
+                    _require0('luasp.util.esc.console')
+                    luasp.console.show(true)
                 else
-                    luasp.showConsole(not luasp.esclayer:isvisible())
+                    luasp.console.show(not luasp.esclayer:isvisible())
                 end
 
             end
@@ -192,7 +192,7 @@ elseif _Corona then
     -- key가 눌렸을 때와 뗐을 때 모두 콜백됨
     enkey = function(func)
 
-        -- enkey()로 호출한 경우 키이벤트 제거
+        -- enkey(nil)로 호출한 경우 키이벤트 제거
         if func==nil and screen.__onkey then
             Runtime:removeEventListener('key', onkey)
             screen.__onkey = false
@@ -210,7 +210,7 @@ elseif _Corona then
     
     --2021/09/07:simulator일 경우에 실행되는 함수
     --'esc'를 누르면 console이 실행된다
-    function luasp.enkeydownsim()
+    function luasp.allowEsc()
 
         Runtime:addEventListener('key', function(e)
 
@@ -220,16 +220,19 @@ elseif _Corona then
 
                 if k=='esc' then
 
-                    if luasp.showConsole==nil then
+                    if luasp.console==nil then
 
-                        _require0('luasp.util.console')
-                        luasp.showConsole(true)
+                        _require0('luasp.util.esc.console')
+                        luasp.console.show(true)
 
                     else
-                        luasp.showConsole(not luasp.esclayer:isvisible())
+
+                        luasp.console.show(not luasp.esclayer:isvisible())
+
                     end
 
                 end
+
             end
 
             return true

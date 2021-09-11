@@ -187,54 +187,7 @@ end
 
 
 
-local dataurls = {
-    ['bird.png'] = 'https://raw.githubusercontent.com/luasopia/data/master/png/bird.png'
-}
-
-function getfile(name)
-
-    local url = dataurls[name]
-    if url == nil then
-        luasp.cli.print('Error: unknown file')
-        return
-    end
-
-
-    local rootpath
-    if _Gideros then
-        --gideros는 rootpath에 한글(utf8)이 들어가면 안된다
-        --(solar2d는 상관없음)
-        rootpath='C:/Users/sales/OneDrive - 목포대학교/_coding/_luasopia/template_gideros/assets/root/'
-        --rootpath='C:/Users/sales/'
-
-
-    elseif _Corona then
-
-        rootpath = system.pathForFile( "root/main.lua", system.ResourceDirectory )
-        rootpath = string.gsub(rootpath, 'main.lua','')
-        print(rootpath)
-    
-    end
-
-
-
-
-
-
-    
-
-    -- print( os.execute('cd/d "'..rootpath..'" && curl -LJO "'..dataurls[name]..'"')
-    -- if 0== os.execute( 'cd/d "'..rootpath..'" && curl -LJO "'..url..'"') then
-    local comm = 'chcp 65001 && curl -o "'..rootpath..name..'" "'..url..'"'
-    print(comm)
-    if 0== os.execute(comm ) then
-        -- luasp.cli.print('download success!')
-        print('download success!')
-    else
-        -- luasp.cli.print('Error: fail to download')
-        print('Error: fail to download')
-    end
-
-
-end
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 

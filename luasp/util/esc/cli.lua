@@ -192,4 +192,4 @@ function cli.print(...)
 end
 
 
-luasp.cli = cli
+return cli

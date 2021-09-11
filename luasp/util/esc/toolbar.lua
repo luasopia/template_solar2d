@@ -42,7 +42,8 @@ toolbar.btnpxs:setxy(screen.endx-100,10)
 local pxsps = Pixels(ps):addto(toolbar.btnpxs):setanchor(0,0):setscale(7):setxy(3,10)
 pxsps.__nocnt = true
 function toolbar.btnpxs:onpush()
-    Scene.__goto0('luasp.util.builderpxs.scene')
+    luasp.esclayer:hide()
+    Scene.__goto0('luasp.util.pxbuilder.scene')
 end
 
 --[[
@@ -55,4 +56,5 @@ function toolbar.btnhome:onpush()
 end
 --]]
 
-luasp.btoolbar = toolbar
+toolbar.height = toolbarheight
+return toolbar

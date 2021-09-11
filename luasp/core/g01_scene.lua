@@ -27,7 +27,7 @@ local function disabletouch()
 
     --print('mkcover ')
 
-    cover = Rect(screen.width,screen.height):setalpha(0):addto(luasp.loglayer)
+    cover = Rect(screen.width,screen.height):setalpha(0):addto(luasp.stdoutlayer)
         -- solar2d는 alpha가 0이면 기본적으로 touch 이벤트가 불능이 된다.
         -- alpha가 0임에도 터치이벤트가 발생토록 하려면 아래와 같이 한다.
         -- cover.__bd(Gruop)가 아니라 cover.__shp에 적용해야 한다

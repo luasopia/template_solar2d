@@ -132,9 +132,7 @@ if gideros then -- in the case of using Gideros
         _luasopia.env = 'device'
     end
     
-    print('env:',_luasopia.env)
-
-
+    
     _Gideros = moveg()
     
 --------------------------------------------------------------------------------
@@ -414,7 +412,26 @@ function require(url) return _require0(luasp.root ..'.'.. url) end
 --------------------------------------------------------------------------------
 
 if luasp.env =='simulatorWin' or luasp.env =='simulatorMac' then
-    luasp.enkeydownsim()
+    
+    if _Gideros then
+    
+        -- 나중에 api함수로 교체해야함
+        luasp.resourceDir='E:/coding/__luasopia/_template_gideros/assets/'
+
+    elseif _Corona then
+
+        local fullpath = system.pathForFile('main.lua', system.ResourceDirectory)
+        fullpath = string.gsub(fullpath, '[\\]', '/')
+        fullpath = string.gsub(fullpath, 'main.lua', '')
+        luasp.resourceDir = fullpath
+
+    end
+
+    _print0('resourceDir="'..luasp.resourceDir..'"')
+    
+    
+    luasp.allowEsc()
+
 end
 
 
@@ -422,15 +439,28 @@ end
 
 -- 2020/04/12: 사용자가 _G에 변수를 생성하는 것을 막는다
 -- 대신 모든 사용자 전역변수는 global테이블에 만들어야 한다.
+-- 2021/09/11: banGlobal()함수를 만들었다.
 global = {} 
-setmetatable(_G, {
-    __newindex = function(_,n)
-        error('ERROR: attempt to create GLOBAL variable/function '..n, 2)
-    end,
---[[ -- 읽는 것까지 예외를 발생시킨다.
-    __index = function(_,n)
-        error('attempt to read undeclared variable '..n, 2)
-    end
---]]
-})
 
+local gmetatable = getmetatable(_G)
+
+luasp.banGlobal = function()
+
+    setmetatable(_G, {
+        __newindex = function(_,n)
+            error('ERROR: attempt to create GLOBAL variable/function '..n, 2)
+        end,
+    --[[ -- 읽는 것까지 예외를 발생시킨다.
+        __index = function(_,n)
+            error('attempt to read undeclared variable '..n, 2)
+        end
+    --]]
+    })
+
+end
+
+luasp.allowGlobal = function()
+    setmetatable(_G, gmetatable)
+end
+
+luasp.banGlobal()

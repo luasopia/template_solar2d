@@ -1,22 +1,35 @@
+--------------------------------------------------------------------------------
+local scene = Scene() --<= 가장 위에 있어야 아래의 객체가 이 scene에 포함된다
+--------------------------------------------------------------------------------
+
+
 local luasp = _luasopia
-local toolbar = luasp.btoolbar -- 툴바(그룹 객체)
--- luasp.pxgrid -- 픽셀그리드
--- luasp.pxidcolor -- 팔레트에서 현재 선택된 색상의 인덱스
--- luasp.pxartset -- 픽셀아트들(모음)
--- luasp.pxshts -- 
+-- luasp.pxbuilder.files
+-- luasp.pxbuilder.pxgrid -- 픽셀그리드
+-- luasp.pxbuilder.idColor -- 팔레트에서 현재 선택된 색상의 인덱스
+-- luasp.pxbuilder.arts -- 픽셀아트들(모음)
+-- luasp.pxbuilder.sheets -- 
 
 
+luasp.pxbuilder = {}
 
 
---------------------------------------------------------------------------------
-local scene = Scene()
---------------------------------------------------------------------------------
+local toolbarfillc = Color(4,85,138)
+local toolbarheight = 80
 
 
-local btnsave = Button("SAVE"):setxy(950,300)
+local toolbar = Group():setxy(0,0)
+toolbar.__nocnt = true
+toolbar.height = toolbarheight
+toolbar.bg = Rect(screen.width0, toolbarheight):setanchor(0,0):addto(toolbar)
+toolbar.bg:fill(toolbarfillc)
+
+
+local btnsave = Button("save",{height=50,strokewidth=3}):addto(toolbar):setxy(200,40)
+--[[
 function btnsave:onpush() 
 
-    local str='return _luasopia._getpxs0{\n'
+    local str='return {\n'
 
     for k, pxsht in ipairs(luasp.pxshts) do
 
@@ -36,18 +49,13 @@ function btnsave:onpush()
     end
     str = str..'}'
     _print0(str)
-    luasp.savefile('testpxs.lua',str)
+    luasp.savefile('test(pxs).lua',str)
 end
+--]]
 
 
 
-function scene:create(stage)
-
-    --Text('builder pixel sprite')
-
-    
-
-end
+--[[
 
 function scene:aftershow(stage)
 
@@ -88,5 +96,7 @@ end
 
 
 function scene:afterhide(stage) end
+
+--]]
 
 return scene

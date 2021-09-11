@@ -1,4 +1,4 @@
--- Warning : Don't edit this file.
+-- WARNING!! : Don't edit this file.
 -- Instead, start coding 'root/main.lua' since luasopia app starts from that file.
 
 -------------------------------------------------------------------------------
