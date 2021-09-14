@@ -30,20 +30,21 @@ local hm = luasp._getpxs0{
 }
 
 local toolbar = Group():addto(esclayer):setxy(0,0)
-toolbar.__nocnt = true
 toolbar.height = toolbarheight
 toolbar.bg = Rect(screen.width, toolbarheight):setanchor(0,0):addto(toolbar)
 toolbar.bg:fill(toolbarfillc)
 
 -- button pixel sprite
 toolbar.btnpxs = Button('',{width=60,height=60,strokewidth=4}):setanchor(0,0):addto(toolbar)
-toolbar.btnpxs.__nocnt = true
 toolbar.btnpxs:setxy(screen.endx-100,10)
 local pxsps = Pixels(ps):addto(toolbar.btnpxs):setanchor(0,0):setscale(7):setxy(3,10)
-pxsps.__nocnt = true
+
+
 function toolbar.btnpxs:onpush()
+
     luasp.esclayer:hide()
     Scene.__goto0('luasp.util.pxbuilder.scene')
+
 end
 
 --[[

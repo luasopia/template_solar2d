@@ -16,7 +16,6 @@ local stdoutlayer = luasp.stdoutlayer
 --------------------------------------------------------------------------------
 local stdout = Group():addto(stdoutlayer)
 stdout:setxy(leftmargin, screen.height0-botmargin)
-stdout.__nocnt = true -- debugmode에서 display obj의 개수로 카운트하지 않는다
 local lineHeight =  Text1.getfontsize0()*linespace
 local maxlines = int(screen.height0/lineHeight)-3 -- -1
 local txtobjs = {}
@@ -102,7 +101,6 @@ local function puts(str, no_new_line)
 
     --(3) 새로운 줄을 추가한다.
     local txtobj = Text1(str,{color=color0}):addto(stdout) -- (0,0)에 자동으로 맞춰진다
-    txtobj.__nocnt = true
     tIn(txtobjs, txtobj)
     numlines = numlines + 1
 

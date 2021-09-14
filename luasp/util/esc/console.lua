@@ -21,7 +21,6 @@ for x = xgap, screen.width0, xgap do
     -- g:addto(esclayer)
     g:addto(gridlines)
     if _Corona then g:setxy(x,0) end
-    g.__nocnt = true
 end
 
 for y = ygap, screen.height0, ygap do
@@ -29,7 +28,6 @@ for y = ygap, screen.height0, ygap do
     -- g:addto(esclayer)
     g:addto(gridlines)
     if _Corona then g:setxy(0,y) end
-    g.__nocnt = true
 end
 
 --------------------------------------------------------------------------------
@@ -45,6 +43,26 @@ if _Gideros then
     --     return 1/e.deltaTime
     -- end
 
+    function Group:__numTotalChildren__()
+
+        local total = 0
+
+        for k = self.__bd:getNumChildren(),1,-1 do
+
+            total = total + 1
+
+            local dobj = self.__bd:getChildAt(k).__obj 
+            if isobject(dobj, Group) then
+                total = total + dobj:__numTotalChildren__()
+            end
+
+        end
+
+        return total
+
+    end
+
+
 elseif _Corona then
     
     getTxtMem = function()
@@ -59,16 +77,33 @@ elseif _Corona then
     --     return fps
     -- end
 
+
+    function Group:__numTotalChildren__()
+
+        local total = 0
+
+        for k = self.__bd.numChildren,1,-1 do
+
+            total = total + 1
+
+            local dobj = self.__bd[k].__obj 
+            if isobject(dobj, Group) then
+                total = total + dobj:__numTotalChildren__()
+            end
+
+        end
+
+        return total
+
+    end
+
 end
 
 local infotxts = Group():addto(esclayer):setxy(0,75)
-infotxts.__nocnt = true
 
 local memtxt = Text1("",{color=infocolor}):addto(infotxts):setxy(10, 45)
-memtxt.__nocnt = true
 
 local objtxt = Text1("",{color=infocolor}):addto(infotxts):setxy(10, 90)
-objtxt.__nocnt = true
 
 
 local updInfo = function(e)
@@ -76,8 +111,9 @@ local updInfo = function(e)
     local txtmem = getTxtMem()
     local mem = collectgarbage('count')
     memtxt:setstrf('memory:%d kb,texture memory:%d kb', mem, txtmem)
-    local ndisp = Disp.__getNumObjs() -- - logf.__getNumObjs() - 2
-    objtxt:setstrf('DispObj:%d, TimerObj:%d', ndisp, Timer.__getNumObjs())
+    -- local ndisp = Disp.__getNumObjs() -- - logf.__getNumObjs() - 2
+    local ndisp = luasp.stage:__numTotalChildren__()
+    objtxt:setstrf('Display objects:%d, Timer objects:%d', ndisp, Timer.__getNumObjs())
         
 end
 

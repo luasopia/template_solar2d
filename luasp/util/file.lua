@@ -55,7 +55,7 @@ function getfile(name)
 end
 
 
-_require0 'lfs' -- 이안에서 global변수가 생성되는 것 같다.
+_require0 'lfs' -- 이안에서 global변수 lfs가 생성되는 것 같다.
 
 --------------------------------------------------------------------------------
 luasp.banGlobal() ------------------------------------------------------------
@@ -162,5 +162,3 @@ function luasp.findfiles(strtype)
 end
 --]]
 
-local files = luasp.findfiles('pxs')
-luasp.util.showt(files)

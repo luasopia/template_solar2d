@@ -52,19 +52,6 @@ Display.updateAll = function(isoddfrm)
 end
 
 
--- debugmode 일 때만 사용되는 함수 (따라서 약간의 overhead는 상관없음)
-Display.__getNumObjs = function() 
-
-    local cnt = 0
-    for _, obj in _nxt, dobjs do
-        if not obj.__nocnt then
-            cnt = cnt + 1
-        end
-    end
-    return cnt
-    
-end
-
 -------------------------------------------------------------------------------
 -- public methods
 -------------------------------------------------------------------------------

@@ -19,15 +19,15 @@ local toolbarheight = 80
 
 
 local toolbar = Group():setxy(0,0)
-toolbar.__nocnt = true
 toolbar.height = toolbarheight
 toolbar.bg = Rect(screen.width0, toolbarheight):setanchor(0,0):addto(toolbar)
 toolbar.bg:fill(toolbarfillc)
 
 
-local btnsave = Button("save",{height=50,strokewidth=3}):addto(toolbar):setxy(200,40)
+local btnSave = Button("save",{height=50,strokewidth=3,fontsize=40}):addto(toolbar):setxy(200,40)
+
 --[[
-function btnsave:onpush() 
+function btnSave:onpush() 
 
     local str='return {\n'
 
@@ -54,43 +54,23 @@ end
 --]]
 
 
+local btnNewFile = Button("new file",{height=50,strokewidth=3,fontsize=40}):addto(toolbar):setxy(400,40)
 
---[[
+
+--------------------------------------------------------------------------------
+-- luasp.pxbuilder.toolbar = toolbar
+luasp.pxbuilder.fileset = _require0('luasp.util.pxbuilder.fileset')
+luasp.pxbuilder.pxartset = _require0('luasp.util.pxbuilder.pxartset')
+
+-- --[[
 
 function scene:aftershow(stage)
 
-    stage:add(toolbar) -- 툴바를 이 scene에 표시
-    
-    luasp.pxshts={
-        {
-            {0,0,8,0,0,0,0,0,8,0,0},
-            {0,0,0,8,0,0,0,8,0,0,0},
-            {0,0,8,8,8,8,8,8,8,0,0},
-            {0,8,8,0,8,8,8,0,8,8,0},
-            {8,8,8,8,8,8,8,8,8,8,8},
-            {8,0,8,8,8,8,8,8,8,0,8},
-            {8,0,8,0,0,0,0,0,8,0,8},
-            {0,0,0,8,8,0,8,8,0,0,0},
-            width=11,
-            height=8,
-        },
-        {
-            {0,0,8,0,0,0,0,0,8,0,0},
-            {8,0,0,8,0,0,0,8,0,0,8},
-            {8,0,8,8,8,8,8,8,8,0,8},
-            {8,8,8,0,8,8,8,0,8,8,8},
-            {0,8,8,8,8,8,8,8,8,8,0},
-            {0,0,8,8,8,8,8,8,8,0,0},
-            {0,0,0,8,0,0,0,8,0,0,0},
-            {0,0,8,0,0,0,0,0,8,0,0},
-            width=11,
-            height=8,
-        }
-    }
+    -- fileset:findfiles()
 
-    _require0('luasp.util.builderpxs.paletgrid')
-    _require0('luasp.util.builderpxs.pxgrid')
-    _require0('luasp.util.builderpxs.pxartset')
+    -- _require0('luasp.util.builderpxs.paletgrid')
+    -- _require0('luasp.util.builderpxs.pxgrid')
+    -- _require0('luasp.util.builderpxs.pxartset')
 
 end
 

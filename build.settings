@@ -42,10 +42,7 @@ settings =
 	--
 	plugins =
 	{
-		["plugin.memoryBitmap"] =
-        {
-            publisherId = "com.coronalabs"
-        },
+		
 	},
 
 	--

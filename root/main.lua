@@ -1,2 +1,1 @@
-Heart(100):fill(Color.RED):wavescale()
-print('luasopia v1.0.3')
+print('hello luasopia(v1.0.4)')

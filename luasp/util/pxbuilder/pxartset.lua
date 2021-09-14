@@ -4,40 +4,31 @@ local palette = luasp.palette0
 
 
 
-local xmargin, ymargin = 10, luasp.btoolbar.height+10
+local xmargin, ymargin = 10, 400
 
 local pxscale = 10
 
-local Pxart = class(Group)
 
-function Pxart:init(pxsht)
+--------------------------------------------------------------------------------
+
+local Pxart = class(Labelbox)
+
+function Pxart:init(pxsht, id)
 
     self.pxsht = pxsht
-    Group.init(self)
-
-    if pxsht == nil then
-        self.pxsht = { -- 새로운 테이블을 생성해야 한다
-            {0,0,0,0,0,0,0,0,},
-            {0,0,0,0,0,0,0,0,},
-            {0,0,0,0,0,0,0,0,},
-            {0,0,0,0,0,0,0,0,},
-            {0,0,0,0,0,0,0,0,},
-            {0,0,0,0,0,0,0,0,},
-            {0,0,0,0,0,0,0,0,},
-            {0,0,0,0,0,0,0,0,},
-            width=8,
-            height=8,
-        }
-    end
-
+    self.id = id
+    
     local s = luasp._getpxs0{self.pxsht}
-    self.pxs = Pixels(s):addto(self):setscale(pxscale):setanchor(0,0)
-
-
-    -- 외곽테두리
+    local pxs = Pixels(s):setscale(pxscale):setanchor(0,0)
     local w,h =pxsht.width, pxsht.height
-    self.rectborder = Rect(w*pxscale,h*pxscale,{strokecolor=Color.RED,strokewidth=3}):addto(self)
-    self.rectborder:setanchor(0,0):empty()
+    
+    
+    Labelbox.init(self, tostring(id),w*pxscale,h*pxscale)
+    pxs:addto(self)
+    self.pxs = psx
+    -- -- 외곽테두리
+    -- self.rectborder = Rect(w*pxscale,h*pxscale,{strokecolor=Color.RED,strokewidth=3}):addto(self)
+    -- self.rectborder:setanchor(0,0):empty()
 
     --터치(영역)사각형
     self.taprect = Rect(w*pxscale,h*pxscale):addto(self)
@@ -65,16 +56,25 @@ end
 
 --------------------------------------------------------------------------------
 
-local pxartset = Group():setxy(xmargin+400, luasp.btoolbar.height+1300)
+local pxartset = Labelbox('',1070,300):setxy(xmargin, ymargin)
 
-local pxart1 = Pxart(luasp.pxshts[1]):addto(pxartset)
-pxartset[1] = pxart1
+function pxartset:setsheet(pxshts, showname)
+    
+    self:clear()
+    self:setlabel(showname)
 
-local pxart2 = Pxart(luasp.pxshts[2]):addto(pxartset):setx(150)
-pxartset[2] = pxart2
+    self.arts = {}
+    
+    local x,y = 20, 50
+    for id, sht in ipairs(pxshts) do
 
-luasp.pxgrid.redraw(pxart2)
+        self.arts[#self.arts+1] = Pxart(sht, id):addto(self):setxy(x,y)
+        x=x+200
+    end
 
+    -- luasp.pxgrid.redraw(pxart2)
+
+end
 --------------------------------------------------------------------------------
 
-luasp.pxartset = pxartset
+return pxartset

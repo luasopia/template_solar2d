@@ -358,6 +358,7 @@ require 'luasp.widget.01_button'
 require 'luasp.widget.02_progressbar'
 require 'luasp.widget.03_alert'
 require 'luasp.widget.04_entry'
+require 'luasp.widget.05_labelbox'
 
 -------------------------------------------------------------------------------
 

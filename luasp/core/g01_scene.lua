@@ -1,7 +1,9 @@
 --[[ scene file template
-local scene = Scene()
+local scene = Scene() -- 맨 위에 있어야 함
 
-function scene:create(stage) ... end
+-- codes in here is run only once
+-- when this file required for the first time
+
 
 function scene:beforeshow(stage) ... end
 
@@ -49,13 +51,15 @@ end
 --------------------------------------------------------------------------------
 -- private static methods
 --------------------------------------------------------------------------------
+-- 2021/09/14: 이건 필요없을듯
+--[[
 local function create(scn)
 
     luasp.stage = scn.__stg
     scn:create(scn.__stg)
 
 end
-
+--]]
 
 local function beforeshow(scn)
 
@@ -123,13 +127,12 @@ function Scene:init()
     -- scene은 scnlayer에 생성한다.
     self.__stg = Group():addto(scnlayer):setxy(0,0)
     luasp.stage = self.__stg
-    self.__stg.__nocnt = true
 
 end    
 
 
 -- The following methods can be optionally overridden.
-function Scene:create() end -- 최초에 딱 한 번만 호출됨
+--function Scene:create() end -- 최초에 딱 한 번만 호출됨
 function Scene:beforeshow() end -- called just before showing
 function Scene:aftershow() end -- called just after showing
 function Scene:beforehide() end -- called just before hiding
@@ -193,7 +196,7 @@ function Scene.__goto0(url, effect, time)
     if inScene == nil then
         inScene = _require0(url) -- stage를 새로운 Scene 객체로 교체한다
         scenes[url] = inScene
-        create(inScene)
+        -- create(inScene)
     end
     
     beforeshow(inScene)
@@ -280,6 +283,7 @@ function Scene.__goto0(url, effect, time)
     end
 
 end
+
 
 -- 2020/05/29 초기에 scene0를 생성한다
 -- scnlayer에는 screen(Rect객체)과 scene.__stg 만을 집어넣는다

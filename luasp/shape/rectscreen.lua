@@ -14,7 +14,6 @@ local cx, cy = int(luasp.centerx), int(luasp.centery)
 --2020/05/06 Rect(screen)가 safe영역 전체를 덮도록 수정
 --2020/08/17 bglayer에 생성되어야 한다
 screen = Rect(endx-x0+1, endy-y0+1, {fill = luasp.config.backgroundColor})
-screen.__nocnt = true
 screen:addto(luasp.bglayer):setxy(cx, cy)
 
 --2021/08/14

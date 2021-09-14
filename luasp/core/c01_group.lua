@@ -45,7 +45,10 @@ if _Gideros then
 
     end
 
+    
 
+
+    --[[
     -- Disp 베이스클래스의 pasuseTouch()를 오버로딩
     function Group:stoptouch()
 
@@ -101,6 +104,7 @@ if _Gideros then
         return Disp.resumeupdate(self)
 
     end
+    --]]
 
 
     --2020/06/15 : 그룹자체는 유지하고 내용물들만 삭제함
@@ -111,6 +115,17 @@ if _Gideros then
         end
 
     end
+
+
+    function Group:getnumchildren()
+
+        return self.__bd:getNumChildren()
+
+    end
+
+
+
+
   
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -158,6 +173,9 @@ elseif _Corona then
     end
 
 
+
+
+    --[[
     function Group:stoptouch()
 
         for k = self.__bd.numChildren, 1, -1 do
@@ -200,7 +218,7 @@ elseif _Corona then
         return Disp.resumeupdate(self)
 
     end
-
+    --]]
 
     -- 2020/03/13: corona의 setFillColor()는 group에는 적용되지 않는다.
     -- 따라서 모든 child를 순회하여 tint()함수를 호출한다.
@@ -224,6 +242,16 @@ elseif _Corona then
         end
       
     end
+
+
+    function Group:getnumchildren()
+
+        return self.__bd.numChildren
+
+    end
+
+
+
     
 
 end
