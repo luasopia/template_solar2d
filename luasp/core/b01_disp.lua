@@ -30,18 +30,18 @@ Display.__tdobj = tdobj
 -------------------------------------------------------------------------------
 --2020/06/20 dobj[self]=self로 저장하기 때문에 self:remove()안에서 바로 삭제 가능
 -- 따라서 updateAll()함수의 구조가 (위의 함수와 비교해서) 매우 간단해 진다
-Display.updateAll = function(isoddfrm)
+Display.updateAll = function(isoddfrm, e)
 
     -- for _, obj in pairs(dobjs) do --for k = #dobjs,1,-1 do local obj = dobjs[k]
     for _, obj in _nxt, dobjs do
 
-        obj:__upd__()
+        obj:__upd__(e)
 
         -- 2021/09/03: 홀수프레임과 짝수 프레임에서만 호출할 upd함수들 실행
         -- 궂이 매프레임마다 호출할 필요가 없는 update함수는
         -- iupd1, iupd2 둘 중 하나를 임의로 선정해서 거기에 집어넣는다
         for _, fn in _nxt, obj.__iupd12[isoddfrm] do
-            if fn(obj) then -- 만약 fn(self)==true 라면 곧바로 삭제하고 리턴
+            if fn(obj,e) then -- 만약 fn(self)==true 라면 곧바로 삭제하고 리턴
                 obj:remove()
                 break
             end
@@ -86,8 +86,9 @@ end
 
 
 -- This function is called in every frames
-function Display:__upd__()
+function Display:__upd__(e)
     
+
     if self.ontouch and self.__tch==nil then self:__touchon() end
     if self.ontap and self.__tap==nil then self:__tapon() end
 
@@ -97,7 +98,7 @@ function Display:__upd__()
     -- if self.__tr then self:__playtr__() end -- shift{}
     
     -- 2020/02/16 call user-defined update() if exists
-    if self.update and self:update() then
+    if self.update and self:update(e) then
 
         return self:remove() -- 꼬리호출로 즉시 종료
 
@@ -107,7 +108,7 @@ function Display:__upd__()
     -- self.__iupds가 nil인지를 check하는 것이 성능에 별로 효과가 없을 것 같다
     for _, fn in _nxt, self.__iupds do
 
-        if fn(self) then -- 만약 fn(self)==true 라면 곧바로 삭제하고 리턴
+        if fn(self, e) then -- 만약 fn(self)==true 라면 곧바로 삭제하고 리턴
 
             return self:remove()
             

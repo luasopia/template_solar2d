@@ -40,9 +40,6 @@ end
 --2021/08/30:added 객체가 화면 밖으로 나갔는지를 체크한다.
 local function isout(self)
 
-     -- 궂이 매 프레임에 체크할 필요가 없을 것 같다.
-    if luasp.isoddfrm then return end
-
     local x0, y0 = luasp.out_x0, luasp.out_y0
     local endx, endy = luasp.out_endx, luasp.out_endy
 

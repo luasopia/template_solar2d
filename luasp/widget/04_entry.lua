@@ -227,7 +227,7 @@ function Entry:focus(focused)
 
         self.__caret:show():blink(blinktm)
         entryActivated = self
-        luasp.changeKeyFunc(onkey)    
+        luasp.changeKeyFunc(onkey)
         
     else -- entry:focus(false) 라고 호출하면
 

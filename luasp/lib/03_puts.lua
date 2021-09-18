@@ -134,6 +134,7 @@ function printf(...)
 end
 
 
+-- --[[
 local function onend_input(entry)
 
     local str_in = entry:getstring()
@@ -144,7 +145,6 @@ local function onend_input(entry)
 
 end
 
-
 function input(header, onenter)
 
     newline()
@@ -152,62 +152,28 @@ function input(header, onenter)
     local entry = Entry(header, onend_input):addto(stdout)
 
 end
+--]]
+
 
 --[[
---------------------------------------------------------------------------------
--- 2021/09/02:stdout added
---------------------------------------------------------------------------------
-local env = setmetatable({},{__index=_G})
-
-local function execstr(entry)
+local function onend_input(entry)
 
     local str_in = entry:getstring()
     local str_hdr = entry.__hdr
-    entry:remove()
-    puts(str_hdr .. str_in, true)
+    entry:remove()                  -- entry를 삭제한 후
+    puts(str_hdr .. str_in, true)   -- 그자리에 문자열만 표시한다
 
-    local f = loadstring(str_in)
-    if f==nil then
-        puts('syntax error!')
-    else
-        setfenv(f, env)()
-    end
-
-    runcli()
+    local onenter = input.onenter or nilfunc
+    input.onenter(str_in)
 
 end
 
 
-function runcli()
+input = setmetatable({},{__call = function(self, header) 
 
     newline()
-    Entry('> ', execstr):addto(stdout)
+    Entry(header, onend_input):addto(stdout)
+    return self
 
-end
-
-
-function stdout:clear()
-    
-    for k=#txtobjs,1,-1 do local v = txtobjs[k]
-        
-        tRm(txtobjs,k)
-        v:remove()
-        
-    end
-    
-    
-end
-
-
-logf.setnumlines = function(n)
-
-    if n == INF then numlines = maxlines
-    else numlines = n end
-
-end
+end})
 --]]
-
--- logf.__getNumObjs = function() return #txtobjs end
-
-
--- luasp.stdout = stdout

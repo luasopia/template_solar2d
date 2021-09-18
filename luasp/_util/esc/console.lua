@@ -2,10 +2,12 @@ local luasp = _luasopia
 local esclayer = luasp.esclayer
 local Disp = Display
 local infocolor = Color.LIGHT_PINK
+local fontsize0 = 40
 
 --------------------------------------------------------------------------------
+_require0('luasp._util.file')
 
-luasp.console = {}
+luasp.console = Group():addto(esclayer):setxy(0,0)
 
 --------------------------------------------------------------------------------
 
@@ -14,7 +16,8 @@ local ygap = 100
 local color = Color.DARK_SLATE_GRAY
 local width = 2
 
-local gridlines = Group():addto(esclayer):setxy(0,0)
+local gridlines = Group():addto(luasp.console):setxy(0,0)
+luasp.console.gridlines = gridlines
 
 for x = xgap, screen.width0, xgap do
     local g = Line1(x, 0, x, screen.height0, {width=width, color=color})
@@ -39,9 +42,6 @@ if _Gideros then
         return _Gideros.application:getTextureMemoryUsage()
     end
 
-    -- luasp.getFps = function(e)
-    --     return 1/e.deltaTime
-    -- end
 
     function Group:__numTotalChildren__()
 
@@ -68,15 +68,6 @@ elseif _Corona then
     getTxtMem = function()
         return system.getInfo("textureMemoryUsed") / 1000
     end
-    
-    -- local prvms = 0
-    -- luasp.getFps = function()
-    --     local ms = system.getTimer()
-    --     local fps = 1000/(ms - prvms)
-    --     prvms = ms
-    --     return fps
-    -- end
-
 
     function Group:__numTotalChildren__()
 
@@ -99,21 +90,33 @@ elseif _Corona then
 
 end
 
-local infotxts = Group():addto(esclayer):setxy(0,75)
+--------------------------------------------------------------------------------
 
-local memtxt = Text1("",{color=infocolor}):addto(infotxts):setxy(10, 45)
+local infotxts = Group():addto(luasp.console):setxy(0,75)
+luasp.console.infotxts = infotxts
 
-local objtxt = Text1("",{color=infocolor}):addto(infotxts):setxy(10, 90)
+local txtopt = {color=infocolor, fontsize=fontsize0}
+local memtxt = Text1("",txtopt):addto(infotxts):setxy(10, 40)
+local objtxt = Text1("",txtopt):addto(infotxts):setxy(10, 80)
 
 
-local updInfo = function(e)
+local etctxt1 = Text1("",txtopt):addto(infotxts):setxy(10, screen.endy-85-80)
+etctxt1:setstrf('(content) resolution : %d x %d',screen.width, screen.height)
+
+local etctxt2 = Text1("",txtopt):addto(infotxts):setxy(10, screen.endy-85-40)
+etctxt2:setstrf('(deivce) resolution : %d x %d',screen.devicewidth, screen.deviceheight)
+
+local etctxt3 = Text1("",txtopt):addto(infotxts):setxy(10, screen.endy-85)
+etctxt3:setstrf("orientation:'%s', fps:%d", screen.orientation, screen.fps)
+
+local updInfo = function(self, e)
 
     local txtmem = getTxtMem()
     local mem = collectgarbage('count')
-    memtxt:setstrf('memory:%d kb,texture memory:%d kb', mem, txtmem)
+    memtxt:setstrf('memory:%d kb, texture memory:%d kb', mem, txtmem)
     -- local ndisp = Disp.__getNumObjs() -- - logf.__getNumObjs() - 2
     local ndisp = luasp.stage:__numTotalChildren__()
-    objtxt:setstrf('Display objects:%d, Timer objects:%d', ndisp, Timer.__getNumObjs())
+    objtxt:setstrf('fps:%3d, #Display:%d, #Timer:%d, #Scene:1', 1/e.deltaTime, ndisp, Timer.__getNumObjs())
         
 end
 
@@ -125,41 +128,32 @@ screen:__addupd12__(updInfo)
 --------------------------------------------------------------------------------
 
 
-function luasp.console.show(isToShow)
+function luasp.console:show()
 
-    -- print('esc pressed')
-
-    if isToShow then
-
-        luasp.stdoutlayer:hide()
-        esclayer:show()
-        -- tmrInfo:resume()
-        screen:__addupd12__(updInfo)
-        luasp.console.cli.entry:focus()
-
-        local h = luasp.console.toolbar.height
-        local tmshift=180
-        luasp.console.toolbar:sety(-h):shift{time=tmshift,y=0}
-        luasp.console.infotxts:sety(-h):shift{time=tmshift,y=75}
-        luasp.console.gridlines:setalpha(0):shift{time=tmshift,alpha=1}
-        luasp.console.cli:setalpha(0):shift{time=tmshift,alpha=1}
+    luasp.stdoutlayer:hide()
+    esclayer:show()
     
-    else
+    local h = luasp.console.toolbar.height
+    local tmshift=180
+    luasp.console.toolbar:sety(-h):shift{time=tmshift,y=0}
+    luasp.console.infotxts:setalpha(0):shift{time=tmshift,alpha=1}
+    luasp.console.gridlines:setalpha(0):shift{time=tmshift,alpha=1}
+    
+    luasp.console.isactive = true
+    screen:__addupd12__(updInfo)
 
-        luasp.stdoutlayer:show()
-        esclayer:hide()
-        -- tmrInfo:pause()
-        screen:__rmupd12__(updInfo)
-        luasp.console.cli.entry:focus(false)
+end
+        
+function luasp.console:hide()
 
-    end
+    luasp.stdoutlayer:show()
+    esclayer:hide()
+    screen:__rmupd12__(updInfo)
+    luasp.console.isactive = false
 
 end
 --------------------------------------------------------------------------------
 
-luasp.console.toolbar = _require0('luasp.util.esc.toolbar')
-luasp.console.infotxts = infotxts
-luasp.console.gridlines = gridlines
-luasp.console.cli = _require0('luasp.util.esc.cli')
-
-_require0('luasp.util.file')
+local toolbar = _require0('luasp._util.esc.toolbar')
+luasp.console:add(toolbar)
+luasp.console.toolbar = toolbar

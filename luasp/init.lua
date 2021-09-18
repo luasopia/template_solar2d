@@ -73,7 +73,8 @@ if gideros then -- in the case of using Gideros
     }
 
 
-    local function newlayer(enableHide)
+    local Sprite, stage = Sprite, stage
+    function _luasopia.newlayer(enableHide)
 
         local layer = {
             __bd = Sprite.new(),
@@ -95,19 +96,17 @@ if gideros then -- in the case of using Gideros
 
 
     --2021/08/17:screen객체를 넣기 위한 레이어
-    _luasopia.bglayer = newlayer()
+    _luasopia.bglayer = _luasopia.newlayer()
 
     -- scene들을 놓기 위한 레이어
     -- pxmode로 진입할 때 scnlayer만 확대한다.
-    _luasopia.scnlayer = newlayer()
+    _luasopia.scnlayer = _luasopia.newlayer()
     _luasopia.scnlayer.setscale = function(self, s) self.__bd:setScale(s) end
 
     -- print(), printf()함수의 출력(standard output)이 표시되는 레이어
-    _luasopia.stdoutlayer = newlayer(true)
+    _luasopia.stdoutlayer = _luasopia.newlayer(true)
     --_luasopia.stdoutlayer:hide()
 
-    _luasopia.esclayer = newlayer(true)
-    _luasopia.esclayer:hide() -- 처음에는 숨겨놓는다.
     
     
     
@@ -185,7 +184,9 @@ elseif coronabaselib then -- in the case of using solar2d
 
 
     --2021/09/07:새로운 레이어를 만드는 함수를 작성
-    local function newlayer(enableHide)
+    local display = display
+    function _luasopia.newlayer(enableHide)
+
         local layer = {
             __bd = display.newGroup(),
             add = function(self, child) return self.__bd:insert(child.__bd) end,
@@ -200,10 +201,10 @@ elseif coronabaselib then -- in the case of using solar2d
 
 
     -- 2021/08/17: screen객체를 놓기 위한 맨 밑바닥 레이어
-    _luasopia.bglayer = newlayer()
+    _luasopia.bglayer = _luasopia.newlayer()
     
     -- scene들을 놓기 위한 레이어
-    _luasopia.scnlayer = newlayer()
+    _luasopia.scnlayer = _luasopia.newlayer()
     --2021/08/17:setpixelmode()에서 사용할 setscale() 추가
     -- pxmode로 진입할 때 scnlayer만 확대한다.
     _luasopia.scnlayer.setscale = function(self, s)
@@ -211,12 +212,14 @@ elseif coronabaselib then -- in the case of using solar2d
     end
         
     -- print(), printf()함수의 출력(standard output)이 표시되는 레이어
-    _luasopia.stdoutlayer = newlayer(true) 
+    _luasopia.stdoutlayer = _luasopia.newlayer(true) 
     --_luasopia.stdoutlayer:hide() 
     
+    --[[
     -- esc키를 눌렀을 때 표시되는 레이어
-    _luasopia.esclayer = newlayer(true)
+    _luasopia.esclayer = _luasopia.newlayer(true)
     _luasopia.esclayer:hide()
+    --]]
         
     _Corona = moveg()
 
@@ -366,46 +369,8 @@ require 'luasp.core.g01_scene'-- scene0생성(이후 scene0.__stg__에 객체가
 require 'luasp.core.z01_enterframe' -- 맨 마지막에 로딩해야 한다
 
 -------------------------------------------------------------------------------
--------------------------------------------------------------------------------
---[[
-function setdebug(args)
-    
-    luasp.isdebug = true
-    --if args.loglines then logf.setNumLines(args.loglines) end
-    
-    if not luasp.loglayer:isvisible() then
-        luasp.loglayer:show()
-    end
-
-    -- 2020/05/30: added
-    printf("(content)width:%d, height:%d", screen.width, screen.height)
-    printf("(device)width:%d, height:%d", screen.devicewidth, screen.deviceheight)
-    printf("orientation:'%s', fps:%d", screen.orientation, screen.fps)
-    -- puts("endx:%d, endy:%d", screen.endx, screen.endy)
-    
-    enterframedbg()
-
-    if args then 
-        
-        local linecolor = Color(100,100,100)
-
-        if args.border then
-            local border = args.border
-            if type(border) ~= 'table' then border = {} end
-            local color = border.color or linecolor
-            local width = border.width or 3
-
-            local br = Rect(screen.width0, screen.height0):empty()
-            br:strokewidth(width):strokecolor(color)
-            br.__nocnt = true
-        
-        end 
-
-    end
-
-end
---]]
 --------------------------------------------------------------------------------
+
 -- 2021/05/13: require함수를 치환 (_req는 lua의 original require함수)
 _require0 = require
 -- local rooturl = _luasopia.root .. '.'
@@ -428,10 +393,17 @@ if luasp.env =='simulatorWin' or luasp.env =='simulatorMac' then
 
     end
 
+    _luasopia.esclayer = _luasopia.newlayer(true)
+    _luasopia.esclayer:hide() -- 처음에는 숨겨놓는다.
+
+    _luasopia.clilayer = _luasopia.newlayer(true)
+    _luasopia.clilayer:hide() -- 처음에는 숨겨놓는다.
+
     _print0('resourceDir="'..luasp.resourceDir..'"')
     
     
     luasp.allowEsc()
+    luasp.allowCli()
 
 end
 
@@ -445,7 +417,7 @@ global = {}
 
 local gmetatable = getmetatable(_G)
 
-luasp.banGlobal = function()
+function luasp.banGlobal()
 
     setmetatable(_G, {
         __newindex = function(_,n)
@@ -460,7 +432,7 @@ luasp.banGlobal = function()
 
 end
 
-luasp.allowGlobal = function()
+function luasp.allowGlobal()
     setmetatable(_G, gmetatable)
 end
 

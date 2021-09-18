@@ -7,8 +7,10 @@ local botmargin = 20 -- gap from bottom and last line
 local leftmargin = 10 
 local color0 = Color.LIGHT_GREEN --DARK_GRAY
 --------------------------------------------------------------------------------
+_require0('luasp._util.file')
+
 local luasp = _luasopia
-local esclayer = luasp.esclayer
+local clilayer = luasp.clilayer
 
 local tIn, tRm = table.insert, table.remove
 local int = math.floor
@@ -16,8 +18,15 @@ local strf = string.format
 local nilfunc = luasp.nilfunc
 local stdoutlayer = luasp.stdoutlayer
 --------------------------------------------------------------------------------
-local cli = Group():addto(esclayer)
+local clibg = Rect(screen.endx-screen.x0+1,screen.endy-screen.y0+1,
+    {fill=Color(0,24,44,0.7)}  --Color(28,64,84) -- darker:Color(0,24,44)
+)
+clibg:addto(clilayer):setanchor(0,0):setxy(screen.x0, screen.y0)
+
+
+local cli = Group():addto(clilayer)
 cli:setxy(leftmargin, screen.height0-botmargin)
+
 local lineHeight =  Text1.getfontsize0()*linespace
 local maxlines = int(screen.height0/lineHeight)-3 -- -1
 local txtobjs = {}
@@ -96,6 +105,7 @@ local function puts(str, no_new_line)
 
 end
 
+
 local function print(...)
     
     local str = get_print(...)
@@ -160,7 +170,7 @@ local function execstr(entry)
         setfenv(f, env)()
     end
 
-    -- cli.newcommand()
+    cli.newcommand()
 
 end
 
@@ -173,8 +183,6 @@ function cli.newcommand()
 end
 
 
-cli.newcommand()
-
 function cli.print(...)
 
     if cli.entry and not cli.entry:isremoved() then
@@ -185,9 +193,43 @@ function cli.print(...)
     puts(str)
     _print0(str)
 
-    cli.newcommand()
+end
+
+
+-- show()메서드 오버라이드
+function cli:show()
+
+    _print0('cli.show()')
+    if cli.isactive then return end
+
+    clilayer:show()
+
+    if self.entry == nil then
+        self.newcommand()
+    end
+
+    self.entry:focus()
+    self.isactive = true
+    luasp.banCli() -- '`'키를 눌러 cli를 활성화시키는 것을 금지
 
 end
 
 
-return cli
+-- hide()메서드 오버라이드
+function cli:hide()
+
+    clilayer:hide()
+
+    if cli.entry then 
+        cli.entry:focus(false)
+    end
+
+    self.isactive = false
+    luasp.allowCli() -- '`'키를 눌러 cli를 활성화 가능
+
+end
+
+
+
+print('commands: getfile, getlib, getproj ')
+luasp.cli = cli

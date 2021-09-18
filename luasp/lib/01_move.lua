@@ -22,17 +22,6 @@ local function move(self)
     
 end
 
---[[
-function Dp:move(mv)
-    
-    self.__mv = mv
-    self.__iupds[move] = move
-    return self
-    
-end
-
---]]
-
 
 function Dp:pausemove()
 

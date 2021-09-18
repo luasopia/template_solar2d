@@ -43,7 +43,7 @@ local pxsps = Pixels(ps):addto(toolbar.btnpxs):setanchor(0,0):setscale(7):setxy(
 function toolbar.btnpxs:onpush()
 
     luasp.esclayer:hide()
-    Scene.__goto0('luasp.util.pxbuilder.scene')
+    Scene.__goto0('luasp._util.pxbuilder.scene')
 
 end
 
@@ -53,7 +53,7 @@ toolbar.btnhome = Button('',{width=60,height=60,strokewidth=4}):setanchor(0,0):a
 toolbar.btnhome:setxy(10,10)
 Pixels(hm):addto(toolbar.btnhome):setanchor(0,0):setscale(7):setxy(7,10)
 function toolbar.btnhome:onpush()
-    Scene.__goto0('luasp.util.builderhome.scene')
+    Scene.__goto0('luasp._util.builderhome.scene')
 end
 --]]
 

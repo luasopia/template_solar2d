@@ -59,8 +59,8 @@ local btnNewFile = Button("new file",{height=50,strokewidth=3,fontsize=40}):addt
 
 --------------------------------------------------------------------------------
 -- luasp.pxbuilder.toolbar = toolbar
-luasp.pxbuilder.fileset = _require0('luasp.util.pxbuilder.fileset')
-luasp.pxbuilder.pxartset = _require0('luasp.util.pxbuilder.pxartset')
+luasp.pxbuilder.fileset = _require0('luasp._util.pxbuilder.fileset')
+luasp.pxbuilder.pxartset = _require0('luasp._util.pxbuilder.pxartset')
 
 -- --[[
 
@@ -68,9 +68,9 @@ function scene:aftershow(stage)
 
     -- fileset:findfiles()
 
-    -- _require0('luasp.util.builderpxs.paletgrid')
-    -- _require0('luasp.util.builderpxs.pxgrid')
-    -- _require0('luasp.util.builderpxs.pxartset')
+    -- _require0('luasp._util.builderpxs.paletgrid')
+    -- _require0('luasp._util.builderpxs.pxgrid')
+    -- _require0('luasp._util.builderpxs.pxartset')
 
 end
 

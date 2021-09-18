@@ -45,7 +45,7 @@ local enkey
 --------------------------------------------------------------------------------
 if _Gideros then
     --------------------------------------------------------------------------------
-    
+    local stage, Event = _Gideros.stage, _Gideros.Event
     -- local function mkkeytbl()
 
         local KeyCode = _Gideros.KeyCode
@@ -97,9 +97,7 @@ if _Gideros then
             [124]='\\'
         }
 
-    --     return keyt, realt
 
-    -- end
     local function onkeydown(e)
         local k = keyt[e.keyCode] or (realt[e.realCode] or 'unknown')
         _keyfunc(screen, k,'down')
@@ -142,17 +140,32 @@ if _Gideros then
 
         -- local keyt, realt = mkkeytbl()
 
-        local stage, Event = _Gideros.stage, _Gideros.Event
+        
         stage:addEventListener(Event.KEY_DOWN, function(e)
 
             local k = keyt[e.keyCode] or (realt[e.realCode] or 'unknown')
             if k=='esc' then
+
+                if luasp.cli and luasp.cli.isactive then
+
+                    return luasp.cli:hide()
+                    
+                end
+
                 
                 if luasp.console==nil then
-                    _require0('luasp.util.esc.console')
-                    luasp.console.show(true)
+
+                    _require0('luasp._util.esc.console')
+                    luasp.console:show()
+
                 else
-                    luasp.console.show(not luasp.esclayer:isvisible())
+
+                    if luasp.console.isactive then
+                        luasp.console:hide()
+                    else
+                        luasp.console:show()
+                    end
+                    
                 end
 
             end
@@ -161,6 +174,41 @@ if _Gideros then
 
 
     end
+
+
+    local function ontilde(e)
+
+        local k = keyt[e.keyCode] or (realt[e.realCode] or 'unknown')
+        if k=='`' then
+            
+            _print0('cli')
+
+            if luasp.cli == nil then
+
+                _require0('luasp._util.esc.cli')
+                
+            end
+
+            luasp.cli:show()
+            
+
+        end
+
+    end
+
+
+    function luasp.allowCli()
+
+        stage:addEventListener(Event.KEY_DOWN, ontilde)
+
+    end
+
+    function luasp.banCli()
+
+        stage:removeEventListener(Event.KEY_DOWN, ontilde)
+
+    end
+
 --------------------------------------------------------------------------------
 elseif _Corona then
 --------------------------------------------------------------------------------
@@ -180,6 +228,8 @@ elseif _Corona then
     }    
 
     local function onkey(e)
+
+        if _keyfunc == nil then return true end
 
         local k = keyt[e.keyName] or e.keyName
         -- screen:onkey(k, e.phase)
@@ -219,17 +269,26 @@ elseif _Corona then
 
                 if k=='esc' then
 
+                    if luasp.cli and luasp.cli.isactive then
+                        luasp.cli:hide()
+                        return true
+                    end
+
+
                     if luasp.console==nil then
 
-                        _require0('luasp.util.esc.console')
-                        luasp.console.show(true)
+                        _require0('luasp._util.esc.console')
+                        luasp.console:show()
 
                     else
 
-                        luasp.console.show(not luasp.esclayer:isvisible())
+                        if luasp.console.isactive then
+                            luasp.console:hide()
+                        else
+                            luasp.console:show()
+                        end
 
                     end
-
                 end
 
             end
@@ -241,7 +300,51 @@ elseif _Corona then
     end
 
 
+
+
+    local function ontilde(e)
+
+        if e.phase=='down' then
+
+            local k = keyt[e.keyName] or e.keyName
+
+            if k=='`' then
+            
+                _print0('cli')
+
+                if luasp.cli == nil then
+
+                    _require0('luasp._util.esc.cli')
+                    
+                end
+
+                luasp.cli:show()
+                --Runtime:removeEventListener('key', ontilde)
+
+            end
+
+        end
+
+        return true
+    end
+        
+
+    function luasp.allowCli()
+
+        Runtime:addEventListener('key', ontilde)
+
+    end
+
+
+    function luasp.banCli()
+
+        Runtime:removeEventListener('key', ontilde)
+
+    end
+
+
 end
+
 --------------------------------------------------------------------------------
 -- end of respective local functions
 --------------------------------------------------------------------------------
@@ -271,4 +374,3 @@ function luasp.restoreKeyUser()
     enkey(screen.onkey)
 
 end
-

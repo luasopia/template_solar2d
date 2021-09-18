@@ -18,36 +18,27 @@ function getfile(name)
 
     local url = fileurls[name]
     if url == nil then
-        luasp.console.cli.print('Error: unknown file')
+        luasp.cli.print('Error: unknown file')
         return
     end
 
+    local rootpath = luasp.resourceDir..'root/'
 
-    local rootpath
+    local comm = 'curl -o "'..rootpath..name..'" "'..url..'"'
+
+    --2021/09/14: gideros는 최소창으로 시작하라는 옵션을 앞에 붙여야 한다
+    -- solar2d는 이 옵션을 붙이지 않아도 창이 뜨지 않는다.
     if _Gideros then
-        --gideros는 rootpath에 한글(utf8)이 들어가면 안된다
-        --(solar2d는 상관없음)
-        rootpath='E:/coding/__luasopia/_template_gideros/assets/'
-        --rootpath='C:/Users/sales/'
-
-
-    elseif _Corona then
-
-        rootpath = system.pathForFile( "root/main.lua", system.ResourceDirectory )
-        rootpath = string.gsub(rootpath, 'main.lua','')
-        print(rootpath)
-    
+        comm = 'start /min '..comm
     end
 
-    -- print( os.execute('cd/d "'..rootpath..'" && curl -LJO "'..dataurls[name]..'"')
-    -- if 0== os.execute( 'cd/d "'..rootpath..'" && curl -LJO "'..url..'"') then
-    local comm = 'curl -o "'..rootpath..name..'" "'..url..'"'
-    print(comm)
+
+    --print(comm)
     if 0== os.execute(comm ) then
-        luasp.console.cli.print('download success!')
+        luasp.cli.print('download success!')
         -- print('download success!')
     else
-        luasp.console.cli.print('Error: fail to download')
+        luasp.cli.print('Error: fail to download')
         -- print('Error: fail to download')
     end
 

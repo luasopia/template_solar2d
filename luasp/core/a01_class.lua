@@ -37,6 +37,7 @@ local Object = {
 
 local clsid = 0
 
+
 local function constructor(cls, ...)
 	--local obj = setmetatable({ __clsid = true }, { __index = cls })
 	-- 2020/06/10: (2*) 때문에 아래와 같이 metatable을 cls로 설정 가능
@@ -45,7 +46,9 @@ local function constructor(cls, ...)
 	return obj
 end
 
+
 class = function(baseClass)
+
 	local super = baseClass or Object
 	clsid = clsid + 1 -- 생성되는 클래스마다 고유의 id를 갖게 한다.
 	------------------------------------------------------------------------
@@ -77,38 +80,3 @@ class = function(baseClass)
 		}
 	)
 end
-
---[[
-local function constructor(cls, ...)
-	local obj = setmetatable({ __clsid = true }, { __index = cls })
-	cls.init(obj, ...)
-	return obj
-end
-
-class = function(baseClass)
-	local super = baseClass or Object
-	clsid = clsid + 1 -- 생성되는 클래스마다 고유의 id를 갖게 한다.
-	return setmetatable(
-		------------------------------------------------------------------------
-		-- init=nilfunc 으로 지정해서 만약 사용자 생성자가 없어도
-		-- super.init이 자동 실행되는 것을 막는다.
-		-- 따라서 자식클래스는 **반드시 생성자를 만들어야 한다**
-		-- 부모생성자를 호출하려면 자식생성자 안에서 parentCls.init(self,...) 라고 호출
-		-- 단, remove 은 빈함수로 지정하지 않았으므로
-		-- 자식의 소멸자가 없으면 **부모의 소멸자가 자동호출된다.**
-		------------------------------------------------------------------------
-		--{init=nilfunc, __super=super, superInit=__superInit, superDel=__superDel}, -- cls
-		{	
-			init = nilfunc,
-			__id__ = clsid, -- 클래스 고유번호, isobjof()메서드에서 사용된다
-		}, -- cls (constructor의 cls로 넘겨짐)
-		------------------------------------------------------------------------
-		-- 아래는 cls의 메타테이블
-		------------------------------------------------------------------------
-		{ __index = super, -- 상속구현
-		  __call = constructor,
-		}
-	)
-end
-
---]]

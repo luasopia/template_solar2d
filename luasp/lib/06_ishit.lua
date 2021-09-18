@@ -297,7 +297,6 @@ end
 -- self가 폴리곤(사각형포함)인 경우의 ishit()메서드
 local function ishit_pg(self, obj)
 
-    -- if luasp.isoddfrm then return end
     if self.__nohit  then return end
 
     if obj.__cpg then return proj_pg2pg(self, obj)
@@ -311,7 +310,6 @@ end
 -- self가 원인 경우의 ishit()메서드
 local function ishit_cc(self, obj)
 
-    -- if luasp.isoddfrm then return end
     if self.__nohit then return end
 
     if obj.__ccc then return proj_cc2cc(self, obj)
@@ -324,7 +322,6 @@ end
 -- self가 점인 경우의 ishit()메서드
 local function ishit_pt(self, obj)
 
-    -- if luasp.isoddfrm then return end
     if self.__nohit then return end
 
     if obj.__cpg then return proj_pg2pt(obj, self)
