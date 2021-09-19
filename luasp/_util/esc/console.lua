@@ -11,8 +11,8 @@ luasp.console = Group():addto(esclayer):setxy(0,0)
 
 --------------------------------------------------------------------------------
 
-local xgap = 100
-local ygap = 100
+local xgap = luasp.config.gridxgap
+local ygap = luasp.config.gridygap
 local color = Color.DARK_SLATE_GRAY
 local width = 2
 
@@ -130,7 +130,7 @@ screen:__addupd12__(updInfo)
 
 function luasp.console:show()
 
-    luasp.stdoutlayer:hide()
+    luasp.stdout:setalpha(0.4)
     esclayer:show()
     
     local h = luasp.console.toolbar.height
@@ -146,7 +146,7 @@ end
         
 function luasp.console:hide()
 
-    luasp.stdoutlayer:show()
+    luasp.stdout:setalpha(1)
     esclayer:hide()
     screen:__rmupd12__(updInfo)
     luasp.console.isactive = false

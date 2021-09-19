@@ -3,8 +3,8 @@
 --2021/09/08: luasp.stdoutlayer를 추가해서 여기에 출력결과를 표시
 --------------------------------------------------------------------------------
 local linespace = 1.15 -- 줄간격을 0.3으로 설정(너무 붙으면 가독성이 떨어짐)
-local botmargin = 20 -- gap from bottom and last line
-local leftmargin = 10 
+local botmargin = 10 -- gap from bottom and last line
+local leftmargin = 5 
 local color0 = Color.SILVER --DARK_GRAY
 --------------------------------------------------------------------------------
 local luasp = _luasopia
@@ -17,20 +17,12 @@ local stdoutlayer = luasp.stdoutlayer
 local stdout = Group():addto(stdoutlayer)
 stdout:setxy(leftmargin, screen.height0-botmargin)
 local lineHeight =  Text1.getfontsize0()*linespace
-local maxlines = int(screen.height0/lineHeight)-3 -- -1
+
+local maxlines = int(screen.height0/lineHeight) -- 최대 줄 수
+local maxchar = 43                              -- 한 줄의 최대 문자 수
+
 local txtobjs = {}
 local numlines = 0
-
-
-local function initcheck()
-
-    if not stdoutlayer:isvisible() then
-
-        -- stdoutlayer:show()
-
-    end
-
-end
 
 
 -- print()함수의 출력과 유사한 문자열을 얻는 함수
@@ -98,11 +90,22 @@ local function puts(str, no_new_line)
     if not no_new_line then
         newline()
     end
-
+    
+    --[[
     --(3) 새로운 줄을 추가한다.
-    local txtobj = Text1(str,{color=color0}):addto(stdout) -- (0,0)에 자동으로 맞춰진다
-    tIn(txtobjs, txtobj)
-    numlines = numlines + 1
+    -- local txtobj = Text1(str,{color=color0}):addto(stdout) -- (0,0)에 자동으로 맞춰진다
+    -- tIn(txtobjs, txtobj)
+    -- numlines = numlines + 1
+    --]]
+
+    --2021/09/19:여러 줄에 걸쳐서 출력하도록 수정
+    for k=1,#str,maxchar do
+        if k>1 then newline() end
+        local substr = str:sub(k,k+maxchar-1)
+        local txtobj = Text1(substr,{color=color0}):addto(stdout) -- (0,0)에 자동으로 맞춰진다
+        tIn(txtobjs, txtobj)
+        numlines = numlines + 1
+    end
 
 end
 
@@ -111,8 +114,6 @@ _print0 = print
 -- local logf = setmetatable({},{__call=function(_, str,...)
 function print(...)
 
-    initcheck()
-    
     local str = get_print(...)
     puts(str)
     _print0(str)
@@ -124,7 +125,6 @@ end
 
 function printf(...)
 
-    initcheck()
     local str = strf(...)
     puts(str)
     _print0(str)
@@ -177,3 +177,5 @@ input = setmetatable({},{__call = function(self, header)
 
 end})
 --]]
+
+luasp.stdout = stdout

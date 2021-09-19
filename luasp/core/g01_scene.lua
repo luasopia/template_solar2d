@@ -23,34 +23,6 @@ local x0, y0, endx, endy = luasp.x0, luasp.y0, luasp.endx, luasp.endy
 local scnlayer = luasp.scnlayer
 
 --------------------------------------------------------------------------------
--- 2021/09/04 loglayer에 cover를 씌워서 터치를 방지
-local cover 
-local function disabletouch()
-
-    --print('mkcover ')
-
-    cover = Rect(screen.width,screen.height):setalpha(0):addto(luasp.stdoutlayer)
-        -- solar2d는 alpha가 0이면 기본적으로 touch 이벤트가 불능이 된다.
-        -- alpha가 0임에도 터치이벤트가 발생토록 하려면 아래와 같이 한다.
-        -- cover.__bd(Gruop)가 아니라 cover.__shp에 적용해야 한다
-    if _Corona then cover.__shp.isHitTestable = true end -- solar2d에서만 필요
-    -- gideros는 alpha가 0이어도 터치이벤트가 발생한다.
-    cover.ontouch = luasp.nilfunc
-
-end
-
-local function enabletouch()
-
-    if cover and not cover:isremoved() then
-        --print('rmcover ')
-        cover:remove()
-    end
-
-end
-
---------------------------------------------------------------------------------
--- private static methods
---------------------------------------------------------------------------------
 -- 2021/09/14: 이건 필요없을듯
 --[[
 local function create(scn)
@@ -74,8 +46,7 @@ local function beforeshow(scn)
     
     --stage:resumetouch()
     --2021/08/11:퇴장 효과(애니) 동안 커버 생성
-    -- scn:__mkcover__()
-    disabletouch()
+    luasp.bantouch()
 
 end
 
@@ -91,10 +62,10 @@ local function aftershow(scn)
     scn:aftershow(stage)
     
     --2021/08/11:입장효과가 다 끝나면 cover를 제거한다.
-    -- scn:__rmcover__()
-    enabletouch()
+    luasp.allowtouch()
 
 end
+
 
 -- 화면에서 퇴장하는 애니메이션 플레이 직전에 호출되는 함수
 local function beforehide(scn)
@@ -116,11 +87,12 @@ local function afterhide(scn)
 
 end
 --------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 Scene = class()
 
 local scenes = {} -- 생성된 scene들을 저장하는 테이블
 local inScene = nil -- current (or scheduled to enter) scene in the screen
-
+--------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 function Scene:init()
 
@@ -138,44 +110,6 @@ function Scene:aftershow() end -- called just after showing
 function Scene:beforehide() end -- called just before hiding
 function Scene:afterhide() end -- called just after hiding
 -- function Scene:destroy() end
-
-
---------------------------------------------------------------------------------
--- 2021/08/11:입장/퇴장 효과(애니메이션) 도중에 터치(탭)가 발생하는 것을 막기위해서
--- 아래의 두 개의 내부메서드가 사용된다.
-
---[[
-function Scene:__mkcover0__()
-
-    self.tag=self.tag or 'scn0'
-
-    
-    if self.__cover==nil or self.__cover:isremoved() then
-        
-        print('mkcover '..self.tag)
-
-        self.__cover = Rect(screen.width,screen.height):setalpha(0)
-        -- solar2d는 alpha가 0이면 기본적으로 touch 이벤트가 불능이 된다.
-        -- alpha가 0임에도 터치이벤트가 발생토록 하려면 아래와 같이 한다.
-        -- gideros는 alpha가 0이어도 터치이벤트가 발생한다.
-        if _Corona then self.__cover.__bd.isHitTestable = true end -- solar2d에서만 필요
-        function self.__cover:ontouch() end
-    end
-
-end
-
-function Scene:__rmcover0__()
-
-    self.tag=self.tag or 'scn0'
-    
-    if self.__cover and not self.__cover:isremoved() then
-        print('rmcover '..self.tag)
-        self.__cover:remove()
-    end
-
-end
---]]
-
 
 --------------------------------------------------------------------------------
 -- Scene.goto(url [,effect [,time] ])

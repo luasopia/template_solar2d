@@ -148,9 +148,8 @@ end
 -- 2021/08/09 table(t)이 empty일 경우 true를 반환
 local _nxt = next
 function util.isempty(t)
-    if _nxt(t) == nil then
-        return true
-    end
+
+    if _nxt(t) == nil then return true end
     return false
 end
 --]]
@@ -190,4 +189,33 @@ end
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+-- 2021/09/19에 작성. 아래 함수들은 scene에서 사용된다.
+local tcover
+function luasp.bantouch()
 
+    _print0('bantouch')
+
+    tcover = Rect(screen.width,screen.height,{fill=Color(0,0,0,0.1)})
+    tcover:setalpha(0.1):addto(luasp.stdoutlayer)
+
+    -- solar2d는 alpha가 0이면 기본적으로 touch 이벤트가 불능이 된다.
+    -- alpha가 0임에도 터치이벤트가 발생토록 하려면 아래와 같이 한다.
+    -- cover.__bd(==Group)가 아니라 cover.__shp에 적용해야 한다
+    -- if _Corona then tcover.__shp.isHitTestable = true end
+    -- 위는 solar2d에서만 필요하고, gideros는 alpha==0이어도 터치이벤트가 발생한다.
+
+    -- 2021/09/19:solar2d에서 alpha를 0.1로 설정하면 터치이벤트가 발생한다.
+    -- shp의 fill도 0.1, rect의 alpha도 0.1로 해서 거의 투명해보인다.
+    tcover.ontouch = luasp.nilfunc
+
+end
+
+
+function luasp.allowtouch()
+
+    if tcover and not tcover:isremoved() then
+        --print('rmcover ')
+        tcover:remove()
+    end
+
+end
