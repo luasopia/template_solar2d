@@ -427,8 +427,6 @@ end
 --------------------------------------------------------------------------------
 --2021/08/20:디버깅을 위해서 추가된 메서드
 --------------------------------------------------------------------------------
-local dblayer =  _luasopia.esclayer -- debug layer
-
 
 local function drawhitborder(self)
     
@@ -459,7 +457,7 @@ local function drawhitborder(self)
             end
 
             local ln=Line1(x1,y1,x2,y2,{color=self.__htblc, width = self.__htblw})
-            dblayer:add(ln)
+            luasp.esclayer:add(ln)
 
             x1,y1 = x2,y2
             tins(self.__htbrdr, ln)
@@ -471,7 +469,7 @@ local function drawhitborder(self)
         local ccc = self.__ccc
         local gx, gy = self:__getgxy__(ccc.x,ccc.y)
         local dot = Rect(10,10,{fill=self.dbhlc})
-        dblayer:add(dot)
+        luasp.esclayer:add(dot)
         dot:xy(gx,gy)
         tins(self.__htbrdr, dot)
 
@@ -479,7 +477,7 @@ local function drawhitborder(self)
             strokewidth = self.__htblw,
             strokecolor = self.__htblc
         }):empty()
-        dblayer:add(circ)
+        luasp.esclayer:add(circ)
         circ:xy(gx,gy)
         tins(self.__htbrdr, circ)
 
@@ -489,7 +487,7 @@ local function drawhitborder(self)
         local gx, gy = self:__getgxy__(cpt.x, cpt.y)
         local dotr = self.__htblw*5
         local dot = Rect(10,10,{fill = self.dbhlc})
-        dblayer:add(dot)
+        luasp.esclayer:add(dot)
         dot:xy(gx,gy)
         tins(self.__htbrdr, dot)
 
