@@ -4,46 +4,26 @@
 _luasopia.nilfunc = function() end
 local nilfunc = _luasopia.nilfunc
 
---[[
---2020/02/15 class 테이블에 __id__ 필드를 추가하고
--- 어떤 테이블이 class 자체인지 rawget()함수를 이용하여 검사한다
-local function _isobj(t) return type(t)=='table' and t.__clsid end
-local function _iscls(t) return type(t)=='table' and rawget(t,'__id__') end
-
--- 어떤 객체가 클래스의 객체인지를 판단하는 (전역)함수
-function isobj(obj, cls)
-	return _isobj(obj) and _iscls(cls) and obj.__id__ == cls.__id__
-end
---]]
-
--- 어떤 객체가 클래스의 객체인지를 판단하는 (전역)함수
--- 2020/06/10 : 수정
-function isobject(obj, cls)
-	return type(obj)=='table' and obj.__clsid == cls.__id__
-end
-
--- function isnum(v) return type(v)=='number' end
 
 local Object = {
 	init = nilfunc, -- default constructor
 	remove = nilfunc, -- default destructor
-	__id__ = 0,
-	
-	-- 2020/02/21 added
-	-- name = 'obj',
-	-- classname = 'Object',
-	-- is = function(self, name) self.classname = name; return self end
+	__clsid = 0, -- 2021/09/21 added
 }
 
 local clsid = 0
 
 
 local function constructor(cls, ...)
+
 	--local obj = setmetatable({ __clsid = true }, { __index = cls })
 	-- 2020/06/10: (2*) 때문에 아래와 같이 metatable을 cls로 설정 가능
-	local obj = setmetatable({ __clsid = cls.__id__ }, cls) -- (*1)
+	-- local obj = setmetatable({ __clsid = cls.__id__ }, cls) -- (*1)
+	-- 2021/09/21: 개별객체의 __clsid 필드를 삭제하고 cls.__clsid를 참조하도록 함
+	local obj = setmetatable({}, cls) -- (*1)
 	cls.init(obj, ...)
 	return obj
+
 end
 
 
@@ -55,7 +35,7 @@ class = function(baseClass)
 	-- init=nilfunc 으로 지정해서 만약 사용자 생성자가 없어도
 	-- super.init이 자동 실행되는 것을 막는다.
 	-- 따라서 자식클래스는 **반드시 생성자를 만들어야 한다**
-	-- 부모생성자를 호출하려면 자식생성자 안에서 ParentClass.init(self,...) 라고 호출
+	-- 부모생성자를 호출하려면 자식생성자 안에서 baseClass.init(self,...) 라고 호출
 	-- 단, remove 은 빈함수로 지정하지 않았으므로
 	-- 자식의 소멸자가 없으면 **부모의 소멸자가 자동호출된다.**
 	------------------------------------------------------------------------
@@ -65,9 +45,9 @@ class = function(baseClass)
 	------------------------------------------------------------------------
 	local cls = {	
 		init = nilfunc,
-		__id__ = clsid, -- 클래스 고유번호, isobjof()메서드에서 사용된다
+		__clsid = clsid, -- 클래스 고유번호, isobjof()메서드에서 사용된다
 	}
-	cls.__index = cls --(*2)
+	cls.__index = cls --(*2) 이것으로 cls인지 obj인지를 type()함수에서 구별한다.
 
 	return setmetatable(
 		cls, -- cls (constructor의 cls로 넘겨짐)
@@ -79,4 +59,59 @@ class = function(baseClass)
 			__call = constructor
 		}
 	)
+
+end
+
+--------------------------------------------------------------------------------
+-- redefining type(), tostring(), and defining isobject() functions
+--------------------------------------------------------------------------------
+
+--2021/09/21: redefining type() global function
+-- type(data) returns 'class' if data itself is a class
+-- type(data) returns 'object' if data is an class instance
+local _type0 = type
+function type(data)
+
+	local datatype = _type0(data)
+
+    if datatype =='table' and data.__clsid then
+        if data.__index == data then
+            return 'class'
+        else
+            return 'object'
+        end
+    else
+        return datatype
+    end
+
+end
+
+
+-- 어떤 객체가 클래스의 객체인지를 판단하는 (전역)함수
+-- 2020/06/10 : 수정
+function isobject(obj, cls)
+
+	--return type(obj)=='table' and obj.__clsid == cls.__id__
+	return _type0(obj)=='table' and obj.__clsid == cls.__clsid
+
+end
+
+
+--2021/09/21: redefining tostring() global function
+local _tostring0 = tostring
+function tostring(data)
+
+	local str = _tostring0(data)
+	local datatype = type(data)
+
+	if datatype == 'class' then
+		str = str:gsub('table','class')
+		return str
+	elseif datatype == 'object' then
+		str = str:gsub('table','object')
+		return str
+	else
+		return str
+	end
+
 end

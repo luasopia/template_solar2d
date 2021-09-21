@@ -111,7 +111,7 @@ end
 
 
 _print0 = print
--- local logf = setmetatable({},{__call=function(_, str,...)
+
 function print(...)
 
     local str = get_print(...)

@@ -37,11 +37,13 @@ local timers = Timer.__tmrs
 --------------------------------------------------------------------------------
 function Timer.updateAll()
 
+	local dtmfrm = luasp.dtmfrm
+
 	for _, tmr in pairs(timers) do
 
 		if tmr.__alive then -- 2021/08/11
 
-			tmr.__tm = tmr.__tm + luasp.dtmfrm
+			tmr.__tm = tmr.__tm + dtmfrm
 			local count = tmr.__tm/tmr.delay - 1
 
 			while  count > tmr.count do
