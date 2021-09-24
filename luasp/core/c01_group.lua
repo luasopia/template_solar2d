@@ -40,6 +40,8 @@ if _Gideros then
             self.__bd:getChildAt(k).__obj:remove()
         end
 
+        return self
+
     end
 
 
@@ -196,6 +198,8 @@ elseif _Corona then
             self.__bd[k].__obj:remove()
         end
       
+        return self
+        
     end
 
 
