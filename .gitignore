@@ -88,5 +88,6 @@ root/ex/
 root/lib/*
 !root/lib/note.txt
 .VSCodeCounter/
+root/data/
 
 # End of https://www.gitignore.io/api/lua,windows,visualstudiocode

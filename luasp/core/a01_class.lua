@@ -45,7 +45,7 @@ class = function(baseClass)
 	------------------------------------------------------------------------
 	local cls = {	
 		init = nilfunc,
-		__clsid = clsid, -- 클래스 고유번호, isobjof()메서드에서 사용된다
+		__clsid = clsid, -- 클래스 고유번호, isobject()메서드에서 사용된다
 	}
 	cls.__index = cls --(*2) 이것으로 cls인지 obj인지를 type()함수에서 구별한다.
 
@@ -55,8 +55,8 @@ class = function(baseClass)
 		-- 아래는 cls의 메타테이블
 		------------------------------------------------------------------------
 		{
-			__index = super, --[[상속구현]]
-			__call = constructor
+			__index = super, -- 상속구현
+			__call = constructor -- Classname(...) 과 같이 객체 생성
 		}
 	)
 
@@ -76,9 +76,9 @@ function type(data)
 
     if datatype =='table' and data.__clsid then
         if data.__index == data then
-            return 'class'
+            return 'class' -- data is class itself
         else
-            return 'object'
+            return 'object' -- data is an instance of a class
         end
     else
         return datatype
@@ -105,7 +105,7 @@ function tostring(data)
 	local datatype = type(data)
 
 	if datatype == 'class' then
-		str = str:gsub('table','class')
+		str = str:gsub('table','class') -- 두 개가 리턴된다. 첫 번째가 결과문자열
 		return str
 	elseif datatype == 'object' then
 		str = str:gsub('table','object')

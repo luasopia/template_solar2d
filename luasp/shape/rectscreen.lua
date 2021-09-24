@@ -10,6 +10,7 @@ local luasp = _luasopia
 local x0, y0, endx, endy = luasp.x0, luasp.y0, luasp.endx, luasp.endy
 local int = math.floor
 local cx, cy = int(luasp.centerx), int(luasp.centery)
+local nilfunc = luasp.nilfunc
 
 --2020/05/06 Rect(screen)가 safe영역 전체를 덮도록 수정
 --2020/08/17 bglayer에 생성되어야 한다
@@ -34,6 +35,10 @@ screen.deviceheight = luasp.deviceheight
 screen.orientation = luasp.orientation 
 -- added 2020/05/06
 screen.x0, screen.y0, screen.endx, screen.endy = x0, y0, endx, endy
+
+--added 2021/09/24
+screen.remove = nilfunc
+screen.setx, screen.sety, screen.setxy = nilfunc, nilfunc, nilfunc
 -------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------
