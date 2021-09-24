@@ -37,7 +37,11 @@ function Star:__mkpts__()
     end
     
     self.__sctx, self.__scty = (xmax+xmin)*0.5, (ymax+ymin)*0.5
-    self.__hwdt, self.__hhgt = (xmax-xmin)*0.5, (ymax-ymin)*0.5
+    local hw, hh = (xmax-xmin)*0.5, (ymax-ymin)*0.5
+    self.__hwdt, self.__hhgt = hw,hh
+
+    --2021/09/24
+    self.__orct={-hw,-hh,  hw,-hh,  hw,hh,  -hw,hh}
     
     return pts
 end

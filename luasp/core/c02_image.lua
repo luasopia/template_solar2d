@@ -102,6 +102,7 @@ function Image:init(url)
     ------------------------------------------------------------
     --2021/05/09 : add info for collision box
     local hw, hh = w*0.5, h*0.5
+    self.__orct = {-hw,-hh,  hw,-hh,  hw,hh,  -hw,hh} -- outer rectangle
     self.__cpg = {-hw,-hh,  hw,-hh,  hw,hh,  -hw,hh}
     ------------------------------------------------------------
     self.__apx, self.__apy = 0.5, 0.5

@@ -39,6 +39,7 @@ if _Gideros then
         ------------------------------------------------------------
         --2021/08/23 : add info for collision box
         -- local hw, hh = w_1*0.5, h_1*0.5
+        self.__orct = {-hw1,-hh1,  hw1,-hh1,  hw1,hh1,  -hw1,hh1}
         self.__cpg = {-hw1,-hh1,  hw1,-hh1,  hw1,hh1,  -hw1,hh1}
         ------------------------------------------------------------
 
@@ -131,7 +132,12 @@ elseif _Corona then
         ------------------------------------------------------------
         --2021/08/23 : add info for collision box
         -- local hw, hh = w_1*0.5, h_1*0.5
+        -- self.__orct = {-hw1,-hh1,  0,-hh1,  hw1,-hh1,  hw1,0,
+        --                 hw1,hh1,  0,hh1,   -hw1,hh1,  -hw1,0}
+        self.__orct = {-hw1,-hh1,  hw1,-hh1,  hw1,hh1,  -hw1,hh1}
+
         self.__cpg = {-hw1,-hh1,  hw1,-hh1,  hw1,hh1,  -hw1,hh1}
+
         ------------------------------------------------------------
 
         return Disp.init(self) --return self:superInit()
@@ -176,7 +182,7 @@ elseif _Corona then
     end
 
 
-    -- solar2d는 image의 앵커점과 상광 없이 localToContent()는
+    -- solar2d는 image의 앵커점과 상관 없이 localToContent()는
     -- 중심점을 원점으로 잡는다
     function Sprite:__getgxy__(x,y)
 
@@ -284,4 +290,3 @@ function Sprite:setframe(idfrm)
 end
 
 luasp.tmrfnsprt = timerfunc
--- Sprite.anchor = Sprite.setanchor

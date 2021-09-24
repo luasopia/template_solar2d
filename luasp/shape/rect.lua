@@ -15,6 +15,8 @@ function Rect:__mkpts__()
     local x3, y3 = hw, hh -- right-bottom
     local x4, y4 = -hw, hh -- left-bottom
 
+    -- 2021/09/24: 화면밖으로 나갔는지를 판정하는 점 정보들
+    self.__orct = {x1,y1,  x2,y2,  x3,y3,  x4,y4}
     -- 2021/05/08 : 충돌판정에 필요한 점의 정보 저장
     self.__cpg = {x1,y1,  x2,y2,  x3,y3,  x4,y4}
     self.__sctx, self.__scty = 0, 0

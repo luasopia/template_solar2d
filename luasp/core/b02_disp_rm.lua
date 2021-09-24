@@ -12,9 +12,10 @@ local tdobj = Disp.__tdobj
 -- 아래는 pixelmode가 아닐 경우에 화면바깥으로 나갔다고 판단되는
 -- 경계값이다. 약간의 갭을 둔다
 local xgap, ygap = 100, 150
-luasp.out_x0, luasp.out_y0 = luasp.x0-xgap, luasp.y0-ygap
-luasp.out_endx, luasp.out_endy = luasp.endx+xgap, luasp.endy+ygap
--- luasp.out_endx, luasp.out_endy = luasp.endx+xgap, 1000
+-- luasp.out_x0, luasp.out_y0 = luasp.x0-xgap, luasp.y0-ygap
+-- luasp.out_endx, luasp.out_endy = luasp.endx+xgap, luasp.endy+ygap
+local out_x0, out_y0 = luasp.x0-xgap, luasp.y0-ygap
+local out_endx, out_endy = luasp.endx+xgap, luasp.endy+ygap
 
 -- pixelmode 일 경우 위의 값들을 다시 계산해야 한다.
 --------------------------------------------------------------------------------
@@ -36,7 +37,7 @@ function Display:removeafter(ms)
 
 end
 
-
+--[[
 --2021/08/30:added 객체가 화면 밖으로 나갔는지를 체크한다.
 local function isout(self)
 
@@ -96,6 +97,27 @@ local function isout(self)
         return true
     
     end
+
+end
+--]]
+
+local function isout(self)
+
+    local x0, y0 = out_x0, out_y0
+    local endx, endy = out_endx, out_endy
+    local cpg = self.__orct
+
+    for k=1,#cpg,2 do
+
+        local x, y = self:__getgxy__(cpg[k], cpg[k+1])
+
+        if x0<=x and x<=endx and y0<=y and y<=endy then
+            return false -- 점들 중 하나라도 영역 안쪽이면 false반환
+        end
+        
+    end
+    
+    return true -- 점들이 다 영역 밖이면 true반환
 
 end
 

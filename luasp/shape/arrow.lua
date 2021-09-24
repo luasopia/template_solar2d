@@ -24,7 +24,11 @@ function Arrow:__mkpts__()
     self.__cpg = {x1,y1,  x2,y2,  x4,y4,  x5,y5,  x7,y7,}
 
     self.__sctx, self.__scty = 0, (thgt-hhgt)*0.5
-    self.__hwdt, self.__hhgt = w*0.5, (hhgt+thgt)*0.5
+    local hw, hh = w*0.5, (hhgt+thgt)*0.5
+    self.__hwdt, self.__hhgt = hw, hh
+
+    --2021/09/24
+    self.__orct={-hw,-hh,  hw,-hh,  hw,hh,  -hw,hh}
 
     return {x1,y1,  x2,y2,  x3,y3,  x4,y4,  x5,y5,  x6,y6,  x7,y7}
 

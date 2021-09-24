@@ -39,6 +39,8 @@ function Circle:init(r, opt)
     -- 충돌감지정보
     self.__ccc = {r=r, x=0, y=0, r2=r*r, r0=r}
 
+    self.__orct={-r,-r,  r,-r,  r,r,  -r,r}
+
     return Shape.init(self, self:__mkpts__(), opt)
     
 end
