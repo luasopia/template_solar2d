@@ -1,6 +1,6 @@
 -- 2021/08/11: refactored getsheet() function (and Sprite class)
-
-local rooturl = _luasopia.root .. '/' -- 2021/05/12
+local luasp = _luasopia
+local rooturl = luasp.root .. '/' -- 2021/05/12
 local tins = table.insert
 
 --------------------------------------------------------------------------------

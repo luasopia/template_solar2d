@@ -10,10 +10,10 @@ local fontsize0 = 50 -- the same as Text class default value
 local fontcolor0 = Color.WHITE
 local int, max = math.floor, math.max
 --------------------------------------------------------------------------------
-Progressbar = class(Group)
+ProgressBar = class(Group)
 --------------------------------------------------------------------------------
 --[[
-    local btn = Progressbar(width [, opt])
+    local btn = ProgressBar(width [, opt])
     opt = {
         height = n, -- in pixel, default:width*0.12
         strokecolor = color, -- default: Color.WHITE
@@ -30,7 +30,7 @@ Progressbar = class(Group)
     }
 --]]
 --------------------------------------------------------------------------------
-function Progressbar:init(width, opt)
+function ProgressBar:init(width, opt)
     Group.init(self)
     
     opt = opt or {}
@@ -79,7 +79,7 @@ function Progressbar:init(width, opt)
 end
 
 
-function Progressbar:setvalue(val, txtformat)
+function ProgressBar:setvalue(val, txtformat)
 
     -- 설정된 최대/최소값을 제한
     if val>self.__maxv then val = self.__maxv
@@ -100,7 +100,7 @@ function Progressbar:setvalue(val, txtformat)
 end
 
 
-function Progressbar:setminmax(minv, maxv)
+function ProgressBar:setminmax(minv, maxv)
 
     self.__minv, self.__maxv = minv, maxv
     return self
@@ -108,7 +108,7 @@ function Progressbar:setminmax(minv, maxv)
 end
 
 
-function Progressbar:setgaugecolor(gc)
+function ProgressBar:setgaugecolor(gc)
 
     self.__gage:fill(gc)
     return self
@@ -116,7 +116,7 @@ function Progressbar:setgaugecolor(gc)
 end
 
 
-function Progressbar:setstrokecolor(gc)
+function ProgressBar:setstrokecolor(gc)
 
     self.__frame:strokecolor(gc)
     return self
@@ -124,7 +124,7 @@ function Progressbar:setstrokecolor(gc)
 end
 
 
-function Progressbar:setbgcolor(gc)
+function ProgressBar:setbgcolor(gc)
 
     self.__frame:fill(gc)
     return self
@@ -132,23 +132,15 @@ function Progressbar:setbgcolor(gc)
 end
 
 
-function Progressbar:setstrokewidth(w)
+function ProgressBar:setstrokewidth(w)
 
     self.__frame:strokewidth(w)
     return self
 
 end
 
-function Progressbar:getvalue()
+function ProgressBar:getvalue()
 
     return self.__val
 
 end
-
--- 2021/06/07
-Progressbar.value = Progressbar.setvalue
-Progressbar.minmax = Progressbar.setminmax
-Progressbar.gaugecolor = Progressbar.setgaugecolor
-Progressbar.strokecolor = Progressbar.setstrokecolor
-Progressbar.strokewidth = Progressbar.setstrokewidth
-Progressbar.bgcolor = Progressbar.setbgcolor

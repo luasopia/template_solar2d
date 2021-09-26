@@ -308,7 +308,8 @@ require 'luasp.core.b05_disp_tap'
 require 'luasp.core.c01_group'
 require 'luasp.core.c02_image'
 -- require 'luasp.core.c03_image_region' -- 한 그림에서 여러장을 뽑도록 개선해야 함
-require 'luasp.core.c04_getsheet'
+-- require 'luasp.core.c04_getsheet'
+require 'luasp.core.c04_image_sheet'
 require 'luasp.core.c05_sprite'
 
 require 'luasp.core.d01_text'

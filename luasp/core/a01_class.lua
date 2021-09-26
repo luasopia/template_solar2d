@@ -69,7 +69,8 @@ end
 --2021/09/21: redefining type() global function
 -- type(data) returns 'class' if data itself is a class
 -- type(data) returns 'object' if data is an class instance
-local _type0 = type
+_type0 = type
+local _type0 = _type0
 function type(data)
 
 	local datatype = _type0(data)
@@ -85,7 +86,6 @@ function type(data)
     end
 
 end
-
 
 -- 어떤 객체가 클래스의 객체인지를 판단하는 (전역)함수
 -- 2020/06/10 : 수정

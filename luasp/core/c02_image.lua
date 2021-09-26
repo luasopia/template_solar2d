@@ -1,12 +1,14 @@
 --------------------------------------------------------------------------------
 -- 2020/08/23: Image클래스의 인수를 url 한 개만으로
 -- x,y는 int()로 변환하여 설정해야 pixel모드에서도 위치가 정확해진다
+-- 2021/09/26: ImageSheet객체도 사용할 수 있도록 변경
 --------------------------------------------------------------------------------
 local Disp = Display
 local rooturl = _luasopia.root .. '/' -- 2021/05/12
 local int = math.floor
 
-local newImage
+--------------------------------------------------------------------------------
+local newImageFile, newImageFrame
 --------------------------------------------------------------------------------
 Image = class(Disp)
 --------------------------------------------------------------------------------
@@ -17,16 +19,29 @@ if _Gideros then
     -- print('core.Image(gid)')
     local newTxt = _Gideros.Texture.new
     local newBmp = _Gideros.Bitmap.new
-    local newGroup = _Gideros.Sprite.new
+    --local newGroup = _Gideros.Sprite.new
 
     ----------------------------------------------------------------------------
     -- texture를 외부에서 따로 만들어서 여러 객체에서 공유하는 거나
     -- 아래(init())와 같이 개별 객체에서 별도로 만드는 경우나
     --  textureMemory의 차이가 없다.
     ----------------------------------------------------------------------------
-    newImage = function(self, url)
+    newImageFile = function(self, url)
 
         local img = newBmp(newTxt(url))
+        self.__bd = img
+
+        -- 2020/06/20 arguement true means 'do not consider transformation'
+        local w, h = img:getWidth(true), img:getHeight(true)
+        img:setAnchorPoint(0.5, 0.5)
+        return w, h
+
+    end
+
+
+    newImageFrame = function(self, isht, idfrm)
+
+        local img = newBmp(isht.__txts[idfrm])
         self.__bd = img
 
         -- 2020/06/20 arguement true means 'do not consider transformation'
@@ -57,10 +72,10 @@ elseif _Corona then
 --------------------------------------------------------------------------------
 
     local newImg = _Corona.display.newImage
-    local newGroup = _Corona.display.newGroup
+    --local newGroup = _Corona.display.newGroup
 
     
-    newImage = function(self, url)
+    newImageFile = function(self, url)
 
         local img = newImg(url) -- newImage(parent, url)
         self.__bd = img
@@ -73,6 +88,19 @@ elseif _Corona then
 
     end
     
+    
+    newImageFrame = function(self, isht, idfrm)
+
+        local img = newImg(isht.__txts, idfrm) -- newImage(parent, url)
+        self.__bd = img
+        
+        local w, h = img.width, img.height
+        -- 앵커점을 고려하여 child의 xy좌표 설정. 초기앵커는 (0.5,0.5)
+        -- pxmode에서 정확히 ap(1,1)가 우하점이 되려면 w-1, h-1를 사용해야 한다.
+        img.anchorX, img.anchorY = 0.5, 0.5
+        return w,h
+
+    end
 
     -- 2021/08/22:solar2d는 image의 anchor point가 바뀌더라도
     -- localToContent()는 항상 image의 중심을 원점으로 한다.
@@ -95,10 +123,21 @@ elseif _Corona then
     
 end -- if _Gideros elseif _Corona
 --------------------------------------------------------------------------------
+local _type0 = _type0
 
-function Image:init(url)
 
-    local w,h = newImage(self, rooturl..url) -- newImage(parent, url)
+function Image:init(url, idFrame)
+
+    local w, h
+    if _type0(url) == 'string' then
+
+        w, h = newImageFile(self, rooturl..url)
+
+    else
+
+        w, h = newImageFrame(self, url, idFrame)
+
+    end
     ------------------------------------------------------------
     --2021/05/09 : add info for collision box
     local hw, hh = w*0.5, h*0.5
