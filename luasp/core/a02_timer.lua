@@ -9,7 +9,7 @@ local luasp = _luasopia
 --------------------------------------------------------------------------------
 -- 2020/01/15 times that is NOT use intrinsic (Gideros/Corona) Timer class
 --
--- tmr = Timer(delay, fn [,loops [,onend]])
+-- tmr = Timer(delay, fn [,loops [,onEnd]])
 --
 -- 	After delay (in milliseconds), fn (function) is called.
 -- 	loops (default=1) designates the total number of calling fn
@@ -126,7 +126,7 @@ end
 ------------------------------------------------------------------------------------------
 -- 생성자
 ------------------------------------------------------------------------------------------
-function Timer:init(delay, func, loops, onend)
+function Timer:init(delay, func, loops, onEnd)
 
 	-- local args = args or {}
 	self.delay = delay
@@ -134,7 +134,7 @@ function Timer:init(delay, func, loops, onend)
 	self.count = 0
 	self.__fn = func
 	self.__tm = 0
-	self.__onend = onend
+	self.__onend = onEnd
 	self.__alive = true -- 2021/08/11
 	timers[self]=self
 
@@ -166,7 +166,7 @@ end
 
 
 -- 2021/08/11:added
-function Timer:isremoved()
+function Timer:isRemoved()
 
 	return timers[self] == nil
 

@@ -18,7 +18,7 @@ if _Gideros then
 
         if self.__bd:hitTestPoint(t.x, t.y) then
             self.__tch[t.id] = {id=t.id, phase='begin', x=t.x, y=t.y, dx=0, dy=0}
-            self:ontouch(self.__tch[t.id])
+            self:onTouch(self.__tch[t.id])
             event:stopPropagation()
         end
 
@@ -36,11 +36,11 @@ if _Gideros then
     
         if self.__bd:hitTestPoint(t.x, t.y) then
             self.__tch[t.id] = {id=t.id, phase='move', x=t.x, y=t.y, dx=dx, dy=dy}
-            self:ontouch(self.__tch[t.id])
+            self:onTouch(self.__tch[t.id])
             event:stopPropagation()
         else -- 터치상태로 영역 밖으로 나가면 'cancel'을 발생시킨다.
             if self.__tch.phase =='cancel' then return end
-            self:ontouch{id=t.id, phase='cancel', x=t.x, y=t.y, dx=0, dy=0}
+            self:onTouch{id=t.id, phase='cancel', x=t.x, y=t.y, dx=0, dy=0}
             self.__tch[t.id] = nil
             event:stopPropagation()
         end
@@ -54,7 +54,7 @@ if _Gideros then
         if self.__tch==nil or self.__tch[t.id]==nil then return end
   
         if self.__bd:hitTestPoint(t.x, t.y) then
-            self:ontouch{id=t.id, phase='end', x=t.x, y=t.y, dx=0, dy=0}
+            self:onTouch{id=t.id, phase='end', x=t.x, y=t.y, dx=0, dy=0}
             self.__tch[t.id] = nil
             event:stopPropagation()
         end
@@ -70,7 +70,7 @@ if _Gideros then
   
         if self.__bd:hitTestPoint(t.x, t.y) then
           self.__tch = {id=event.touch.id, phase='cancelled', x=event.touch.x, y=event.touch.y,dx=0,dy=0}
-            self:ontouch(self.__tch)
+            self:onTouch(self.__tch)
             self.__tch[t.id] = nil
             event:stopPropagation()
         end
@@ -80,7 +80,7 @@ if _Gideros then
 
     function Display:__touchon() -- print('enable touch try')
         
-        if self.ontouch then --printf('%s touch enabled',self.name)
+        if self.onTouch then --printf('%s touch enabled',self.name)
             self.__bd:addEventListener(Event.TOUCHES_BEGIN, tchBegin, self)
             self.__bd:addEventListener(Event.TOUCHES_MOVE, tchMove, self)
             self.__bd:addEventListener(Event.TOUCHES_END, tchEnd, self)
@@ -93,14 +93,14 @@ if _Gideros then
     end
     
 
-    function Display:stoptouch() --print('try dt')
+    function Display:stopTouch() --print('try dt')
 
-        if self.ontouch then --printf('%s touch disabled',self.name)
+        if self.onTouch then --printf('%s touch disabled',self.name)
             -- 현재 begin된 터치가 있다면 end를 발생시키고 __tch를 비운다
             -- self.__tch 본체는 그대로 남겨두어야 __upd__()에서 __touchOn()이 안 호출됨
             if self.__tch then
                 for k, t in pairs(self.__tch) do
-                    self:ontouch{id=t.id, phase='end', x=t.x, y=t.y, dx=0, dy=0}
+                    self:onTouch{id=t.id, phase='end', x=t.x, y=t.y, dx=0, dy=0}
                     self.__tch[k] = nil
                 end
             end
@@ -147,7 +147,7 @@ elseif _Corona then
             _Corona.display.getCurrentStage():setFocus(self.__bd)
             self.__bd.isFocus = true
             self.__tch[e.id] = {id = e.id, phase="begin", x=e.x, y=e.y, dx=dx, dy=dy}
-            self:ontouch(self.__tch[e.id])
+            self:onTouch(self.__tch[e.id])
             return true
           
         elseif e.phase == 'moved' then --print('tch move event')
@@ -157,13 +157,13 @@ elseif _Corona then
             if hitTestFunction(self.__bd, e.x, e.y) then
                 dx, dy = e.x - self.__tch[e.id].x, e.y - self.__tch[e.id].y
                 self.__tch[e.id]={id=e.id, phase='move', x=e.x, y=e.y, dx=dx, dy=dy}
-                self:ontouch(self.__tch[e.id])
+                self:onTouch(self.__tch[e.id])
                 return true
             else 
                 -- if self.__tch.phase == 'cancel' then return end
                 _Corona.display.getCurrentStage():setFocus(nil)
                 self.__bd.isFocus = false
-                self:ontouch{id=e.id, phase='cancel', x=e.x, y=e.y, dx=dx, dy=dy}
+                self:onTouch{id=e.id, phase='cancel', x=e.x, y=e.y, dx=dx, dy=dy}
                 self.__tch[e.id] = nil
                 return true
             end
@@ -172,7 +172,7 @@ elseif _Corona then
 
             _Corona.display.getCurrentStage():setFocus(nil)
             self.__bd.isFocus = false
-            self:ontouch{id=e.id, phase='end', x=e.x, y=e.y, dx=0, dy=0}
+            self:onTouch{id=e.id, phase='end', x=e.x, y=e.y, dx=0, dy=0}
             self.__tch[e.id] = nil
             return true
   
@@ -180,7 +180,7 @@ elseif _Corona then
 
             _Corona.display.getCurrentStage():setFocus(nil)
             self.__bd.isFocus = false
-            self:ontouch{id=e.id, phase='cancel', x=e.x, y=e.y, dx=dx, dy=dy}
+            self:onTouch{id=e.id, phase='cancel', x=e.x, y=e.y, dx=dx, dy=dy}
             self.__tch[e.id] = nil
             return true
 
@@ -191,7 +191,7 @@ elseif _Corona then
 
     function Display:__touchon() --print('tch on')
 
-        if self.ontouch then
+        if self.onTouch then
             self.__bd:addEventListener('touch', tch)
             self.__tch = {}
             --print('resume touch')
@@ -201,9 +201,9 @@ elseif _Corona then
     end
 
 
-    function Display:stoptouch() --print('try dt')
+    function Display:stopTouch() --print('try dt')
 
-        if self.ontouch then
+        if self.onTouch then
             -- 현재 begin된 터치가 있다면 강제로 end를 발생
             -- self.__tch는 그대로 남겨두어야 __upd__()에서 __touchOn()이 안 호출됨
             if self.__tch then
@@ -221,4 +221,4 @@ elseif _Corona then
   
 end
 
-Display.resumetouch = Display.__touchon
+Display.resumeTouch = Display.__touchon

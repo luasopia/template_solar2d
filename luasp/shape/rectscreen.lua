@@ -3,19 +3,19 @@
 -- 2020/02/23 : screen 에 touch()를 직접붙이기 위해서 Rect를 screen으로 생성해서
 -- bglayer에 등록
 -- 2020/06/23 : Rect클래스를 리팩토링한 후 여기로 옮김
--- 2021/08/09 : screen:onkey(k) 메서드 처리 추가
+-- 2021/08/09 : screen:onKey(k) 메서드 처리 추가
 --------------------------------------------------------------------------------
 local luasp = _luasopia
 
-local x0, y0, endx, endy = luasp.x0, luasp.y0, luasp.endx, luasp.endy
+local x0, y0, endX, endY = luasp.x0, luasp.y0, luasp.endX, luasp.endY
 local int = math.floor
-local cx, cy = int(luasp.centerx), int(luasp.centery)
+local cx, cy = int(luasp.centerX), int(luasp.centerY)
 local nilfunc = luasp.nilfunc
 
 --2020/05/06 Rect(screen)가 safe영역 전체를 덮도록 수정
 --2020/08/17 bglayer에 생성되어야 한다
-screen = Rect(endx-x0+1, endy-y0+1, {fill = luasp.config.backgroundColor})
-screen:addto(luasp.bglayer):setxy(cx, cy)
+screen = Rect(endX-x0+1, endY-y0+1, {fill = luasp.config.backgroundColor})
+screen:addTo(luasp.bglayer):setXY(cx, cy)
 
 --2021/08/14
 screen.width0 = luasp.width -- original (content) width
@@ -25,25 +25,25 @@ screen.height0 = luasp.height -- original (contetn) height
 screen.width = screen.width0
 screen.height = screen.height0
 
-screen.centerx = cx
-screen.centery = cy
+screen.centerX = cx
+screen.centerY = cy
 screen.fps = luasp.fps
 -- added 2020/05/05
-screen.devicewidth = luasp.devicewidth
-screen.deviceheight = luasp.deviceheight
+screen.deviceWidth = luasp.deviceWidth
+screen.deviceHeight = luasp.deviceHeight
 -- orientations: 'portrait', 'portraitUpsideDown', 'landscapeLeft', 'landscapeRight'
 screen.orientation = luasp.orientation 
 -- added 2020/05/06
-screen.x0, screen.y0, screen.endx, screen.endy = x0, y0, endx, endy
+screen.x0, screen.y0, screen.endX, screen.endY = x0, y0, endX, endY
 
 --added 2021/09/24
 screen.remove = nilfunc
-screen.setx, screen.sety, screen.setxy = nilfunc, nilfunc, nilfunc
+screen.setX, screen.setY, screen.setXY = nilfunc, nilfunc, nilfunc
 -------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------
 --2021/08/09: (아래 코드는) 키보드 입력을 처리하기 위해서 작성
---2021/09/08: onkeydown은 없애고 onkey(both)만 남기기로 함
+--2021/09/08: onkeydown은 없애고 onKey(both)만 남기기로 함
 --------------------------------------------------------------------------------
 local _keyfunc -- 키가 눌렸을 때 호출되는 콜백함수
 local enkey
@@ -116,7 +116,7 @@ if _Gideros then
     end
 
 
-    -- key가 눌렸을 때와 뗐을 때 모두 onkey()가 콜백되도록 함
+    -- key가 눌렸을 때와 뗐을 때 모두 onKey()가 콜백되도록 함
     enkey = function(func)
         
         local stage, Event = _Gideros.stage, _Gideros.Event
@@ -232,12 +232,11 @@ elseif _Corona then
             ['escape'] = 'esc',
     }    
 
-    local function onkey(e)
+    local function onKey(e)
 
         if _keyfunc == nil then return true end
 
         local k = keyt[e.keyName] or e.keyName
-        -- screen:onkey(k, e.phase)
         _keyfunc(screen, k, e.phase)
         return true
 
@@ -248,7 +247,7 @@ elseif _Corona then
 
         -- enkey(nil)로 호출한 경우 키이벤트 제거
         if func==nil and screen.__onkey then
-            Runtime:removeEventListener('key', onkey)
+            Runtime:removeEventListener('key', onKey)
             screen.__onkey = false
             return
         end
@@ -256,7 +255,7 @@ elseif _Corona then
         _keyfunc = func -- 콜백함수 교체
         if screen.__onkey then return end --이벤트가 이미 등록되었다면 반환
 
-        Runtime:addEventListener('key', onkey)
+        Runtime:addEventListener('key', onKey)
         screen.__onkey = true
 
     end
@@ -357,8 +356,8 @@ local tmrkeycheck
 local function checkkeyfunc(self)
 
     -- print('ckd')
-    if screen.onkey then
-        enkey(screen.onkey)
+    if screen.onKey then
+        enkey(screen.onKey)
         tmrkeycheck:remove()
     end
 
@@ -376,6 +375,6 @@ end
 
 function luasp.restoreKeyUser()
 
-    enkey(screen.onkey)
+    enkey(screen.onKey)
 
 end

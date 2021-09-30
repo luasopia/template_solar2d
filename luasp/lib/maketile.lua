@@ -1,6 +1,6 @@
 local Group, Image = Group, Image
-local x0, y0, endx, endy = screen.x0, screen.y0, screen.endx, screen.endy
-local cx, cy = screen.centerx, screen.centery
+local x0, y0, endX, endY = screen.x0, screen.y0, screen.endX, screen.endY
+local cx, cy = screen.centerX, screen.centerY
 local tins = table.insert
 --------------------------------------------------------------------------------
 local function update(self)
@@ -24,7 +24,7 @@ local function update(self)
 
         -- 가장 끝쪽의 열(column)만 맨 처음으로 옮긴다
         if self._xspd > 0 then 
-            if xmax > endx + w/2 then
+            if xmax > endX + w/2 then
                 maxcol.x = xmin - w
                 for _, img in ipairs(maxcol) do img:x(maxcol.x) end
             end
@@ -54,7 +54,7 @@ local function update(self)
         end 
 
         if self._yspd > 0 then
-            if ymax > endy + h/2 then
+            if ymax > endY + h/2 then
                 maxrow.y = ymin - h
                 for _, img in ipairs(maxrow) do img:y(maxrow.y) end
             end
@@ -98,18 +98,18 @@ function lib.maketile(url)
     tile._cols={}
 
     local img = Image(url)
-    local w, h = img:getwidth(), img:getheight()
+    local w, h = img:getWidth(), img:getHeight()
     img:remove()
     
     local imgs = {}
     local rowk, colk = 0, 0
-    for yk = y0-h, endy+h, h do
+    for yk = y0-h, endY+h, h do
         rowk = rowk + 1
         tile._rows[rowk] = {y=yk}
         colk = 0
-        for xk = x0-w, endx+w, w do
+        for xk = x0-w, endX+w, w do
             colk = colk + 1
-            local img = Image(url):addto(tile):xy(xk,yk)
+            local img = Image(url):addTo(tile):xy(xk,yk)
             img.rowk, img.colk = rowk, colk
             
             tins(tile._rows[rowk], img)
@@ -142,7 +142,7 @@ function Tile:update()
     local w, h = self._imgw, self._imgh
 
     for _, img in ipairs(self._imgs) do    
-        local x, y = img:getxy()
+        local x, y = img:getXY()
 
         img:xy(x + self._xspd, y + self._yspd)
 
@@ -153,15 +153,15 @@ function Tile:update()
     end 
 
     for _, img in ipairs(self._imgs) do    
-        local x, y = img:getxy()
+        local x, y = img:getXY()
 
-        if x>endx+w/2 and self._xspd>0 then
+        if x>endX+w/2 and self._xspd>0 then
             img:x(cxmin-w)
         elseif x<x0-w/2 and self._xspd<0 then
             img:x(cxmax+w)
         end
 
-        if y>endy+h/2 and self._yspd>0 then
+        if y>endY+h/2 and self._yspd>0 then
             img:y(cymin-h)
         elseif y<y0-h/2 and self._yspd<0 then
             img:y(cymax+h)

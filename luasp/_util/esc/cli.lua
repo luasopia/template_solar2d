@@ -18,14 +18,14 @@ local strf = string.format
 local nilfunc = luasp.nilfunc
 local stdoutlayer = luasp.stdoutlayer
 --------------------------------------------------------------------------------
-local clibg = Rect(screen.endx-screen.x0+1,screen.endy-screen.y0+1,
+local clibg = Rect(screen.endX-screen.x0+1,screen.endY-screen.y0+1,
     {fill=Color(0,24,44,0.7)}  --Color(28,64,84) -- darker:Color(0,24,44)
 )
-clibg:addto(clilayer):setanchor(0,0):setxy(screen.x0, screen.y0)
+clibg:addTo(clilayer):setAnchor(0,0):setXY(screen.x0, screen.y0)
 
 
-local cli = Group():addto(clilayer)
-cli:setxy(leftmargin, screen.height0-botmargin)
+local cli = Group():addTo(clilayer)
+cli:setXY(leftmargin, screen.height0-botmargin)
 
 local lineHeight =  Text1.getfontsize0()*linespace
 local maxlines = int(screen.height0/lineHeight)-3 -- -1
@@ -85,7 +85,7 @@ local function newline()
     for k=#txtobjs,1,-1 do
 
         local v = txtobjs[k]
-        v:sety(v:gety()-lineHeight)
+        v:setY(v:getY()-lineHeight)
 
     end
 
@@ -99,7 +99,7 @@ local function puts(str, no_new_line)
     end
 
     --(3) 새로운 줄을 추가한다.
-    local txtobj = Text1(str,{color=color0}):addto(cli) -- (0,0)에 자동으로 맞춰진다
+    local txtobj = Text1(str,{color=color0}):addTo(cli) -- (0,0)에 자동으로 맞춰진다
     tIn(txtobjs, txtobj)
     numlines = numlines + 1
 
@@ -132,7 +132,7 @@ end
 
 local function onend_input(entry)
 
-    local str_in = entry:getstring()
+    local str_in = entry:getString()
     local str_hdr = entry.__hdr
     entry:remove()
     puts(str_hdr .. str_in, true)
@@ -145,7 +145,7 @@ function input(header, onenter)
 
     newline()
     cli.__endin = onenter or nilfunc
-    local entry = Entry(header, onend_input):addto(cli)
+    local entry = Entry(header, onend_input):addTo(cli)
 
 end
 
@@ -158,7 +158,7 @@ local env = setmetatable({},{__index=_G})
 -- 첫번째 인수가 entry이다.
 local function execstr(entry)
 
-    local str_in = entry:getstring()
+    local str_in = entry:getString()
     local str_hdr = entry.__hdr
     entry:remove()
     puts(str_hdr .. str_in, true)
@@ -178,14 +178,14 @@ end
 function cli.newcommand()
 
     newline()
-    cli.entry = Entry('> ', execstr, {fontcolor=color0}):addto(cli)
+    cli.entry = Entry('> ', execstr, {fontColor=color0}):addTo(cli)
 
 end
 
 
 function cli.print(...)
 
-    if cli.entry and not cli.entry:isremoved() then
+    if cli.entry and not cli.entry:isRemoved() then
         cli.entry:remove()
     end
 

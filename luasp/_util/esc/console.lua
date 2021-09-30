@@ -7,7 +7,7 @@ local fontsize0 = 40
 --------------------------------------------------------------------------------
 _require0('luasp._util.file')
 
-luasp.console = Group():addto(esclayer):setxy(0,0)
+luasp.console = Group():addTo(esclayer):setXY(0,0)
 
 --------------------------------------------------------------------------------
 
@@ -16,21 +16,21 @@ local ygap = luasp.config.gridygap
 local color = Color.DARK_SLATE_GRAY
 local width = 2
 
-local gridlines = Group():addto(luasp.console):setxy(0,0)
+local gridlines = Group():addTo(luasp.console):setXY(0,0)
 luasp.console.gridlines = gridlines
 
 for x = xgap, screen.width0, xgap do
     local g = Line1(x, 0, x, screen.height0, {width=width, color=color})
-    -- g:addto(esclayer)
-    g:addto(gridlines)
-    if _Corona then g:setxy(x,0) end
+    -- g:addTo(esclayer)
+    g:addTo(gridlines)
+    if _Corona then g:setXY(x,0) end
 end
 
 for y = ygap, screen.height0, ygap do
     local g = Line1(0, y, screen.width0, y, {width=width, color=color})
-    -- g:addto(esclayer)
-    g:addto(gridlines)
-    if _Corona then g:setxy(0,y) end
+    -- g:addTo(esclayer)
+    g:addTo(gridlines)
+    if _Corona then g:setXY(0,y) end
 end
 
 --------------------------------------------------------------------------------
@@ -52,7 +52,7 @@ if _Gideros then
             total = total + 1
 
             local dobj = self.__bd:getChildAt(k).__obj 
-            if isobject(dobj, Group) then
+            if isObject(dobj, Group) then
                 total = total + dobj:__numTotalChildren__()
             end
 
@@ -78,7 +78,7 @@ elseif _Corona then
             total = total + 1
 
             local dobj = self.__bd[k].__obj 
-            if isobject(dobj, Group) then
+            if isObject(dobj, Group) then
                 total = total + dobj:__numTotalChildren__()
             end
 
@@ -92,21 +92,21 @@ end
 
 --------------------------------------------------------------------------------
 
-local infotxts = Group():addto(luasp.console):setxy(0,75)
+local infotxts = Group():addTo(luasp.console):setXY(0,75)
 luasp.console.infotxts = infotxts
 
-local txtopt = {color=infocolor, fontsize=fontsize0}
-local memtxt = Text1("",txtopt):addto(infotxts):setxy(10, 40)
-local objtxt = Text1("",txtopt):addto(infotxts):setxy(10, 80)
+local txtopt = {color=infocolor, fontSize=fontsize0}
+local memtxt = Text1("",txtopt):addTo(infotxts):setXY(10, 40)
+local objtxt = Text1("",txtopt):addTo(infotxts):setXY(10, 80)
 
 
-local etctxt1 = Text1("",txtopt):addto(infotxts):setxy(10, screen.endy-85-80)
+local etctxt1 = Text1("",txtopt):addTo(infotxts):setXY(10, screen.endY-85-80)
 etctxt1:setstrf('(content) resolution : %d x %d',screen.width, screen.height)
 
-local etctxt2 = Text1("",txtopt):addto(infotxts):setxy(10, screen.endy-85-40)
-etctxt2:setstrf('(deivce) resolution : %d x %d',screen.devicewidth, screen.deviceheight)
+local etctxt2 = Text1("",txtopt):addTo(infotxts):setXY(10, screen.endY-85-40)
+etctxt2:setstrf('(deivce) resolution : %d x %d',screen.deviceWidth, screen.deviceHeight)
 
-local etctxt3 = Text1("",txtopt):addto(infotxts):setxy(10, screen.endy-85)
+local etctxt3 = Text1("",txtopt):addTo(infotxts):setXY(10, screen.endY-85)
 etctxt3:setstrf("orientation:'%s', fps:%d", screen.orientation, screen.fps)
 
 local updInfo = function(self, e)
@@ -130,14 +130,14 @@ screen:__addupd12__(updInfo)
 
 function luasp.console:show()
 
-    luasp.stdout:setalpha(0.4)
+    luasp.stdout:setAlpha(0.4)
     esclayer:show()
     
     local h = luasp.console.toolbar.height
     local tmshift=180
-    luasp.console.toolbar:sety(-h):shift{time=tmshift,y=0}
-    luasp.console.infotxts:setalpha(0):shift{time=tmshift,alpha=1}
-    luasp.console.gridlines:setalpha(0):shift{time=tmshift,alpha=1}
+    luasp.console.toolbar:setY(-h):shift{time=tmshift,y=0}
+    luasp.console.infotxts:setAlpha(0):shift{time=tmshift,alpha=1}
+    luasp.console.gridlines:setAlpha(0):shift{time=tmshift,alpha=1}
     
     luasp.console.isactive = true
     screen:__addupd12__(updInfo)
@@ -146,7 +146,7 @@ end
         
 function luasp.console:hide()
 
-    luasp.stdout:setalpha(1)
+    luasp.stdout:setAlpha(1)
     esclayer:hide()
     screen:__rmupd12__(updInfo)
     luasp.console.isactive = false

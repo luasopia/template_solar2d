@@ -61,7 +61,7 @@ end
 
 
 --2020/06/23
-function Polygon:setradius(r)
+function Polygon:setRadius(r)
 
     self.__rds = r
 
@@ -70,14 +70,10 @@ function Polygon:setradius(r)
 
 end
 
-function Polygon:setpoints(n)
+function Polygon:setPoints(n)
     self.__npts = n
     
     self.__pts = self:__mkpts__()
     return self:__redraw__()
 
 end
-
---2021/05/20
-Polygon.radius = Polygon.setradius
-Polygon.points = Polygon.setpoints

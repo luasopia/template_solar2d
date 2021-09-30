@@ -25,7 +25,7 @@ end
 
 
 
-local fileset = Labelbox('files',1070,200):setxy(10,150)
+local fileset = Labelbox('files',1070,200):setXY(10,150)
 
 
 function fileset:searchfiles()
@@ -38,11 +38,11 @@ function fileset:searchfiles()
     for _, file in ipairs(files) do
 
         local fobj = File(file)
-        local btnfile = Button(fobj.dispname,{fontsize=40,height=50}):addto(fileset)
+        local btnfile = Button(fobj.dispname,{fontSize=40,height=50}):addTo(fileset)
         btnfile.file = fobj
-        btnfile:setxy(x,y)
+        btnfile:setXY(x,y)
 
-        function btnfile:onpush()
+        function btnfile:onPush()
             luasp.pxbuilder.pxartset:setsheet(fobj.pxshts, fobj.dispname)
         end
 

@@ -65,7 +65,7 @@ function Heart:init(r, opt)
 end
 
 --2020/06/23
-function Heart:setradius(r)
+function Heart:setRadius(r)
 
     self.__rds = r
     self.__ccc = r*0.85
@@ -74,5 +74,3 @@ function Heart:setradius(r)
     return self:__redraw__()
 
 end
-
-Heart.radius = Heart.setradius

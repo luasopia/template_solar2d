@@ -16,7 +16,7 @@ local function tmrf(self)
     Display.xy(self, self._fx, self._fy)
     local pxys, njnt, njnt1 = self._pxys, self._njnt, self._njnt1
 
-    --tblin(pxys, {self:getxy()})
+    --tblin(pxys, {self:getXY()})
     tblin(pxys, {self._fx, self._fy})
     if #pxys>njnt1 then tblrm(pxys,1) end
 
@@ -93,8 +93,8 @@ opt = {
     decalpha (default=1) : decreasing rate of alpha
     yoffset
 
-    strokewidth
-    strokecolor
+    strokeWidth
+    strokeColor
     fillcolor
 }
 ------------------------------------------------------------------------------]]
@@ -103,8 +103,8 @@ function Tail:init(width, opt)
     Group.init(self)
     -- --[[
     opt = opt or {}
-    opt.sw = opt.strokewidth or 0
-    opt.sc = opt.strokecolor or WHITE
+    opt.sw = opt.strokeWidth or 0
+    opt.sc = opt.strokeColor or WHITE
     opt.fc = opt.fillcolor or WHITE
 
     self._opt = opt 
@@ -156,9 +156,9 @@ function Tail:x(x) self._fx = x;return self end
 function Tail:y(x) self._fy = y;return self end
 function Tail:rot(r) return self end
 
-function Tail:getxy() return self._fx, self._fy end
-function Tail:getx() return self._fx end
-function Tail:gety() return self._fy end
+function Tail:getXY() return self._fx, self._fy end
+function Tail:getX() return self._fx end
+function Tail:getY() return self._fy end
 
 
 function Tail:fill(color)
@@ -166,12 +166,12 @@ function Tail:fill(color)
     return self
 end
 
-function Tail:strokecolor(color)
+function Tail:strokeColor(color)
     self._opt.sc = color
     return self
 end
 
-function Tail:strokewidth(w)
+function Tail:strokeWidth(w)
     self._opt.sw = w
     return self
 end
@@ -210,20 +210,20 @@ function Tail:_redraw(pts)
             q1x,q1y,
             q2x,q2y,
             x,y
-        },self._opt):addto(self):xy(xk_1, yk_1)
+        },self._opt):addTo(self):xy(xk_1, yk_1)
 -- --[[
         if k>1 then
             Rawshape({
                 xk_1-q1xp, yk_1-q1yp, --pts[k-2]-q1xp, pts[k-1]-q1yp,
                 q1x+ xk_1-q1xp, q1y+ yk_1-q1yp, 
                 0,0
-            },self._opt):addto(self):xy(q1xp, q1yp)
+            },self._opt):addTo(self):xy(q1xp, q1yp)
 
             Rawshape({
                 xk_1-q2xp, yk_1-q2yp, --pts[k-2]-q2xp, pts[k-1]-q2yp,
                 q2x+ xk_1-q2xp, q2y+ yk_1-q2yp,
                 0, 0
-            },self._opt):addto(self):xy(q2xp, q2yp)
+            },self._opt):addTo(self):xy(q2xp, q2yp)
         end
     --]]    
         q1xp, q1yp = q1x+xk_1, q1y+yk_1
@@ -283,23 +283,23 @@ function Tail:_redraw(pts)
             q1x,q1y,
             q2x,q2y,
             x,y
-        --},self._opt):addto(self):xy(xk_1, yk_1)
-        },self._opt):addto(self):xy(xk_1 + xo,yk_1 + yo)
+        --},self._opt):addTo(self):xy(xk_1, yk_1)
+        },self._opt):addTo(self):xy(xk_1 + xo,yk_1 + yo)
 
         if k>1 then
             Rawshape({
                 xk_1-q1xp, yk_1-q1yp, --pts[k-2]-q1xp, pts[k-1]-q1yp,
                 q1x+ xk_1-q1xp, q1y+ yk_1-q1yp, 
                 0,0
-            --},self._opt):addto(self):xy(q1xp, q1yp)
-            },self._opt):addto(self):xy(q1xp+xo, q1yp+yo)
+            --},self._opt):addTo(self):xy(q1xp, q1yp)
+            },self._opt):addTo(self):xy(q1xp+xo, q1yp+yo)
 
             Rawshape({
                 xk_1-q2xp, yk_1-q2yp, --pts[k-2]-q2xp, pts[k-1]-q2yp,
                 q2x+ xk_1-q2xp, q2y+ yk_1-q2yp,
                 0, 0
-            --},self._opt):addto(self):xy(q2xp, q2yp)
-            },self._opt):addto(self):xy(q2xp+xo, q2yp+yo)
+            --},self._opt):addTo(self):xy(q2xp, q2yp)
+            },self._opt):addTo(self):xy(q2xp+xo, q2yp+yo)
         end
 
         q1xp, q1yp = q1x+xk_1, q1y+yk_1

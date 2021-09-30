@@ -24,7 +24,7 @@ local function gvec_pg(self)
     local gpts, vecs = {}, {}
 
     -- 첫 번째 점을 따로 저장한다
-    local gx1, gy1 = self:getglobalxy(pts[1], pts[2])
+    local gx1, gy1 = self:__getgxy__(pts[1], pts[2])
     local _1_len1 = pts[3] -- 이 점과 전 점간의 거리의 역수
     tins(gpts, gx1)
     tins(gpts, gy1)
@@ -33,7 +33,7 @@ local function gvec_pg(self)
     local gxk_1, gyk_1 = gx1, gy1  
     for k=4, #pts, 3 do -- {x,y,1/len}이므로 3씩 증가시킨다
         
-        local gxk, gyk = self:getglobalxy(pts[k], pts[k+1])
+        local gxk, gyk = self:__getgxy__(pts[k], pts[k+1])
         local _1_lenk = pts[k+2] -- 이 점과 전 점간의 거리의 역수
         tins(gpts, gxk)
         tins(gpts, gyk)
@@ -58,7 +58,7 @@ local function gvec_circ(circ, pgpts)
     local gpts, vecs = {}, {}
 
     -- 원의 중심점을 따로 저장한다
-    local gx, gy = circ:getglobalxy()
+    local gx, gy = circ:__getgxy__()
     tins(gpts, gx)
     tins(gpts, gy)
     tins(gpts, circ.__ccc)
@@ -202,16 +202,16 @@ local function updpush(self)
                 if push then -- 겹친다면(push는 nil이 아니라 테이블)
                     
                     -- <self의 중심 -> obj의 중심>  방향의 벡터 계산
-                    local x1, y1 = self:getglobalxy()
-                    local x2, y2 = obj:getglobalxy()
+                    local x1, y1 = self:__getgxy__()
+                    local x2, y2 = obj:__getgxy__()
                     local outerx, outery = x2-x1, y2-y1
 
                     local pushx, pushy = unpack(push)
                     -- <pushx, pushy>가 self의 바깥방향으로의 벡터라면 더한다
                     if (outerx*pushx+outery*pushy>=0) then
-                        obj:xy(obj:getx()+pushx, obj:gety()+pushy)
+                        obj:xy(obj:getX()+pushx, obj:getY()+pushy)
                     else -- <pushx, pushy>가 self의 안쪽 방향으로의 벡터라면 뺀다.
-                        obj:xy(obj:getx()-pushx, obj:gety()-pushy)
+                        obj:xy(obj:getX()-pushx, obj:getY()-pushy)
                     end
 
                 end
@@ -236,8 +236,8 @@ local function updpush(self)
             --(3) 둘 다 원일 경우
             elseif self.__ccc and obj.__ccc then
                 -- print('ishit')
-                local gcx1, gcy1 = self:getglobalxy()
-                local gcx2, gcy2 = obj:getglobalxy()
+                local gcx1, gcy1 = self:__getgxy__()
+                local gcx2, gcy2 = obj:__getgxy__()
                 local dx, dy = gcx1-gcx2, gcy1-gcy2
                 local len = sqrt(dx*dx+dy*dy)
                 return len <= self.__ccc + obj.__ccc
@@ -297,18 +297,18 @@ local function updreact(self)
                 if push then -- 겹친다면(push는 nil이 아니라 테이블)
                     
                     -- <self의 중심 -> obj의 중심>  방향의 벡터 계산
-                    local x1, y1 = self:getglobalxy()
-                    local x2, y2 = obj:getglobalxy()
+                    local x1, y1 = self:__getgxy__()
+                    local x2, y2 = obj:__getgxy__()
                     local outerx, outery = x2-x1, y2-y1
 
                     local pushx, pushy = unpack(push)
                     -- <pushx, pushy>가 self의 바깥방향으로의 벡터라면 더한다
                     if (outerx*pushx+outery*pushy>=0) then
-                        self:xy(self:getx()-pushx*0.5, self:gety()-pushy*0.5)
-                        obj:xy(obj:getx()+pushx*0.5, obj:gety()+pushy*0.5)
+                        self:xy(self:getX()-pushx*0.5, self:getY()-pushy*0.5)
+                        obj:xy(obj:getX()+pushx*0.5, obj:getY()+pushy*0.5)
                     else -- <pushx, pushy>가 self의 안쪽 방향으로의 벡터라면 뺀다.
-                        self:xy(self:getx()+pushx*0.5, self:gety()+pushy*0.5)
-                        obj:xy(obj:getx()-pushx*0.5, obj:gety()-pushy*0.5)
+                        self:xy(self:getX()+pushx*0.5, self:getY()+pushy*0.5)
+                        obj:xy(obj:getX()-pushx*0.5, obj:getY()-pushy*0.5)
                     end
 
                 end
@@ -367,14 +367,14 @@ function Disp:ishit0(obj)
     local gpts1, gpts2 = {}, {}
 
     for k=1, #pts1, 2 do
-        local gx, gy = self:getglobalxy(pts1[k], pts1[k+1])
+        local gx, gy = self:__getgxy__(pts1[k], pts1[k+1])
         tins(gpts1, gx)
         tins(gpts1, gy)
     end
 
     -- (2) obj의 각 꼭지점이 self안에 포함되는지 체크
     for k=1, #pts2, 2 do
-        local gx2, gy2 = obj:getglobalxy(pts2[k], pts2[k+1])
+        local gx2, gy2 = obj:__getgxy__(pts2[k], pts2[k+1])
         tins(gpts2, gx2)
         tins(gpts2, gy2)
 

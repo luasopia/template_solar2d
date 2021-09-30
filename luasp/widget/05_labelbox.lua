@@ -24,11 +24,11 @@ function Labelbox:__drawlb__()
 
     local opt = self.__lbopt
 
-    local box = Rect(self.__wdt, self.__hgt,{strokewidth=opt.borderwidth, strokecolor=opt.bordercolor})
-    box:empty():setanchor(0,0):addto(self)
+    local box = Rect(self.__wdt, self.__hgt,{strokeWidth=opt.borderwidth, strokeColor=opt.bordercolor})
+    box:empty():setAnchor(0,0):addTo(self)
     self.box = box
     
-    self.label = Text1(self.__lbtxt):addto(self):sety(-opt.labelymargin)
+    self.label = Text1(self.__lbtxt):addTo(self):setY(-opt.labelymargin)
 
     return self
 

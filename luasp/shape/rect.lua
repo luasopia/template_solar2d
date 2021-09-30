@@ -38,7 +38,7 @@ end
 
 
 --2020/06/23
-function Rect:setwidth(w)
+function Rect:setWidth(w)
 
     self.__wdt = w
 
@@ -48,7 +48,7 @@ function Rect:setwidth(w)
 end
 
 
-function Rect:setheight(h)
+function Rect:setHeight(h)
 
     self.__hgt = h
 
@@ -56,8 +56,3 @@ function Rect:setheight(h)
     return self:__redraw__()
 
 end
-
-
--- 2021/05/04: add aliases of set methods 
-Rect.width = Rect.setwidth
-Rect.height = Rect.setheight

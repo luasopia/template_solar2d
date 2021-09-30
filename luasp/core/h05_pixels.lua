@@ -223,13 +223,13 @@ function Pixels.__setpxmode__()
     -- (pxmode에서는 확대시 점좌표들을 직접 계산해야 한다.)
     pxmode = true
 
-    Pixels.setrot, Pixels.rot = Pixels.__setr__, Pixels.__setr__
-    Pixels.setscale, Pixels.scale = Pixels.__sets__, Pixels.__sets__
-    Pixels.setxscale, Pixels.xscale = Pixels.__setxs__, Pixels.__setxs__
-    Pixels.setyscale, Pixels.yscale = Pixels.__setys__, Pixels.__setys__
-    Pixels.setxyscale, Pixels.xyscale = Pixels.__setxys__, Pixels.__setxys__
+    Pixels.setRot = Pixels.__setr__
+    Pixels.setScale = Pixels.__sets__
+    Pixels.setScaleX = Pixels.__setxs__
+    Pixels.setScaleY = Pixels.__setys__
+    Pixels.setScaleXY= Pixels.__setxys__
     
-    Pixels.getglobalxy = Pixels.__getgxypx__
+    Pixels.getGlobalXY = Pixels.__getgxypx__
     Pixels.__getgxy__ = Pixels.__getgxypx__
 
 end
@@ -328,7 +328,7 @@ function Pixels:__setrs__()
 end
 --]]
 
---2021/08/17:pxmode일 때 setrot() (and rot()) 함수가 아래로 교체된다
+--2021/08/17:pxmode일 때 setRot() 함수가 아래로 교체된다
 -- 항상 __bd의 원점(0,0)이 앵커점이다.
 function Pixels:__setr__(deg)
 
@@ -351,7 +351,7 @@ function Pixels:__setr__(deg)
     
     self.__rsupd = true
     
-    return Disp.setrot(self, deg)
+    return Disp.setRot(self, deg)
 
 end
 
@@ -405,7 +405,7 @@ end
 
 
 -- 호출 빈도가 낮을 것으로 예상(최초 한 번 정도)
-function Pixels:setanchor(ax, ay)
+function Pixels:setAnchor(ax, ay)
 
     self.__apx, self.__apy = ax, ay
 
@@ -427,7 +427,7 @@ end
 
 
 -- pxmode에서 pixels객체는 자체적으로 확대를 하기 때문에
--- getglobalxy()메서드를 아래 함수로 오버라이드해야 한다.
+-- getGlobalXY()메서드를 아래 함수로 오버라이드해야 한다.
 function Pixels:__getgxypx__(x,y)
 
     -- local xc, yc = (0.5-ax)*w_1, (0.5-ay)*h_1
@@ -436,14 +436,14 @@ function Pixels:__getgxypx__(x,y)
     x = ((x or 0)+self.__xc)*self.__bdxs
     y = ((y or 0)+self.__yc)*self.__bdys
     
-    return Disp.getglobalxy(self, x, y)
+    return Disp.getGlobalXY(self, x, y)
 
 end
 
 
 -- pxmode에서 pixels객체는 자체적으로 확대/회전을 하기 때문에
--- pxmode에서 getglobalxy()메서드를 오버라이드해야 한다.
-function Pixels:getglobalxy(x,y)
+-- pxmode에서 getGlobalXY()메서드를 오버라이드해야 한다.
+function Pixels:getGlobalXY(x,y)
 
     -- local xc, yc = (0.5-ax)*w_1, (0.5-ay)*h_1
     -- (xc,yc)는 그룹(self) 죄표계에서 픽셀들의 정중앙점 좌표
@@ -451,11 +451,11 @@ function Pixels:getglobalxy(x,y)
     x = (x or 0)+self.__xc
     y = (y or 0)+self.__yc
     
-    return Disp.getglobalxy(self, x, y)
+    return Disp.getGlobalXY(self, x, y)
 
 end
 
-Pixels.__getgxy__ = Pixels.getglobalxy
+Pixels.__getgxy__ = Pixels.getGlobalXY
 
 
 --------------------------------------------------------------------------------
@@ -467,7 +467,4 @@ Pixels.play = Sprite.play
 Pixels.pause = Sprite.pause
 Pixels.resume = Sprite.resume
 Pixels.stop = Sprite.stop
-Pixels.setframe = Sprite.setframe
-
-
-Pixels.anchor = Pixels.setanchor
+Pixels.setFrame = Sprite.setFrame

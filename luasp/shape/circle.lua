@@ -47,7 +47,7 @@ end
 
 
 --2020/06/23
-function Circle:setradius(r)
+function Circle:setRadius(r)
     self.__rds = r
     self.__ccc = r
 
@@ -62,5 +62,3 @@ function Circle:getradius()
     return self.__rds
     
 end
-
-Circle.radius = Circle.setradius

@@ -40,9 +40,9 @@ function Arrow:init(width, opt)
     self.__wdt = width --width of the head
     
     opt = opt or {}
-    self.__hhgt = opt.headheight or width
-    self.__twdt = opt.tailwidth or int(width*0.5)
-    self.__thgt = opt.tailheight or width
+    self.__hhgt = opt.headHeight or width
+    self.__twdt = opt.tailWidth or int(width*0.5)
+    self.__thgt = opt.tailHeight or width
 
     return Shape.init(self, self:__mkpts__(), opt)
 
@@ -50,7 +50,7 @@ end
 
 
 --2020/06/23
-function Arrow:setwidth(w)
+function Arrow:setWidth(w)
 
     self.__wdt = w
     self.__pts = self:__mkpts__()
@@ -58,7 +58,7 @@ function Arrow:setwidth(w)
 
 end
 
-function Arrow:setheadheight(h)
+function Arrow:setHeadHeight(h)
 
     self.__hhgt = h
     self.__pts = self:__mkpts__()
@@ -67,8 +67,8 @@ function Arrow:setheadheight(h)
 end
 
 
--- tailwidth < (head)width 가 되도록 강제함
-function Arrow:settailwidth(w)
+-- tailWidth < (head)width 가 되도록 강제함
+function Arrow:setTailWidth(w)
 
     if w<self.__wdt then
         self.__twdt = w
@@ -80,7 +80,7 @@ function Arrow:settailwidth(w)
 
 end
 
-function Arrow:settailheight(h)
+function Arrow:setTailHeight(h)
 
     self.__thgt = h
     self.__pts = self:__mkpts__()
@@ -88,16 +88,10 @@ function Arrow:settailheight(h)
 
 end
 
-function Arrow:getwidth() return self.__wdt end
-function Arrow:getheadheight() return self.__hhgt end
-function Arrow:gettailwidth() return self.__twdt end
-function Arrow:gettailheight() return self.__thgt end
+function Arrow:getWidth() return self.__wdt end
+function Arrow:getHeadHeight() return self.__hhgt end
+function Arrow:getTailWidth() return self.__twdt end
+function Arrow:getTailHeight() return self.__thgt end
 
-function Arrow:getwidth() return self.__wdt end
-function Arrow:getheight() return self.__hhgt + self.__thgt end
-
--- 2021/05/04: add aliases of set methods 
-Arrow.width = Arrow.setwidth
-Arrow.headheight = Arrow.setheadheight
-Arrow.tailheight = Arrow.settailheight
-Arrow.tailwidth = Arrow.settailwidth
+function Arrow:getWidth() return self.__wdt end
+function Arrow:getHeight() return self.__hhgt + self.__thgt end

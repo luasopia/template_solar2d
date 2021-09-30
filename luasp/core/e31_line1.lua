@@ -55,12 +55,12 @@ elseif _Corona then
         self.__strkc = c
 
         Disp.init(self) -- 이 안에서 시작점이 (화면의)중심점으로 바뀌니까
-        self:setxy(x1,y1) -- 위치를 다시 맞춰준다
+        self:setXY(x1,y1) -- 위치를 다시 맞춰준다
 
     end
 
 end
 
 --2021/05/24 : added
-function Line1:getwidth() return self.__strkw end
-function Line1:getcolor() return self.__strkc end
+function Line1:getWidth() return self.__strkw end
+function Line1:getColor() return self.__strkc end

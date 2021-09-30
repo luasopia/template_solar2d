@@ -19,24 +19,24 @@ function Pxart:init(pxsht, id)
     self.id = id
     
     local s = luasp._getpxs0{self.pxsht}
-    local pxs = Pixels(s):setscale(pxscale):setanchor(0,0)
+    local pxs = Pixels(s):setScale(pxscale):setAnchor(0,0)
     local w,h =pxsht.width, pxsht.height
     
     
     Labelbox.init(self, tostring(id),w*pxscale,h*pxscale)
-    pxs:addto(self)
+    pxs:addTo(self)
     self.pxs = psx
     -- -- 외곽테두리
-    -- self.rectborder = Rect(w*pxscale,h*pxscale,{strokecolor=Color.RED,strokewidth=3}):addto(self)
-    -- self.rectborder:setanchor(0,0):empty()
+    -- self.rectborder = Rect(w*pxscale,h*pxscale,{strokeColor=Color.RED,strokeWidth=3}):addTo(self)
+    -- self.rectborder:setAnchor(0,0):empty()
 
     --터치(영역)사각형
-    self.taprect = Rect(w*pxscale,h*pxscale):addto(self)
-    self.taprect:setanchor(0,0):setalpha(0.01)
+    self.taprect = Rect(w*pxscale,h*pxscale):addTo(self)
+    self.taprect:setAnchor(0,0):setAlpha(0.01)
     -- if _Cornoa then self.taprect.__shp.isHitTestable = true end
 
 
-    function self.taprect:ontap(e)
+    function self.taprect:onTap(e)
 
         luasp.pxgrid.redraw(self.__pr)
 
@@ -49,14 +49,14 @@ function Pxart:redraw()
 
     self.pxs:remove()
     local s = luasp._getpxs0{self.pxsht}
-    self.pxs = Pixels(s):addto(self):setscale(pxscale):setanchor(0,0)
+    self.pxs = Pixels(s):addTo(self):setScale(pxscale):setAnchor(0,0)
 
 end
 
 
 --------------------------------------------------------------------------------
 
-local pxartset = Labelbox('',1070,300):setxy(xmargin, ymargin)
+local pxartset = Labelbox('',1070,300):setXY(xmargin, ymargin)
 
 function pxartset:setsheet(pxshts, showname)
     
@@ -68,7 +68,7 @@ function pxartset:setsheet(pxshts, showname)
     local x,y = 20, 50
     for id, sht in ipairs(pxshts) do
 
-        self.arts[#self.arts+1] = Pxart(sht, id):addto(self):setxy(x,y)
+        self.arts[#self.arts+1] = Pxart(sht, id):addTo(self):setXY(x,y)
         x=x+200
     end
 

@@ -2,13 +2,14 @@
 -- 2021/06/09: created
 --------------------------------------------------------------------------------
 -- default values
-local strokewidthratio0 = 0.15 -- strokewidth == fontsize*strokewidthratio0
+local strokewidthratio0 = 0.15 -- strokeWidth == fontSize*strokewidthratio0
 local fillcolor0 = Color.BLUE
 local strokecolor0 = Color.ROYAL_BLUE
 local fontsize0 = 50 -- the same as Text class default value
 local textcolor0 = Color.WHITE
 local nilfunc = function() end
 local oktext0 = "Tap if OK"
+local popuptime0 = 100
 --------------------------------------------------------------------------------
 --[[
     alert('string')
@@ -21,15 +22,15 @@ local oktext0 = "Tap if OK"
 
     opt = {
         oktext = string -- default:"Tap if OK"
-        fontsize = n,       -- default:50
-        textcolor = color,  -- default: Color.WHITE
-        bgcolor = color,       -- default: Color.GREEN
-        strokecolor = color,-- default: Color.LIGHT_GREEN
-        strokewidth = n,    -- in pixel, default:fontzise*0.15
+        fontSize = n,       -- default:50
+        textColor = color,  -- default: Color.WHITE
+        bgColor = color,       -- default: Color.GREEN
+        strokeColor = color,-- default: Color.LIGHT_GREEN
+        strokeWidth = n,    -- in pixel, default:fontzise*0.15
         
-        popuptime = n,      -- in millisecond (default:150)
-        verticalmargin = n,
-        sidemargin = n,
+        popupTime = n,      -- in millisecond (default:150)
+        verticalMargin = n,
+        sideMargin = n,
         
         width = n,
         height = n,
@@ -49,44 +50,44 @@ function alert(str, onok, opt)
     opt = opt or {}
 
     local oktext = opt.oktext or oktext0
-    local fontsize = opt.fontsize or fontsize0
-    local textcolor = opt.textcolor or textcolor0
-    local fillcolor = opt.bgcolor or fillcolor0
-    local strokecolor = opt.strokecolor or strokecolor0
-    local strokewidth = opt.strokewidth or fontsize*strokewidthratio0
+    local fontSize = opt.fontSize or fontsize0
+    local textColor = opt.textColor or textcolor0
+    local fillcolor = opt.bgColor or fillcolor0
+    local strokeColor = opt.strokeColor or strokecolor0
+    local strokeWidth = opt.strokeWidth or fontSize*strokewidthratio0
 
-    local popuptime = opt.popuptime or 150
-    local vertmargin = opt.verticalmargin or fontsize*0.7
-    local sidemargin = opt.sidemargin or fontsize
+    local popupTime = opt.popupTime or  popuptime0
+    local vertmargin = opt.verticalMargin or fontSize*0.7
+    local sideMargin = opt.sideMargin or fontSize
     
     -- (1) background rect must be firsly generated
     local frame = Rect(3,3,{
         fill = fillcolor,
         fill = fillcolor,
-        strokecolor = strokecolor,
-        strokewidth = strokewidth,
-    }):addto(wnd)
+        strokeColor = strokeColor,
+        strokeWidth = strokeWidth,
+    }):addTo(wnd)
 
     -- (2) then, text object
     local txt = Text(str,{
-        fontsize=fontsize,
-        color=textcolor,
-    }):addto(wnd)
+        fontSize=fontSize,
+        color=textColor,
+    }):addTo(wnd)
 
     local txtok = Text(oktext, {
-        fontsize = fontsize*0.7,
+        fontSize = fontSize*0.7,
         color = Color.POWDER_BLUE
-    }):addto(wnd):anchor(1,1)
+    }):addTo(wnd):setAnchor(1,1)
 
 
-    function frame:ontap(self)
+    function frame:onTap(self)
 
-        if popuptime > 0 then
+        if popupTime > 0 then
 
             wnd:shift{
-                time=popuptime*0.7,
+                time=popupTime*0.7,
                 scale=0.1,
-                onend = function()
+                onEnd = function()
                     wnd:remove()
                     wnd.onok()
                 end
@@ -102,15 +103,15 @@ function alert(str, onok, opt)
     
     -- 2021/06/04 opt의 width/height가 사용자에게 주어졌다면 그것을 사용하고
     -- 아니라면 text의 폭과 높이값을 고려한 계산치를 사용한다.
-    local wdt = opt.width or (txt:getwidth()  + 2*sidemargin)
-    local hgt = opt.height or (vertmargin*4 + txt:getheight() + fontsize)
+    local wdt = opt.width or (txt:getWidth()  + 2*sideMargin)
+    local hgt = opt.height or (vertmargin*4 + txt:getHeight() + fontSize)
 
-    frame:width(wdt):height(hgt)
-    txt:y(-fontsize)
-    txtok:xy(wdt*0.5-fontsize*0.5,hgt*0.5-fontsize*0.5)
+    frame:setWidth(wdt):setHeight(hgt)
+    txt:setY(-fontSize)
+    txtok:setXY(wdt*0.5-fontSize*0.5,hgt*0.5-fontSize*0.5)
 
-    if popuptime>0 then
-        wnd:scale(0.01):shift{time=popuptime,scale=1}
+    if popupTime>0 then
+        wnd:setScale(0.01):shift{time=popupTime,scale=1}
     end
 
     return wnd

@@ -62,8 +62,8 @@ end
 
 -- y축의 1은 16/9 이므로 (1920:1080=16:9=1.7777..) dy에 이 비율을 곱한다.
 --local widht, height = 1080, 1920
-local width = screen.endx - screen.x0 + 1
-local height = screen.endy - screen.y0 + 1
+local width = screen.endX - screen.x0 + 1
+local height = screen.endY - screen.y0 + 1
 local yratio = height/width
 local function dist(pt1, pt2)
     local dx, dy, dz = pt1.x-pt2.x, yratio*(pt1.y-pt2.y), pt1.z-pt2.z

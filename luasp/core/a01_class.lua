@@ -8,7 +8,7 @@ local nilfunc = _luasopia.nilfunc
 local Object = {
 	init = nilfunc, -- default constructor
 	remove = nilfunc, -- default destructor
-	__clsid = 0, -- 2021/09/21 added
+	__clsid = 0, -- 2021/09/21 added --0으로 고정시켜야 한다.
 }
 
 local clsid = 0
@@ -45,7 +45,7 @@ class = function(baseClass)
 	------------------------------------------------------------------------
 	local cls = {	
 		init = nilfunc,
-		__clsid = clsid, -- 클래스 고유번호, isobject()메서드에서 사용된다
+		__clsid = clsid, -- 클래스 고유번호, isObject()메서드에서 사용된다
 	}
 	cls.__index = cls --(*2) 이것으로 cls인지 obj인지를 type()함수에서 구별한다.
 
@@ -63,18 +63,17 @@ class = function(baseClass)
 end
 
 --------------------------------------------------------------------------------
--- redefining type(), tostring(), and defining isobject() functions
+-- redefining type(), tostring(), and defining isObject() functions
 --------------------------------------------------------------------------------
 
 --2021/09/21: redefining type() global function
 -- type(data) returns 'class' if data itself is a class
 -- type(data) returns 'object' if data is an class instance
-_type0 = type
-local _type0 = _type0
-function type(data)
-
+local _type0 = type
+local function type(data)
+	
 	local datatype = _type0(data)
-
+	
     if datatype =='table' and data.__clsid then
         if data.__index == data then
             return 'class' -- data is class itself
@@ -84,15 +83,35 @@ function type(data)
     else
         return datatype
     end
-
+	
 end
+_type0 = _type0 -- create global function _type0()
+type = type		-- create global function type()
+
 
 -- 어떤 객체가 클래스의 객체인지를 판단하는 (전역)함수
--- 2020/06/10 : 수정
-function isobject(obj, cls)
+-- 2020/09/30 : 부모클래스에 대해서도 true를 반환하도록 수정
+local getmt = getmetatable
+function isObject(obj, cls)
 
-	--return type(obj)=='table' and obj.__clsid == cls.__id__
-	return _type0(obj)=='table' and obj.__clsid == cls.__clsid
+	--return _type0(obj)=='table' and obj.__clsid == cls.__clsid
+
+	if type(obj)=='object' and type(cls)=='class' then
+
+		local objcls = obj
+		repeat
+			objcls = getmt(objcls).__index
+			if objcls.__clsid == cls.__clsid then 
+				return true
+			end
+		until objcls.__clsid == Object.__clsid -- __clsid of the Object
+		return false
+
+	else
+
+		return false
+
+	end
 
 end
 
@@ -106,7 +125,7 @@ function tostring(data)
 
 	if datatype == 'class' then
 		str = str:gsub('table','class') -- 두 개가 리턴된다. 첫 번째가 결과문자열
-		return str
+		return str						-- 따라서 return str:gsub(...)라고 하면 안된다
 	elseif datatype == 'object' then
 		str = str:gsub('table','object')
 		return str
@@ -115,3 +134,4 @@ function tostring(data)
 	end
 
 end
+_tostring0 = _tostring0

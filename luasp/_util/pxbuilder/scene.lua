@@ -18,16 +18,16 @@ local toolbarfillc = Color(4,85,138)
 local toolbarheight = 80
 
 
-local toolbar = Group():setxy(0,0)
+local toolbar = Group():setXY(0,0)
 toolbar.height = toolbarheight
-toolbar.bg = Rect(screen.width0, toolbarheight):setanchor(0,0):addto(toolbar)
+toolbar.bg = Rect(screen.width0, toolbarheight):setAnchor(0,0):addTo(toolbar)
 toolbar.bg:fill(toolbarfillc)
 
 
-local btnSave = Button("save",{height=50,strokewidth=3,fontsize=40}):addto(toolbar):setxy(200,40)
+local btnSave = Button("save",{height=50,strokeWidth=3,fontSize=40}):addTo(toolbar):setXY(200,40)
 
 --[[
-function btnSave:onpush() 
+function btnSave:onPush() 
 
     local str='return {\n'
 
@@ -54,7 +54,7 @@ end
 --]]
 
 
-local btnNewFile = Button("new file",{height=50,strokewidth=3,fontsize=40}):addto(toolbar):setxy(400,40)
+local btnNewFile = Button("new file",{height=50,strokeWidth=3,fontSize=40}):addTo(toolbar):setXY(400,40)
 
 
 --------------------------------------------------------------------------------

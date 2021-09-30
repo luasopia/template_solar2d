@@ -46,7 +46,7 @@ if _Gideros then
     end
 
 
-    function Line:setwidth(w)
+    function Line:setWidth(w)
 
         self.__strkw = w
         self.__bd:removeChildAt(1)
@@ -56,9 +56,11 @@ if _Gideros then
     end
 
     -- r,g,b는 0-255 범위의 정수
-    function Line:setcolor(r,g,b)
+    --function Line:setColor(r,g,b)
+    function Line:setColor(color)
 
-        self.__strkc = Color(r,g,b)
+        --self.__strkc = Color(r,g,b)
+        self.__strkc = color
         self.__bd:removeChildAt(1)
         self.__bd:addChild(self:__draw(unpack(self.__ptsm)))
         return self
@@ -106,7 +108,7 @@ elseif _Corona then
     end
 
 
-    function Line:setwidth(w)
+    function Line:setWidth(w)
 
         self.__strkw = w
         self.__sbd.strokeWidth = w
@@ -117,9 +119,10 @@ elseif _Corona then
 
     -- r,g,b는 0-255 범위의 정수
     -- 2020/02/22 : r 은 Color객체일 수도 있다.
-    function Line:setcolor(r, g, b)
+    -- function Line:setColor(r, g, b)
+    function Line:setColor(c)
 
-        local c = Color(r,g,b)
+        -- local c = Color(r,g,b)
         self.__sbd:setStrokeColor(c.r, c.g, c.b)
         self.__strkc = c
         return self
@@ -129,9 +132,5 @@ elseif _Corona then
 end
 
 --2021/05/24 : added
-function Line:getwidth() return self.__strkw end
-function Line:getcolor() return self.__strkc end
-
-
-Line.width = Line.setwidth
-Line.color = Line.setcolor
+function Line:getWidth() return self.__strkw end
+function Line:getColor() return self.__strkc end

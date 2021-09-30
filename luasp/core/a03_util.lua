@@ -195,7 +195,7 @@ function luasp.bantouch()
     _print0('bantouch')
 
     tcover = Rect(screen.width,screen.height,{fill=Color(0,0,0,0.1)})
-    tcover:setalpha(0.1):addto(luasp.stdoutlayer)
+    tcover:setAlpha(0.1):addTo(luasp.stdoutlayer)
 
     -- solar2d는 alpha가 0이면 기본적으로 touch 이벤트가 불능이 된다.
     -- alpha가 0임에도 터치이벤트가 발생토록 하려면 아래와 같이 한다.
@@ -205,14 +205,14 @@ function luasp.bantouch()
 
     -- 2021/09/19:solar2d에서 alpha를 0.1로 설정하면 터치이벤트가 발생한다.
     -- shp의 fill도 0.1, rect의 alpha도 0.1로 해서 거의 투명해보인다.
-    tcover.ontouch = luasp.nilfunc
+    tcover.onTouch = luasp.nilfunc
 
 end
 
 
 function luasp.allowtouch()
 
-    if tcover and not tcover:isremoved() then
+    if tcover and not tcover:isRemoved() then
         --print('rmcover ')
         tcover:remove()
     end

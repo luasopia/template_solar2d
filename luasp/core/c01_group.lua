@@ -26,7 +26,7 @@ if _Gideros then
 
         child.__pr = self
         self.__bd:addChild(child.__bd)
-        child:setxy(0,0) --2021/08/14:__bdx,__bdy를 갱신하기 위해서 이렇게 해야함
+        child:setXY(0,0) --2021/08/14:__bdx,__bdy를 갱신하기 위해서 이렇게 해야함
         -- self.__chld[child] = child -- 2021/09/24
         return self
 
@@ -60,14 +60,14 @@ if _Gideros then
     end
     
 
-    function Group:getchild(k)
+    function Group:getChild(k)
 
         return self.__bd:getChildAt(k).__obj
         
     end
 
 
-    function Group:getnumchildren()
+    function Group:getNumChildren()
 
         return self.__bd:getNumChildren()
 
@@ -76,58 +76,58 @@ if _Gideros then
 
     --[[
     -- Disp 베이스클래스의 pasuseTouch()를 오버로딩
-    function Group:stoptouch()
+    function Group:stopTouch()
 
         -- (1) child들은 소멸자 호출 (__obj는 body를 가지는 객체)
         for k = self.__bd:getNumChildren(),1,-1 do
             local obj = self.__bd:getChildAt(k).__obj
-            obj:stoptouch() -- 차일드 각각의 touchOff() 호출
+            obj:stopTouch() -- 차일드 각각의 touchOff() 호출
         end
         -- (2) 자신도 (부모그룹에서) 터치를 멈춤
-        --return Disp.stoptouch(self)
+        --return Disp.stopTouch(self)
 
     end
 
 
     -- Disp 베이스클래스의 pasuseTouch()를 오버로딩
-    function Group:resumetouch() --print('---group enabletch')
+    function Group:resumeTouch() --print('---group enabletch')
 
         -- (1) child들은 소멸자 호출 (__obj는 body를 가지는 객체)
         for k = self.__bd:getNumChildren(),1,-1 do
             local obj = self.__bd:getChildAt(k).__obj
-            obj:resumetouch() -- 차일드 각각의 소멸자 호출
+            obj:resumeTouch() -- 차일드 각각의 소멸자 호출
         end
         -- (2) 자신도 (부모그룹에서) 터치를 멈춤
-        --return Disp.resumetouch(self)
+        --return Disp.resumeTouch(self)
 
     end
 
 
     -- Disp 베이스클래스의 pasuseTouch()를 오버로딩
-    function Group:stopupdate()
+    function Group:stopUpdate()
 
         -- (1) child들은 소멸자 호출 (__obj는 body를 가지는 객체)
         for k = self.__bd:getNumChildren(),1,-1 do
             local obj = self.__bd:getChildAt(k).__obj
-            obj:stopupdate() -- 차일드 각각의 소멸자 호출
+            obj:stopUpdate() -- 차일드 각각의 소멸자 호출
         end
         -- (2) 자신도 (부모그룹에서) 터치를 멈춤
-        return Disp.stopupdate(self)
+        return Disp.stopUpdate(self)
 
     end
 
 
     -- Disp 베이스클래스의 pasuseTouch()를 오버로딩
-    function Group:resumeupdate()
+    function Group:resumeUpdate()
 
         -- (1) child들은 소멸자 호출 (__obj는 body를 가지는 객체)
         for k = self.__bd:getNumChildren(),1,-1 do
             local obj = self.__bd:getChildAt(k).__obj
-            obj:resumeupdate() -- 차일드 각각의 소멸자 호출
+            obj:resumeUpdate() -- 차일드 각각의 소멸자 호출
         end
 
         -- (2) 자신도 (부모그룹에서) 터치를 멈춤
-        return Disp.resumeupdate(self)
+        return Disp.resumeUpdate(self)
 
     end
     --]]
@@ -157,7 +157,7 @@ elseif _Corona then
 
         child.__pr = self
         self.__bd:insert(child.__bd)
-        child:setxy(0,0) --2021/08/14:__bdx,__bdy를 갱신 하기 위해서 이렇게 해야함
+        child:setXY(0,0) --2021/08/14:__bdx,__bdy를 갱신 하기 위해서 이렇게 해야함
         return self
     
     end
@@ -203,14 +203,14 @@ elseif _Corona then
     end
 
 
-    function Group:getnumchildren()
+    function Group:getNumChildren()
 
         return self.__bd.numChildren
 
     end
 
 
-    function Group:getchild(k)
+    function Group:getChild(k)
 
         return self.__bd[k].__obj
 
@@ -232,46 +232,46 @@ elseif _Corona then
 
 
     --[[
-    function Group:stoptouch()
+    function Group:stopTouch()
 
         for k = self.__bd.numChildren, 1, -1 do
-            self.__bd[k].__obj:stoptouch()
+            self.__bd[k].__obj:stopTouch()
         end
 
-        return Disp.stoptouch(self)
+        return Disp.stopTouch(self)
 
     end
 
 
-    function Group:resumetouch()
+    function Group:resumeTouch()
 
         for k = self.__bd.numChildren, 1, -1 do
-            self.__bd[k].__obj:resumetouch()
+            self.__bd[k].__obj:resumeTouch()
         end
 
-        return Disp.resumetouch(self)
+        return Disp.resumeTouch(self)
 
     end
 
 
-    function Group:stopupdate()
+    function Group:stopUpdate()
 
         for k = self.__bd.numChildren, 1, -1 do
-            self.__bd[k].__obj:stopupdate()
+            self.__bd[k].__obj:stopUpdate()
         end
 
-        return Disp.stopupdate(self)
+        return Disp.stopUpdate(self)
 
     end
 
 
-    function Group:resumeupdate()
+    function Group:resumeUpdate()
 
         for k = self.__bd.numChildren, 1, -1 do
-            self.__bd[k].__obj:resumeupdate()
+            self.__bd[k].__obj:resumeUpdate()
         end
 
-        return Disp.resumeupdate(self)
+        return Disp.resumeUpdate(self)
 
     end
     --]]

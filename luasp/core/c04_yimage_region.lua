@@ -95,5 +95,5 @@ ImageRegion.__setimgxy__ = Image.__setimgxy__
 ImageRegion.remove = Image.remove
 
 
-ImageRegion.setanchor = Image.setanchor
--- ImageRegion.anchor = ImageRegion.setanchor
+ImageRegion.setAnchor = Image.setAnchor
+-- ImageRegion.anchor = ImageRegion.setAnchor

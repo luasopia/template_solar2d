@@ -1,12 +1,11 @@
 --------------------------------------------------------------------------------
 -- 2021/08/17:scale에 대해서 아래와 같이 정한다.
 -- self.__bds, self.__bdxs, self.__bdys를 둔다
--- setxscale(xs) 나 setyscale(ys)은 scale값도 (xs+ys)/2값으로 갱신한다.
+-- setScaleX(xs) 나 setYscale(ys)은 scale값도 (xs+ys)/2값으로 갱신한다.
 --------------------------------------------------------------------------------
 local Timer = Timer
 local timers = Timer.__tmrs -- 2020/06/24:Disp:remove()함수 내에서 직접 접근
 local luasp = _luasopia
--- local cx, cy = luasp.centerx, luasp.centery -- 정수값들이다
 local _nxt = next
 
 local int, min = math.floor, math.min
@@ -63,9 +62,9 @@ function Display:init()
     self.__pr = luasp.stage
     self.__pr:add(self)
 
-    --2021/08/15:pixelmode에서 cx,cy값이 변하므로 luasp.centerx/y값을 직접 읽어야 한다
+    --2021/08/15:pixelmode에서 cx,cy값이 변하므로 luasp.centerX/Y값을 직접 읽어야 한다
     -- xy()메서드 안에서 self.__bdx, self.__bdy가 생성된다.
-    self:setxy(luasp.centerx, luasp.centery)
+    self:setXY(luasp.centerX, luasp.centerY)
 
     self.__bd.__obj = self -- body에 원객체를 등록 (_Grp의 __del함수에서 사용)
     
@@ -89,8 +88,8 @@ end
 function Display:__upd__(e)
     
 
-    if self.ontouch and self.__tch==nil then self:__touchon() end
-    if self.ontap and self.__tap==nil then self:__tapon() end
+    if self.onTouch and self.__tch==nil then self:__touchon() end
+    if self.onTap and self.__tap==nil then self:__tapon() end
 
     if self.__noupd then return end -- self.__noupd==true이면 갱신 금지------------
 
@@ -119,8 +118,8 @@ function Display:__upd__(e)
 end
 
 
--- 2021/08/10: addtimer()로 이름을 바꿈
-function Display:addtimer(...)
+-- 2021/08/10: addTimer()로 이름을 바꿈
+function Display:addTimer(...)
 
     self.__tmrs = self.__tmrs or {}
     local tmr = Timer(...)
@@ -130,11 +129,9 @@ function Display:addtimer(...)
     return tmr -- 2020/03/27 수정
 
 end
--- Display.timer = Display.addtimer -- will be deprecaed in future
 
 
-
-function Display:resumeupdate()
+function Display:resumeUpdate()
 
     self.__noupd = false
     --타이머도 다시 시작해야 한다.(2020/07/01)
@@ -143,7 +140,7 @@ function Display:resumeupdate()
 end
 
 
-function Display:stopupdate()
+function Display:stopUpdate()
 
     self.__noupd = true
     --타이머도 다 멈추어야 한다.(2020/07/01)
@@ -153,7 +150,7 @@ end
 
 
 --2020/03/02: group:add(child) returns child
-function Display:addto(group)
+function Display:addTo(group)
 
     group:add(self) -- this returns group object
     return self
@@ -162,11 +159,11 @@ end
 
 
 --function Display:remove() self.__rm = true end
-function Display:isremoved() return self.__bd==nil end
+function Display:isRemoved() return self.__bd==nil end
 
 
 --2020/06/12
-function Display:getparent() return self.__pr end
+function Display:getParent() return self.__pr end
 
 
 --2020/07/01 : handle Internal UPDateS (__iupds)
@@ -216,14 +213,14 @@ end
 
 
 --2020/08/27: added
-function Display:getwidth()
+function Display:getWidth()
 
     return self.__wdt or 0
 
 end
 
 
-function Display:getheight()
+function Display:getHeight()
 
     return self.__hgt or 0
 
@@ -271,49 +268,59 @@ end
 
 
 -- 2021/08/14
-function Display:getanchor()
+function Display:getAnchor()
     -- return self.__bd:getAnchorPosition()
     -- return self.__bd.anchorX, self.__bd.anchorY --solar2d
     return self.__apx, self.__apy
 end
 
 
-function Display:getx()
+function Display:getAnchorX()
+    return self.__apx
+end
+
+
+function Display:getAnchorY()
+    return self.__apy
+end
+
+
+function Display:getX()
     -- return self.__bd:getX() -- gid
     -- return self.__bd.x --solar2d
     return self.__bdx
 end
 
 
-function Display:gety()
+function Display:getY()
     -- return self.__bd:getY() --gid
      -- return self.__bd.y --solar2d
     return self.__bdy
 end
 
 
-function Display:getxy()
+function Display:getXY()
     -- return self.__bd:getPosition() --gid
     -- return self.__bd.x, self.__bd.y --solar2d
     return self.__bdx, self.__bdy
 end
 
 
-function Display:getalpha()
+function Display:getAlpha()
     -- return self.__bd:getAlpha() -- gideros
     -- return self.__bd.alpha -- solar2d
     return self.__bda
 end
 
 
-function Display:getrot()
+function Display:getRot()
     -- return self.__bd:getRotation() end -- gideros(2020/02/26)
     -- return self.__bd.rotation --solar2d
     return self.__bdrd
 end
 
 
-function Display:getxscale()
+function Display:getScaleX()
 
     -- return self.__bd:getScaleX() -- gideros
     -- return self.__bd.xScale -- solar2d
@@ -322,7 +329,7 @@ function Display:getxscale()
 end
 
 
-function Display:getyscale()
+function Display:getScaleY()
 
     -- return self.__bd:getScaleY() -- gideros
     -- return self.__bd.yScale -- gideros
@@ -331,11 +338,15 @@ function Display:getyscale()
 end
 
 
-function Display:getscale()
+function Display:getScaleXY()
 
-    -- gideros getScale() returns xScale, yScale, and zScale
-    -- local sx, sy = self.__bd:getScale(); return (sx+sy)/2 -- gideros
-    -- return (self.__bd.xScale + self.__bd.yScale)/2 -- solar2d
+    return self.__bdxs, self.__bdys
+
+end
+
+
+function Display:getScale()
+
     return self.__bds
 
 end
@@ -344,21 +355,21 @@ end
 -- 2021/08/17:set()메서드를 공통으로 변경
 function Display:set(arg)
     
-    if arg.x        then self:setx(arg.x) end
-    if arg.y        then self:sety(arg.y) end
-    if arg.alpha    then self:setalpha(arg.alpha) end
-    if arg.rot      then self:setrot(arg.rot) end
-    if arg.xscale   then self:setxscale(arg.xscale) end
-    if arg.yscale   then self:setyscale(arg.yscale) end
-    if arg.scale    then self:setscale(arg.scale) end
+    if arg.x        then self:setX(arg.x) end
+    if arg.y        then self:setY(arg.y) end
+    if arg.rot      then self:setRot(arg.rot) end
+    if arg.scale    then self:setScale(arg.scale) end
+    if arg.alpha    then self:setAlpha(arg.alpha) end
+    if arg.xscale   then self:setScaleX(arg.xscale) end
+    if arg.yscale   then self:setScaleY(arg.yscale) end
 
-    if arg.dx        then self:setdx(arg.dx) end
-    if arg.dy        then self:setdy(arg.dy) end
-    if arg.dalpha    then self:setdalpha(arg.dalpha) end
-    if arg.drot      then self:setdrot(arg.drot) end
-    if arg.dxscale   then self:setdxscale(arg.dxscale) end
-    if arg.dyscale   then self:setdyscale(arg.dyscale) end
-    if arg.dscale    then self:setdscale(arg.dscale) end
+    if arg.dx        then self:setDx(arg.dx) end
+    if arg.dy        then self:setDy(arg.dy) end
+    if arg.drot      then self:setDrot(arg.drot) end
+    if arg.dalpha    then self:setDalpha(arg.dalpha) end
+    if arg.dxscale   then self:setDscaleX(arg.dxscale) end
+    if arg.dyscale   then self:setDscaleY(arg.dyscale) end
+    if arg.dscale    then self:setDscale(arg.dscale) end
 
     return self
 
@@ -370,7 +381,7 @@ if _Gideros then -- gideros
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
     
-    function Display:isvisible()
+    function Display:isVisible()
 
         return self.__bd:isVisible()
 
@@ -378,7 +389,7 @@ if _Gideros then -- gideros
 
 
     -- 2020/02/18 (Gideros), 2021/04/22 다시 정리 ##################################
-    function Display:setx(v)
+    function Display:setX(v)
 
         self.__bdx = v
         self.__bd:setX(int(v))
@@ -387,7 +398,7 @@ if _Gideros then -- gideros
     end
 
 
-    function Display:sety(v)
+    function Display:setY(v)
 
         self.__bdy = v
         self.__bd:setY(int(v))
@@ -396,7 +407,7 @@ if _Gideros then -- gideros
     end
 
 
-    function Display:setxy(x,y)
+    function Display:setXY(x,y)
 
         self.__bdx, self.__bdy = x, y
         self.__bd:setPosition(int(x),int(y))
@@ -406,7 +417,7 @@ if _Gideros then -- gideros
 
 
     -- Gideros는 1이 넘으면 이미지가 열화(?)되고, Solar2D는 자동으로 1로 세팅됨
-    function Display:setalpha(v)
+    function Display:setAlpha(v)
 
         self.__bda = v>1 and 1 or v
         self.__bd:setAlpha(self.__bda)
@@ -415,7 +426,7 @@ if _Gideros then -- gideros
     end
 
 
-    function Display:setrot(deg) -- gideros
+    function Display:setRot(deg) -- gideros
 
         self.__bdrd = deg
         self.__bd:setRotation(deg)
@@ -425,13 +436,13 @@ if _Gideros then -- gideros
 
 
     -- gid는 setScale(v)라고 하면 scaleX, scaleY(, scaleZ)에 모두 v가 적용됨
-    function Display:setscale(s)
+    function Display:setScale(s)
 
         self.__bds, self.__bdxs, self.__bdys = s, s, s
         self.__bd:setScale(s)
 
 
-        -- -- setscale()메서드가 호출되었을 때만 hit.r을 재조정한다.
+        -- -- setScale()메서드가 호출되었을 때만 hit.r을 재조정한다.
         -- if self.__ccc then -- 2021/08/21:added
         --     local r = self.__ccc.r0*s
         --     self.__ccc.r = r
@@ -443,12 +454,12 @@ if _Gideros then -- gideros
     end
 
 
-    function Display:setxyscale(xs, ys)
+    function Display:setScaleXY(xs, ys)
 
         self.__bds, self.__bdxs, self.__bdys = (xs+ys)*0.5, xs, ys
         self.__bd:setScale(xs, ys)
 
-        -- -- setscale()메서드가 호출되었을 때만 hit.r을 재조정한다.
+        -- -- setScale()메서드가 호출되었을 때만 hit.r을 재조정한다.
         -- -- xscale과 yscale가 다를 경우에는 작은 값을 기준으로 한다.
         -- if self.__ccc then -- 2021/08/21:added
         --     local mins = min(xs, ys)
@@ -464,13 +475,13 @@ if _Gideros then -- gideros
 
     -- 2020/04/26 : alpha가 1초과면 1로 세팅한다.
     -- xs()와 ys()는 x and scale, y and scale로 혼동할 여지가 있어서 삭제
-    function Display:setxscale(xs)
+    function Display:setScaleX(xs)
 
         self.__bdxs = xs
         self.__bds = (xs+self.__bdys)*0.5 --2021/08/17
         self.__bd:setScaleX(xs)
 
-        -- -- setscale()메서드가 호출되었을 때만 hit.r을 재조정한다.
+        -- -- setScale()메서드가 호출되었을 때만 hit.r을 재조정한다.
         -- -- xscale과 yscale가 다를 경우에는 작은 값을 기준으로 한다.
         -- if self.__ccc then -- 2021/08/21:added
         --     local mins = min(xs, self.__bdys)
@@ -483,13 +494,13 @@ if _Gideros then -- gideros
 
     end
 
-    function Display:setyscale(ys)
+    function Display:setScaleY(ys)
 
         self.__bdys = ys
         self.__bds = (self.__bdxs+ys)*0.5 --2021/08/17
         self.__bd:setScaleY(ys)
 
-        -- -- setscale()메서드가 호출되었을 때만 hit.r을 재조정한다.
+        -- -- setScale()메서드가 호출되었을 때만 hit.r을 재조정한다.
         -- -- xscale과 yscale가 다를 경우에는 작은 값을 기준으로 한다.
         -- if self.__ccc then -- 2021/08/21:added
         --     local mins = min(self.__bdxs, ys)
@@ -515,8 +526,8 @@ if _Gideros then -- gideros
     --]]
 
 
-    -- setanchor()는 각각의 클래스에서 별도로 오버로딩된다
-    function Display:setanchor(ax, ay)
+    -- setAnchor()는 각각의 클래스에서 별도로 오버로딩된다
+    function Display:setAnchor(ax, ay)
 
         self.__apx, self.__apy = ax, ay
         self.__bd:setAnchorPoint(ax, ay)
@@ -528,7 +539,7 @@ if _Gideros then -- gideros
     
     function Display:hide() self.__bd:setVisible(false); return self end
     function Display:show() self.__bd:setVisible(true); return self end
-    function Display:setvisible(v) self.__bd:setVisible(v); return self end
+    function Display:setVisible(v) self.__bd:setVisible(v); return self end
 
     function Display:tint(r,g,b)
 
@@ -539,7 +550,7 @@ if _Gideros then -- gideros
     
 
     -- 2020/06/08 : 추가 
-    function Display:getglobalxy(x,y)
+    function Display:getGlobalXY(x,y)
 
         return self.__bd:localToGlobal(x or 0,y or 0)
         
@@ -551,13 +562,13 @@ elseif _Corona then -- if coronaSDK
 --------------------------------------------------------------------------------    
 --------------------------------------------------------------------------------    
     
-    function Display:isvisible()
+    function Display:isVisible()
         return self.__bd.isVisible
     end
 
 
     -- 2020/02/18 시험메서드 (Solar2D)###############################################
-    function Display:setx(v)
+    function Display:setX(v)
 
         self.__bdx = v
         self.__bd.x = int(v)
@@ -565,7 +576,7 @@ elseif _Corona then -- if coronaSDK
 
     end
     
-    function Display:sety(v)
+    function Display:setY(v)
 
         self.__bdy = v
         self.__bd.y = int(v)
@@ -573,7 +584,7 @@ elseif _Corona then -- if coronaSDK
 
     end
 
-    function Display:setxy(x,y)
+    function Display:setXY(x,y)
 
         self.__bdx, self.__bdy = x, y
         self.__bd.x, self.__bd.y = int(x), int(y)
@@ -582,7 +593,7 @@ elseif _Corona then -- if coronaSDK
     end
 
 
-    function Display:setrot(deg) -- solar2d
+    function Display:setRot(deg) -- solar2d
 
         self.__bdrd = deg
         self.__bd.rotation = deg
@@ -591,12 +602,12 @@ elseif _Corona then -- if coronaSDK
     end
 
     
-    function Display:setscale(s)
+    function Display:setScale(s)
 
         self.__bds, self.__bdxs, self.__bdys = s, s, s
         self.__bd.xScale, self.__bd.yScale = s, s
 
-        -- -- setscale()메서드가 호출되었을 때만 hit.r을 재조정한다.
+        -- -- setScale()메서드가 호출되었을 때만 hit.r을 재조정한다.
         -- -- xscale과 yscale가 틀릴 경우에는 ccc.r을 조정하지 않는다.
         -- if self.__ccc then -- 2021/08/21:added
         --     local r = self.__ccc.r0*s
@@ -609,12 +620,12 @@ elseif _Corona then -- if coronaSDK
     end
 
 
-    function Display:setxyscale(xs, ys)
+    function Display:setScaleXY(xs, ys)
 
         self.__bds, self.__bdxs, self.__bdys = (xs+ys)*0.5, xs, ys
         self.__bd.xScale, self.__bd.yScale = xs, ys
 
-        -- -- setscale()메서드가 호출되었을 때만 hit.r을 재조정한다.
+        -- -- setScale()메서드가 호출되었을 때만 hit.r을 재조정한다.
         -- -- xscale과 yscale가 다를 경우에는 작은 값을 기준으로 한다.
         -- if self.__ccc then -- 2021/08/21:added
         --     local mins = min(xs, ys)
@@ -629,7 +640,7 @@ elseif _Corona then -- if coronaSDK
     end
 
 
-    function Display:setalpha(v)
+    function Display:setAlpha(v)
         
         self.__bda = v
         self.__bd.alpha = v, v
@@ -638,13 +649,13 @@ elseif _Corona then -- if coronaSDK
     end
 
     
-    function Display:setxscale(xs)
+    function Display:setScaleX(xs)
 
         self.__bdxs = xs
         self.__bds = (xs+self.__bdys)*0.5 --2021/08/17
         self.__bd.xScale = xs
 
-        -- -- setscale()메서드가 호출되었을 때만 hit.r을 재조정한다.
+        -- -- setScale()메서드가 호출되었을 때만 hit.r을 재조정한다.
         -- -- xscale과 yscale가 다를 경우에는 작은 값을 기준으로 한다.
         -- if self.__ccc then -- 2021/08/21:added
         --     local mins = min(xs, self.__bdys)
@@ -659,13 +670,13 @@ elseif _Corona then -- if coronaSDK
     end
 
 
-    function Display:setyscale(ys)
+    function Display:setScaleY(ys)
 
         self.__bdys = ys
         self.__bds = (self.__bdxs+ys)*0.5 --2021/08/17
         self.__bd.yScale = ys
 
-        -- -- setscale()메서드가 호출되었을 때만 hit.r을 재조정한다.
+        -- -- setScale()메서드가 호출되었을 때만 hit.r을 재조정한다.
         -- -- xscale과 yscale가 다를 경우에는 작은 값을 기준으로 한다.
         -- if self.__ccc then -- 2021/08/21:added
         --     local mins = min(self.__bdxs, ys)
@@ -692,7 +703,7 @@ elseif _Corona then -- if coronaSDK
 
     
     -- 추상메서드:차일드에서 각자 구현해야한다
-    function Display:setanchor(x, y)
+    function Display:setAnchor(x, y)
 
         self.__apx, self.__apy = ax, ay
         self.__bd.anchorX, self.__bd.anchorY = x,y
@@ -704,11 +715,11 @@ elseif _Corona then -- if coronaSDK
 
     function Display:hide() self.__bd.isVisible = false; return self end
     function Display:show() self.__bd.isVisible = true; return self end
-    function Display:setvisible(v) self.__bd.isVisible = v;return self end
+    function Display:setVisible(v) self.__bd.isVisible = v;return self end
     
 
     -- 2020/06/08 : 추가 
-    function Display:getglobalxy(x,y)
+    function Display:getGlobalXY(x,y)
 
         return self.__bd:localToContent(x or 0,y or 0)
         
@@ -725,17 +736,4 @@ elseif _Corona then -- if coronaSDK
 
 end -- elseif _Corona then
 
---2021/04/21 :set메서드의 축명함수들 추가
--- (set method는 혼동을 줄이기위해서 아래의 두 개만으로 정리)
--- Display.x = Display.setx
--- Display.y = Display.sety
--- Display.rot = Display.setrot
--- Display.alpha = Display.setalpha
--- Display.scale = Display.setscale
--- Display.xyscale = Display.setxyscale
--- Display.xscale = Display.setxscale
--- Display.yscale = Display.setyscale
-
--- Display.xy = Display.setxy
--- -- Display.xyrot = Display.setxyrot -- deprecated
--- Display.anchor = Display.setanchor
+Display.setxy = Display.setXY -- will be removed

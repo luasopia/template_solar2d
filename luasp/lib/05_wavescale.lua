@@ -2,21 +2,21 @@
 -- 2021/09/20 refactored
 --------------------------------------------------------------------------------
 --[[-----------------------------------------------------------------------------
--- dobj:wavescale(opt)
+-- dobj:waveScale(opt)
 --
         opt.period (default:1000 ms)
-        opt.peakscale (default:1.2)
+        opt.peakScale (default:1.2)
         opt.loops (default:INF)
-        opt.onend
+        opt.onEnd
 
--- dobj:wavexscale(opt)
--- dobj:waveyscale(opt)
--- dobj:stopwave()
+-- dobj:waveScaleX(opt)
+-- dobj:waveScaleY(opt)
+-- dobj:stopWave()
 ------------------------------------------------------------------------------]]
 
 local tmgap = 25 -- 1000/screen.fps -- 매frame마다 갱신
 local prd0 = 1000 -- ms default period
-local pkscl0 = 1.2 -- default peakscale
+local pkscl0 = 1.2 -- default peakScale
 --------------------------------------------------------------------------------
 local luasp = _luasopia
 local cos, _2PI = math.cos, 2*math.pi
@@ -29,7 +29,7 @@ local function getloops(self, opt)
     opt=opt or {}
 
     self._ws_prd = opt.period or prd0
-    self._ws_onend = opt.onend or nilfunc
+    self._ws_onend = opt.onEnd or nilfunc
 
     return (opt.loops or INF)*(self._ws_prd/tmgap) -- loops
 
@@ -39,14 +39,14 @@ end
 local function wstmr(self, e)
     
     local wv = 0.5*(1-cos(_2PI*e.time/self._ws_prd))
-    self:setscale( self._ws_s0*(1 + self._ws_pks*wv) )
+    self:setScale( self._ws_s0*(1 + self._ws_pks*wv) )
 
 end
 
 
 local function wsend(self)
 
-    self:setscale(self._ws_s0)
+    self:setScale(self._ws_s0)
 
     if self._ws_onend then
         self:_ws_onend()
@@ -54,34 +54,34 @@ local function wsend(self)
 
 end
 
--- function Disp:wavescale(prd, amp)
-function Disp:wavescale(opt)
 
-    if self._ws_tmr and not self._ws_tmr:isremoved() then
+function Disp:waveScale(opt)
+
+    if self._ws_tmr and not self._ws_tmr:isRemoved() then
         self._ws_tmr:remove()
     end
     
-    self._ws_s0 = self:getscale() -- original scale
+    self._ws_s0 = self:getScale() -- original scale
 
     opt = opt or {}
     self._ws_prd = opt.period or prd0
     local loops= (opt.loops or INF)*(self._ws_prd/tmgap) -- loops
-    self._ws_onend = opt.onend or nilfunc
+    self._ws_onend = opt.onEnd or nilfunc
 
-    self._ws_pks = (opt.peakscale or pkscl0) - 1 -- peak scale
-    self._ws_tmr = self:addtimer(tmgap, wstmr, loops, wsend)
+    self._ws_pks = (opt.peakScale or pkscl0) - 1 -- peak scale
+    self._ws_tmr = self:addTimer(tmgap, wstmr, loops, wsend)
 
     return self
 
 end
 
 
-function Disp:stopwavescale()
+function Disp:stopWaveScale()
 
-    if self._ws_tmr and not self._ws_tmr:isremoved() then
+    if self._ws_tmr and not self._ws_tmr:isRemoved() then
 
         self._ws_tmr:remove()
-        self:setscale(self._ws_s0)
+        self:setScale(self._ws_s0)
 
     end
 
@@ -94,14 +94,14 @@ end
 local function wxstmr(self, e)
 
     local wv = 0.5*(1-cos(_2PI*e.time/self._ws_prd))
-    self:setxscale( self._ws_xs0*(1 + self._ws_pkxs*wv) )
+    self:setScaleX( self._ws_xs0*(1 + self._ws_pkxs*wv) )
 
 end
 
 
 local function wxs_end(self)
 
-    self:setxscale(self._ws_xs0)
+    self:setScaleX(self._ws_xs0)
 
     if self._ws_onend then
         self:_ws_onend()
@@ -110,32 +110,32 @@ local function wxs_end(self)
 end
 
 
-function Disp:wavexscale(opt)
+function Disp:waveScaleX(opt)
 
-    if self._ws_xtmr and not self._ws_xtmr:isremoved() then
+    if self._ws_xtmr and not self._ws_xtmr:isRemoved() then
         self._ws_xtmr:remove()
     end
     
-    self._ws_xs0 = self:getxscale() -- original scale
+    self._ws_xs0 = self:getScaleX() -- original scale
 
     opt=opt or {}
     self._ws_prd = opt.period or prd0
     local loops = (opt.loops or INF)*(self._ws_prd/tmgap) 
-    self._ws_onend = opt.onend or nilfunc
+    self._ws_onend = opt.onEnd or nilfunc
 
-    self._ws_pkxs = (opt.peakscale or pkscl0) - 1 -- peak scale
-    self._ws_xtmr = self:addtimer(tmgap, wxstmr, loops, wxs_end)
+    self._ws_pkxs = (opt.peakScale or pkscl0) - 1 -- peak scale
+    self._ws_xtmr = self:addTimer(tmgap, wxstmr, loops, wxs_end)
 
     return self
 end
 
 
-function Disp:stopwavexscale()
+function Disp:stopWaveScaleX()
 
-    if self._ws_xtmr and not self._ws_xtmr:isremoved() then
+    if self._ws_xtmr and not self._ws_xtmr:isRemoved() then
 
         self._ws_xtmr:remove()
-        self:setxscale(self._ws_xs0)
+        self:setScaleX(self._ws_xs0)
 
     end
 
@@ -148,14 +148,14 @@ end
 local function wystmr(self, e)
 
     local wv = 0.5*(1-cos(_2PI*e.time/self._ws_prd))
-    self:setyscale( self._ws_ys0*(1 + self._ws_pkys*wv) )
+    self:setScaleY( self._ws_ys0*(1 + self._ws_pkys*wv) )
 
 end
 
 
 local function wys_end(self)
 
-    self:setyscale(self._ws_ys0)
+    self:setScaleY(self._ws_ys0)
 
     if self._ws_onend then
         self:_ws_onend()
@@ -164,36 +164,39 @@ local function wys_end(self)
 end
 
 
-function Disp:waveyscale(opt)
+function Disp:WaveScaleY(opt)
 
-    if self._ws_ytmr and not self._ws_ytmr:isremoved() then
+    if self._ws_ytmr and not self._ws_ytmr:isRemoved() then
         self._ws_ytmr:remove()
     end
     
-    self._ws_ys0 = self:getyscale() -- original scale
+    self._ws_ys0 = self:getScaleY() -- original scale
 
 
     opt=opt or {}
 
     self._ws_prd = opt.period or prd0
     local loops = (opt.loops or INF)*(self._ws_prd/tmgap) 
-    self._ws_onend = opt.onend or nilfunc
+    self._ws_onend = opt.onEnd or nilfunc
     
-    self._ws_pkys = (opt.peakscale or pkscl0) - 1 -- peak scale
-    self._ws_ytmr = self:addtimer(tmgap, wystmr, loops, wys_end)
+    self._ws_pkys = (opt.peakScale or pkscl0) - 1 -- peak scale
+    self._ws_ytmr = self:addTimer(tmgap, wystmr, loops, wys_end)
 
     return self
 end
 
-function Disp:stopwaveyscale()
+function Disp:stopWaveScaleY()
 
-    if self._ws_ytmr and not self._ws_ytmr:isremoved() then
+    if self._ws_ytmr and not self._ws_ytmr:isRemoved() then
 
         self._ws_ytmr:remove()
-        self:setyscale(self._ws_ys0)
+        self:setScaleY(self._ws_ys0)
 
     end
 
     return self
 
 end
+
+
+Disp.wavescale = Disp.waveScale -- must be depricated in 2022

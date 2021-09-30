@@ -3,7 +3,7 @@
 --2021/08/22:Text1클래스를 사용. 앵커점은 (0,1)좌하점이다.
 --------------------------------------------------------------------------------
 local fontsize0 = 45
-local fontcolor = Color.WHITE
+local fontColor = Color.WHITE
 local blinktm = 1000
 --------------------------------------------------------------------------------
 local luasp = _luasopia
@@ -38,7 +38,7 @@ Entry = class(Group)
 --------------------------------------------------------------------------------
 
 local entryActivated
-local function onkey(_, key, phase) -- 첫번째 인자는 screen
+local function onKey(_, key, phase) -- 첫번째 인자는 screen
     if phase == 'up' then
         if key == 'shift' then
             undershift = 1
@@ -91,7 +91,7 @@ local function onkey(_, key, phase) -- 첫번째 인자는 screen
 end
 
 --------------------------------------------------------------------------------
--- opt = {fontsize, header, borderwidth, bordercolor, soundeffect,}
+-- opt = {fontSize, header, borderwidth, bordercolor, soundeffect,}
 --------------------------------------------------------------------------------
 local nilfunc = function() end
 
@@ -103,26 +103,26 @@ function Entry:init(header, onenter, opt)
     self.__onenter = onenter or nilfunc
     opt = opt or {}
 
-    self.__fsz = opt.fontsize or fontsize0
-    self.__fc = opt.fontcolor or fontcolor0
+    self.__fsz = opt.fontSize or fontsize0
+    self.__fc = opt.fontColor or fontcolor0
     self.__chgap = self.__fsz*0.555 -- 문자간격
 
     -- print(self.__chgap) -- charecter gap
     
     if header then
-        self.__txthdr = Text1(header,{fontsize=self.__fsz,color=self.__fc}):addto(self)
+        self.__txthdr = Text1(header,{fontSize=self.__fsz,color=self.__fc}):addTo(self)
         self.__hdr=header
     else
         self.__hdr=''
     end
     
     -- __entry는 text와 caret이 들어가는 그룹
-    self.__entry = Group():addto(self):setx(#self.__hdr*self.__chgap)
+    self.__entry = Group():addTo(self):setX(#self.__hdr*self.__chgap)
     
-    self.__txtin = Text1('',{fontsize=self.__fsz,color=self.__fc}):addto(self.__entry)
+    self.__txtin = Text1('',{fontSize=self.__fsz,color=self.__fc}):addTo(self.__entry)
     
-    self.__caret = Rect(4,self.__fsz,{fill=self.__fc}):addto(self.__entry) -- 먼저 add()해야 한다.
-    self.__caret:setanchor(0,0.75):blink(blinktm)
+    self.__caret = Rect(4,self.__fsz,{fill=self.__fc}):addTo(self.__entry) -- 먼저 add()해야 한다.
+    self.__caret:setAnchor(0,0.75):blink(blinktm)
     self.__endx = 1 -- caret의 맨 우측값
     self:__setcaretx__(1) -- caretx의 가장 작은 값은 1이다.
     self.__shift = 1
@@ -137,7 +137,7 @@ end
 
 function Entry:__inschar__(char)
 
-    local text = self.__txtin:getstring()
+    local text = self.__txtin:getString()
     local len = text:len()
     local x = self.__caretx
 
@@ -158,7 +158,7 @@ function Entry:__delback__()
     if x==1 then return end
     
 
-    local text = self.__txtin:getstring()
+    local text = self.__txtin:getString()
     local len = text:len()
 
     local left = text:sub(1,x-2)
@@ -179,7 +179,7 @@ function Entry:__del__()
     if x==self.__endx then return end
     
 
-    local text = self.__txtin:getstring()
+    local text = self.__txtin:getString()
     local len = text:len()
 
     local left = text:sub(1,x-1)
@@ -202,15 +202,15 @@ function Entry:__setcaretx__(x)
     end
 
     self.__caretx = x
-    self.__caret:setx((x-1)*self.__chgap)
+    self.__caret:setX((x-1)*self.__chgap)
     self.__caret:blink(blinktm)
 
 end
 
 
-function Entry:getstring()
+function Entry:getString()
 
-    return self.__txtin:getstring()
+    return self.__txtin:getString()
 
 end
 
@@ -227,7 +227,7 @@ function Entry:focus(focused)
 
         self.__caret:show():blink(blinktm)
         entryActivated = self
-        luasp.changeKeyFunc(onkey)
+        luasp.changeKeyFunc(onKey)
         
     else -- entry:focus(false) 라고 호출하면
 

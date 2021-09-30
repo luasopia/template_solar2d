@@ -8,7 +8,7 @@ local cellsize=60
 
 local strokecolor0 = Color(80,80,80)
 
-local pxgrid = Group():setxy(xmargin, ymargin) 
+local pxgrid = Group():setXY(xmargin, ymargin) 
 local pxsht
 local pxboxes
 
@@ -30,13 +30,13 @@ function pxgrid.redraw(pxart)
             local color = palette[idcolor]
 
             local pxbox = Rect(cellsize, cellsize,{
-                strokewidth=2,
-                strokecolor=strokecolor0,
+                strokeWidth=2,
+                strokeColor=strokecolor0,
                 fill=color
-            }):setanchor(0,0):addto(pxgrid)
-            -- pxbox:setanchor(0,0):empty()
+            }):setAnchor(0,0):addTo(pxgrid)
+            -- pxbox:setAnchor(0,0):empty()
             pxbox.x, pxbox.y = x, y
-            pxbox:setxy((x-1)*cellsize, (y-1)*cellsize)
+            pxbox:setXY((x-1)*cellsize, (y-1)*cellsize)
             
             -- solar2d는 alpha가 0이면 기본적으로 touch 이벤트가 불능이 된다.
             -- alpha가 0임에도 터치이벤트가 발생토록 하려면 아래와 같이 한다.
@@ -44,7 +44,7 @@ function pxgrid.redraw(pxart)
             if _Corona then pxbox.__shp.isHitTestable = true end -- solar2d에서만 필요
 
             -- --[[
-            function pxbox:ontap(e)
+            function pxbox:onTap(e)
 
                 -- -- 직전에 마우스우클릭을 처리했다면 바로 발생하는 터치는 무시한다.
                 -- -- (solar2d는 항상 ignoreTap == nil 이므로 상관없다.)
@@ -53,11 +53,10 @@ function pxgrid.redraw(pxart)
                 --     return
                 -- end
 
-                print('ontap x, y=',pxbox.x, pxbox.y)
+                print('onTap x, y=',pxbox.x, pxbox.y)
 
                 local color = palette[luasp.pxidcolor]
                 self:fill(color)
-                --self:setstrokecolor(color)
                 pxsht[self.y][self.x] = luasp.pxidcolor
                 pxart:redraw()
 
@@ -81,7 +80,7 @@ local function onMouseRightClick(x,y)
 
         if bx1<x and x<bx2 and by1<y and y<by2 then
             local color = palette[0]
-            pxbox:setstrokecolor(strokecolor0)
+            pxbox:setStrokeColor(strokecolor0)
             pxbox:fill(color)
             pxgrid.pxsht[pxbox.y][pxbox.x] = 0
             pxgrid.pxart:redraw()

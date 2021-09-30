@@ -5,8 +5,8 @@
 (주의) 아래 pts 테이블에는 x1,y1 부터 ** xn,yn 까지만 ** 저장되어 있어야 한다.
 pts = {x1,y1, x2,y2, ..., xn,yn } 
 opt = {
-    sw -- (required) strokewidth
-    sc -- (required) strokecolor
+    sw -- (required) strokeWidth
+    sc -- (required) strokeColor
     fc -- (required) fillcolor
 }
 The anchor point is initially located at the center of the shape.
@@ -45,13 +45,13 @@ if _Gideros then
             self.__bd:getChildAt(2):removeFromParent()
         end
         
-        -- strokewidth==0 인 경우는 기존의 self.__strk를 nil로 하고 리턴
+        -- strokeWidth==0 인 경우는 기존의 self.__strk를 nil로 하고 리턴
         if opt.sw == 0 then
             self.__strk = nil
             return self
         end
         
-        -- strokewidth~=0 인 경우 strk를 교체한다
+        -- strokeWidth~=0 인 경우 strk를 교체한다
         
         local pts = self.__pts
         local strk = GShape.new() -- 외곽선
@@ -167,7 +167,7 @@ if _Gideros then
 
     --2021/05/31 : Shpae객체의 anchor point를 변경하기 위한 메서드들
     -- self.__shp의 (parent group내에서의) 위치를 바꿔주는 방식으로 변경
-    function Shape:setanchor(apx, apy)
+    function Shape:setAnchor(apx, apy)
 
         self.__apx, self.__apy = apx, apy
 
@@ -186,7 +186,7 @@ if _Gideros then
 
     -- 2021/05/31: globalxy는 __bd가 아니라 __shp에서 구해야 한다
     -- 따라서 Display의 그것을 override해야 한다.
-    function Shape:getglobalxy(x,y)
+    function Shape:getGlobalXY(x,y)
 
         return self.__shp:localToGlobal(x or 0,y or 0)
 
@@ -196,7 +196,7 @@ if _Gideros then
     function Shape:fill(fc)
 
         --2021/06/21: 현재 fillcolor와 변경하려는 것이 같다면 그냥 리턴
-        if self.__sopt.fc:isequal(fc) then return self end
+        if self.__sopt.fc:isEqual(fc) then return self end
 
         self.__sopt.fc = fc
         self.__shp:setColorTransform(
@@ -210,10 +210,10 @@ if _Gideros then
     end
 
 
-    function Shape:setstrokecolor(sc)
+    function Shape:setStrokeColor(sc)
 
         --2021/06/21: strk가 없거나 strokecolor가 이전 것과 같다면 그냥 리턴
-        if self.__strk == nil or self.__sopt.sc:isequal(sc) then
+        if self.__strk == nil or self.__sopt.sc:isEqual(sc) then
             return self
         end
         
@@ -222,7 +222,7 @@ if _Gideros then
     
     end
     
-    function Shape:setstrokewidth(sw)
+    function Shape:setStrokeWidth(sw)
 
         -- print('setstrkwdt(',sw)
 
@@ -317,7 +317,7 @@ elseif _Corona then
 
     --2021/05/31 : Shpae객체의 anchor point를 변경하기 위한 메서드들
     -- self.__shp의 (parent group내에서의) 위치를 바꿔주는 방식으로 변경
-    function Shape:setanchor(apx, apy)
+    function Shape:setAnchor(apx, apy)
 
         self.__apx, self.__apy = apx, apy
         self.__shp.x = self.__hwdt*(1-2*apx)
@@ -328,7 +328,7 @@ elseif _Corona then
 
 
     -- 2021/05/31: globalxy는 self.__bd가 아니라 self.__shp에서 구해야 한다
-    function Shape:getglobalxy(x,y)
+    function Shape:getGlobalXY(x,y)
 
         return self.__shp:localToContent(x or 0, y or 0)
 
@@ -338,7 +338,7 @@ elseif _Corona then
     function Shape:fill(fc)
 
         --2021/06/21: 현재 fillcolor와 변경하려는 것이 같다면 그냥 리턴
-        if self.__sopt.fc:isequal(fc) then return self end
+        if self.__sopt.fc:isEqual(fc) then return self end
 
         self.__sopt.fc = fc
         self.__shp:setFillColor(fc.r, fc.g, fc.b, fc.a)
@@ -347,10 +347,10 @@ elseif _Corona then
     end
 
     
-    function Shape:setstrokecolor(sc)
+    function Shape:setStrokeColor(sc)
 
         --2021/06/21: 현재 fillcolor와 변경하려는 것이 같다면 그냥 리턴
-        if self.__sopt.sc:isequal(sc) then return self end
+        if self.__sopt.sc:isEqual(sc) then return self end
 
         self.__sopt.sc = sc
         self.__shp:setStrokeColor(sc.r, sc.g, sc.b, sc.a)
@@ -359,7 +359,7 @@ elseif _Corona then
     end
 
     
-    function Shape:setstrokewidth(sw)
+    function Shape:setStrokeWidth(sw)
 
         if self.__sopt.sw == sw then return self end
         self.__sopt.sw = sw
@@ -394,8 +394,8 @@ function Shape:init(pts, opt)
     else
 
         self.__sopt = {
-            sw = opt.strokewidth or 0,
-            sc = opt.strokecolor or WHITE,
+            sw = opt.strokeWidth or 0,
+            sc = opt.strokeColor or WHITE,
             fc = opt.fill or opt.fillcolor or WHITE,
         }
 
@@ -413,13 +413,6 @@ function Shape:empty()
     return self:fill(emptycolor)
 
 end
-
-
--- 2021/05/04에 추가, 2021/08/29에 삭제
--- Shape.strokewidth = Shape.setstrokewidth
--- Shape.strokecolor = Shape.setstrokecolor
--- Shape.fillcolor = Shape.fill -- 삭제예정
-
 
 --[[
 --------------------------------------------------------------------------------

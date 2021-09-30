@@ -8,7 +8,7 @@ local function upd(self)
 
     -- 타겟이 없거나 삭제되었다면 직전의 방향으로 계속 진행한다.
     if self._trgt == nil or self._trgt.__bd == nil then
-        local x, y = self:getxy()
+        local x, y = self:getXY()
         self:xy(x+self._pdx*self._lspd, y+self._pdy*self._lspd)
         return
     end
@@ -16,8 +16,8 @@ local function upd(self)
     local ga = self._rspd
 
     -- 타겟을 향하는 단위벡터 계산
-    local x, y = self:getxy()
-    local dx, dy = self._trgt:getxy()
+    local x, y = self:getXY()
+    local dx, dy = self._trgt:getXY()
     dx, dy = dx-x, dy-y
     local dist = sqrt(dx*dx + dy*dy)
     dx, dy = dx/dist, dy/dist

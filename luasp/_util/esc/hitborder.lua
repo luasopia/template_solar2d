@@ -52,8 +52,8 @@ local function drawhitborder(self)
         tins(self.__htbrdr, dot)
 
         local circ = Circle(ccc.r,{
-            strokewidth = self.__htblw,
-            strokecolor = self.__htblc
+            strokeWidth = self.__htblw,
+            strokeColor = self.__htblc
         }):empty()
         esclayer:add(circ)
         circ:xy(gx,gy)

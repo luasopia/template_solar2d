@@ -10,7 +10,7 @@ Sound = class()
 if _Gideros then 
     
     local sounds = {} -- 2021/08/12 모든 Sound객체 관리
-    -- stopall(), pauseall()같은 스태틱메서드에서 사용됨
+    -- stopAll(), pauseAll()같은 스태틱메서드에서 사용됨
 
     local Sndnew = _Gideros.Sound.new
     local EFIN = _Gideros.Event.COMPLETE
@@ -113,7 +113,7 @@ if _Gideros then
     end
 
 
-    function Sound:setvolume(v)
+    function Sound:setVolume(v)
 
         self.__vol = v
         if self.__ch then
@@ -135,7 +135,7 @@ if _Gideros then
 
     --static methods
 
-    function Sound.stopall()
+    function Sound.stopAll()
 
         for _, snd in pairs(sounds) do
             snd:stop()
@@ -144,7 +144,7 @@ if _Gideros then
     end
 
 
-    function Sound.pauseall()
+    function Sound.pauseAll()
 
         for _, snd in pairs(sounds) do
             snd:pause()
@@ -153,7 +153,7 @@ if _Gideros then
     end
 
 
-    function Sound.resumeall()
+    function Sound.resumeAll()
 
         for _, snd in pairs(sounds) do
             snd:resume()
@@ -162,10 +162,10 @@ if _Gideros then
     end
 
 
-    function Sound.setvolumeall(v)
+    function Sound.setVolumeAll(v)
 
         for _, snd in pairs(sounds) do
-            snd:setvolume(v)
+            snd:setVolume(v)
         end
 
     end
@@ -266,7 +266,7 @@ elseif _Corona then -- 2020/02/09
 
 
     -- volume은 1과 0사이의 값이다.
-    function Sound:setvolume(v)
+    function Sound:setVolume(v)
 
         self.__vol = v
         if self.__ch then setvol(v, {channel=self.__ch}) end
@@ -286,11 +286,9 @@ elseif _Corona then -- 2020/02/09
     
 
     -- static methods
-    Sound.pauseall = pause
-    Sound.resumeall = resume
-    Sound.setvolumeall = setvol
-    Sound.stopall = stop
+    Sound.pauseAll = pause
+    Sound.resumeAll = resume
+    Sound.setVolumeAll = setvol
+    Sound.stopAll = stop
 
 end
-
-Sound.volume = Sound.setvolume -- will be deprecated

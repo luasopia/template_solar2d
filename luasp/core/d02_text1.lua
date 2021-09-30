@@ -33,7 +33,7 @@ if _Gideros then -- for Gideros ###############################################
 		self.__str = str
         opt = opt or {}
 
-		self.__fsz = opt.fontsize or fontsize0 -- font size (fsz)
+		self.__fsz = opt.fontSize or fontsize0 -- font size (fsz)
 		self.__fclr = opt.color or fontcolor0
 
         local font = ttfnew(fonturl, self.__fsz)
@@ -51,7 +51,7 @@ if _Gideros then -- for Gideros ###############################################
 
 
 	-- r, g, b는 0-255 범위의 정수
-	function Text1:setcolor(color)
+	function Text1:setColor(color)
 
 		self.__fclr = color
 		self.__bd:setTextColor(color.hex)
@@ -94,8 +94,8 @@ elseif _Corona then
 		self.__bd:insert(text)
 		self.__tbd = text
 
-		text.x = 0.5*self:getwidth()*(1-2*self.__apx)
-		text.y = 0.5*self:getheight()*(1-2*self.__apy)
+		text.x = 0.5*self:getWidth()*(1-2*self.__apx)
+		text.y = 0.5*self:getHeight()*(1-2*self.__apy)
 
 
 		return text
@@ -107,7 +107,7 @@ elseif _Corona then
 		self.__str = str
         opt = opt or {}
 
-        self.__fsz = opt.fontsize or fontsize0 -- font size (fsz)
+        self.__fsz = opt.fontSize or fontsize0 -- font size (fsz)
 		self.__fclr = opt.color or fontcolor0
 
         local text = newText{ -- font options
@@ -129,7 +129,7 @@ elseif _Corona then
 	end
 
 	
-	function Text1:setfontsize(v)
+	function Text1:setFontSize(v)
 
 		self.__fsz = v
 		self.__bd.size = v
@@ -156,8 +156,7 @@ elseif _Corona then
 
 	
 	-- r, g, b는 0-255 범위의 정수, (r이 color객체일 수도 있음)
-	-- function Text1:setcolor(r,g,b)
-	function Text1:setcolor(fc)
+	function Text1:setColor(fc)
 
 		self.__tbd:setFillColor(fc.r, fc.g, fc.b)
 		self.__fclr = fc -- {r/255,g/255,b/255}
@@ -170,14 +169,14 @@ elseif _Corona then
 end
 
 
-function Text1:getfontsize()
+function Text1:getFontSize()
 
     return self.__fsz
 
 end
 
 --2020/11/06 added
-function Text1:getstring()
+function Text1:getString()
 
 	return self.__str
 

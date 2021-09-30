@@ -23,7 +23,7 @@ if _Corona then
     end
 
 
-    function Dot:setcolor(fc)
+    function Dot:setColor(fc)
 
         self.__bd:setFillColor(fc.r, fc.g, fc.b, fc.a)
         self.__fc = fc
@@ -47,7 +47,7 @@ elseif _Gideros then
     end
 
 
-    function Dot:setcolor(fc)
+    function Dot:setColor(fc)
 
         self.__bd:setColor(fc.hex, fc.alpha)
         self.__fc = fc
@@ -58,5 +58,5 @@ elseif _Gideros then
 end
 
 -- 점의 회전은 금지된다.(필요없다)
-Dot.setrot, Dot.rot = nil, nil
+Dot.setRot = nil
 Dot.drot = nil

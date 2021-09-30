@@ -2,7 +2,7 @@ local Color = Color
 --------------------------------------------------------------------------------
 -- 2020/02/15:아래테이블은 !luasophia/ttf 폴더의 public domain ttf 리스트
 -- 첫 번째 폰트가 defualt 폰트로 지정됨
-local ttfs = {'opensans', 'typed', 'cabin', 'cruft',}
+local ttfs = {'opensans', 'typed', 'cabin', 'cruft', 'consolas'}
 local ttfurl = 'luasp/ttf/%s.ttf'
 local fontname0 = ttfs[1] 		-- default font 
 local fontsize0 = 40			-- default font size (50)
@@ -114,7 +114,7 @@ if _Gideros then -- for Gideros ###############################################
         opt = opt or {}
 
 		self.__fnm = opt.font or fontname0 -- font name(fnm)
-		self.__fsz = opt.fontsize or fontsize0 -- font size (fsz)
+		self.__fsz = opt.fontSize or fontsize0 -- font size (fsz)
 		self.__fclr = opt.color or fontcolor0
 
 		self.__apx, self.__apy = 0.5, 0.5
@@ -127,7 +127,7 @@ if _Gideros then -- for Gideros ###############################################
 	end
 
 
-	function Text:setfont(fontname, size)
+	function Text:setFont(fontname, size)
 
 		self.__fnm = fontname -- fontname은 필수요소임
 		self.__fsz = size or self.__fsz -- size가 nil이면 기존크기로
@@ -139,7 +139,7 @@ if _Gideros then -- for Gideros ###############################################
 
 
 	-- r, g, b는 0-255 범위의 정수
-	function Text:setcolor(color)
+	function Text:setColor(color)
 
 		self.__fclr = color
 		self.__tbd:setTextColor(color.hex)
@@ -149,7 +149,7 @@ if _Gideros then -- for Gideros ###############################################
 
 
 	-- 2020/01/28 text가 변경되면 중심점도 다시 잡아야 한다.
-	function Text:setstring(str,...)
+	function Text:setString(str,...)
 
 		local text = self.__tbd
 
@@ -200,7 +200,7 @@ if _Gideros then -- for Gideros ###############################################
 
 
 
-	function Text:setfontsize(v)
+	function Text:setFontSize(v)
 
 		self.__fsz = v
 		self.__bd:removeChildAt(1)
@@ -215,11 +215,11 @@ if _Gideros then -- for Gideros ###############################################
 	end
 --]]
 
-	function Text:getfontsize() return self.__fsz end
+	function Text:getFontSize() return self.__fsz end
 
 
 	-- 2021/06/05 group내에서의 xy좌표를 이동하여 anchor point를 설정한다.
-	function Text:setanchor(apx, apy)
+	function Text:setAnchor(apx, apy)
 
 		self.__apx, self.__apy = apx, apy
 		self.__tbd:setX( self.__hwdt*(1-2*apx) )
@@ -265,8 +265,8 @@ elseif _Corona then
 		self.__bd:insert(text)
 		self.__tbd = text
 
-		text.x = 0.5*self:getwidth()*(1-2*self.__apx)
-		text.y = 0.5*self:getheight()*(1-2*self.__apy)
+		text.x = 0.5*self:getWidth()*(1-2*self.__apx)
+		text.y = 0.5*self:getHeight()*(1-2*self.__apy)
 
 
 		return text
@@ -279,7 +279,7 @@ elseif _Corona then
         opt = opt or {}
         -------------------------------------------------------------------------
 		self.__fnm = opt.font or fontname0 -- font name(fnm)
-		self.__fsz = opt.fontsize or fontsize0 -- font size (fsz)
+		self.__fsz = opt.fontSize or fontsize0 -- font size (fsz)
 		self.__fclr = opt.color or fontcolor0
 
 		self.__apx, self.__apy = 0.5, 0.5
@@ -292,28 +292,28 @@ elseif _Corona then
 	end
 
 	
-	function Text:setfontsize(v)
+	function Text:setFontSize(v)
 
 		self.__fsz = v
 		self.__tbd.size = v
 
 		-- fontsize가 변경되었다면 anchor point도 다시 잡아줘야된다.
-		self.__tbd.x = 0.5*self:getwidth()*(1-2*self.__apx)
-		self.__tbd.y = 0.5*self:getheight()*(1-2*self.__apy)
+		self.__tbd.x = 0.5*self:getWidth()*(1-2*self.__apx)
+		self.__tbd.y = 0.5*self:getHeight()*(1-2*self.__apy)
 		
 		return self
 
 	end
 	
 	
-	function Text:setstring(str,...)
+	function Text:setString(str,...)
 
 		self.__str = strf(str,...)
 		self.__tbd.text = self.__str  --<<== C stack overflow
 
 		-- string이 변경되었다면 anchor point도 다시 잡아줘야된다.
-		self.__tbd.x = 0.5*self:getwidth()*(1-2*self.__apx)
-		self.__tbd.y = 0.5*self:getheight()*(1-2*self.__apy)
+		self.__tbd.x = 0.5*self:getWidth()*(1-2*self.__apx)
+		self.__tbd.y = 0.5*self:getHeight()*(1-2*self.__apy)
 
 		return self
 	end
@@ -327,16 +327,15 @@ elseif _Corona then
 		self.__tbd.text = self.__str  --<<== C stack overflow
 
 		-- string이 변경되었다면 anchor point도 다시 잡아줘야된다.
-		self.__tbd.x = 0.5*self:getwidth()*(1-2*self.__apx)
-		self.__tbd.y = 0.5*self:getheight()*(1-2*self.__apy)
+		self.__tbd.x = 0.5*self:getWidth()*(1-2*self.__apx)
+		self.__tbd.y = 0.5*self:getHeight()*(1-2*self.__apy)
 
 		return self
 	end
 
 	
 	-- r, g, b는 0-255 범위의 정수, (r이 color객체일 수도 있음)
-	-- function Text:setcolor(r,g,b)
-	function Text:setcolor(fc)
+	function Text:setColor(fc)
 
 		self.__tbd:setFillColor(fc.r, fc.g, fc.b)
 		self.__fclr = fc -- {r/255,g/255,b/255}
@@ -345,7 +344,7 @@ elseif _Corona then
 	end
 	
 
-	function Text:setfont(fontname, size)
+	function Text:setFont(fontname, size)
 
 		self.__fnm = fontname -- fontname은 필수요소임
 		self.__fsz = size or self.__fsz -- size가 nil이면 기존크기로
@@ -356,14 +355,14 @@ elseif _Corona then
 
 	end
 
-	function Text:getfontsize() return self.__tbd.size end
+	function Text:getFontSize() return self.__tbd.size end
 	
 
-	function Text:setanchor(apx, apy)
+	function Text:setAnchor(apx, apy)
 
 		self.__apx, self.__apy = apx, apy
-		self.__tbd.x = 0.5*self:getwidth()*(1-2*apx)
-		self.__tbd.y = 0.5*self:getheight()*(1-2*apy)
+		self.__tbd.x = 0.5*self:getWidth()*(1-2*apx)
+		self.__tbd.y = 0.5*self:getHeight()*(1-2*apy)
 
 		return self
 
@@ -371,7 +370,7 @@ elseif _Corona then
 
 
 	-- 2020/08/26 added
-	function Text:getwidth()
+	function Text:getWidth()
 
 		return self.__bd.width
 
@@ -379,7 +378,7 @@ elseif _Corona then
 	
 	-- 2020/08/26 Gideros와 같이 문자열 영역을 정확히 계산하기위해서
 	-- 높이를 아래와 같이 보정 (solar2d는 실제 높이보다 더 큰수를 반환함)
-	function Text:getheight() 
+	function Text:getHeight() 
 
 		return self.__bd.height - 0.45*self.__fsz -- 0.6
 
@@ -389,15 +388,8 @@ end
 
 
 --2020/11/06 added
-function Text:getstring()
+function Text:getString()
 
 	return self.__str
 
 end
-
---2021/05/24 added
-Text.font = Text.setfont
-Text.fontsize = Text.setfontsize
-Text.color = Text.setcolor
-Text.string = Text.setstring
-Text.anchor = Text.setanchor

@@ -9,7 +9,7 @@ local int = math.floor
 -- shift테이블에 여러 지점을 등록할 수 있다.
 -- tr = {time=ms, x=n, y=n, rot=n,...
 --		loops(=1), -- 반복 회수, INF이면 무한반복
---		onend = function(self) ... end, --모든 tr이 종료될 때 실행되는 함수
+--		onEnd = function(self) ... end, --모든 tr이 종료될 때 실행되는 함수
 --		{time(필수), x, y, rot, xscale, yscale, scale, alpha},
 --		{time(필수), x, y, rot, xscale, yscale, scale, alpha},
 --		...
@@ -24,17 +24,17 @@ local function calcTr(self, sh)
     local fc = int(sh.time/tmgapf)+1
     tr.endcnt = fc -- final count
     tr.framecnt = 0
-    if sh.x then tr.dx = (sh.x-self:getx())/fc end
-    if sh.y then tr.dy = (sh.y-self:gety())/fc end
-    if sh.rot then tr.dr = (sh.rot-self:getrot())/fc end
-    if sh.scale then tr.ds = (sh.scale-self:getscale())/fc end
-    if sh.alpha then tr.da = (sh.alpha-self:getalpha())/fc end
+    if sh.x then tr.dx = (sh.x-self:getX())/fc end
+    if sh.y then tr.dy = (sh.y-self:getY())/fc end
+    if sh.rot then tr.dr = (sh.rot-self:getRot())/fc end
+    if sh.scale then tr.ds = (sh.scale-self:getScale())/fc end
+    if sh.alpha then tr.da = (sh.alpha-self:getAlpha())/fc end
 
     local xs = sh.xscale
-    if xs then tr.dxs = (xs-self:getxscale())/fc end
+    if xs then tr.dxs = (xs-self:getScaleX())/fc end
 
     local ys = sh.yscale
-    if ys then tr.dys = (ys-self:getyscale())/fc end
+    if ys then tr.dys = (ys-self:getScaleY())/fc end
 
     tr.dest = sh
     tr.__to = sh.__to
@@ -51,9 +51,9 @@ local function shift(self) -- tr == self.__trInfo
     local endshift = function()
         self.__tr = nil
         self.__iupds[shift] = nil --return self:__rmupd__(shift)
-        -- onend()함수가 있다면 그것을 실행시키고 종료
-        -- onend()가 혹시 nil이 아니더라도 확실하게 nil을 반환
-        return self.__sh.onend and (self.__sh.onend(self) and nil) --(1)
+        -- onEnd()함수가 있다면 그것을 실행시키고 종료
+        -- onEnd()가 혹시 nil이 아니더라도 확실하게 nil을 반환
+        return self.__sh.onEnd and (self.__sh.onEnd(self) and nil) --(1)
     end
 
     local tr = self.__tr
@@ -85,13 +85,13 @@ local function shift(self) -- tr == self.__trInfo
     
     else
 
-        if tr.dx then self:setx(self:getx()+tr.dx) end
-        if tr.dy then self:sety(self:gety()+tr.dy) end
-        if tr.dr then self:setrot(self:getrot()+tr.dr) end
-        if tr.ds then self:setscale(self:getscale()+tr.ds) end
-        if tr.dxs then self:setxscale(self:getxscale()+tr.dxs) end
-        if tr.dys then self:setyscale(self:getyscale()+tr.dys) end
-        if tr.da then self:setalpha(self:getalpha()+tr.da) end
+        if tr.dx then self:setX(self:getX()+tr.dx) end
+        if tr.dy then self:setY(self:getY()+tr.dy) end
+        if tr.dr then self:setRot(self:getRot()+tr.dr) end
+        if tr.ds then self:setScale(self:getScale()+tr.ds) end
+        if tr.dxs then self:setScaleX(self:getScaleX()+tr.dxs) end
+        if tr.dys then self:setScaleY(self:getScaleY()+tr.dys) end
+        if tr.da then self:setAlpha(self:getAlpha()+tr.da) end
     
     end
 
@@ -137,7 +137,7 @@ function Display:shift(sh)
 
 end
 
-function Display:stopshift()
+function Display:stopShift()
 
     self.__sh = nil
     self.__tr=nil
@@ -147,7 +147,7 @@ function Display:stopshift()
 end
 
 
-function Display:pauseshift()
+function Display:pauseShift()
 
     self.__iupds[shift] = nil --  self:__addupd__(shift)
     return self
@@ -155,7 +155,7 @@ function Display:pauseshift()
 end
 
 
-function Display:resumeshift()
+function Display:resumeShift()
 
     self.__iupds[shift] = nil --  self:__addupd__(shift)
     return self

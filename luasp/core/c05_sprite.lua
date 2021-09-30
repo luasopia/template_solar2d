@@ -75,7 +75,7 @@ if _Gideros then
     end
 
 
-    function Sprite:setanchor(apx, apy)
+    function Sprite:setAnchor(apx, apy)
     
         self.__apx, self.__apy = apx, apy
         -- self.__bmp:setAnchorPoint(apx, apy)
@@ -172,7 +172,7 @@ elseif _Corona then
     end
         
 
-    function Sprite:setanchor(apx, apy)
+    function Sprite:setAnchor(apx, apy)
 
         self.__apx, self.__apy = apx, apy
         -- self.__img.anchorX, self.__img.anchorY = apx, apy
@@ -216,7 +216,7 @@ end
 
 function Sprite:play(id)
 
-    if self.__tmrsprt and not self.__tmrsprt:isremoved() then
+    if self.__tmrsprt and not self.__tmrsprt:isRemoved() then
         self.__tmrsprt:remove()
     end
 
@@ -241,7 +241,7 @@ function Sprite:play(id)
     self.__idsubfrm, self.__loopcnt = 1, 0
     self:__setfrm__(self.__frms[1])
     
-    self.__tmrsprt = self:addtimer(tmgap, timerfunc, INF)
+    self.__tmrsprt = self:addTimer(tmgap, timerfunc, INF)
 
     return self
 
@@ -272,7 +272,7 @@ end
 
 function Sprite:stop()
 
-    if self.__tmrsprt and not self.__tmrsprt:isremoved() then
+    if self.__tmrsprt and not self.__tmrsprt:isRemoved() then
         self.__tmrsprt:remove()
     end
 
@@ -281,7 +281,7 @@ function Sprite:stop()
 end
 
 
-function Sprite:setframe(idfrm)
+function Sprite:setFrame(idfrm)
 
     self:stop()
     self.__setfrm__(idfrm)

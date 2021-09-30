@@ -14,8 +14,8 @@ local strf = string.format
 local nilfunc = luasp.nilfunc
 local stdoutlayer = luasp.stdoutlayer
 --------------------------------------------------------------------------------
-local stdout = Group():addto(stdoutlayer)
-stdout:setxy(leftmargin, screen.height0-botmargin)
+local stdout = Group():addTo(stdoutlayer)
+stdout:setXY(leftmargin, screen.height0-botmargin)
 local lineHeight =  Text1.getfontsize0()*linespace
 
 local maxlines = int(screen.height0/lineHeight) -- 최대 줄 수
@@ -78,7 +78,7 @@ local function newline()
     for k=#txtobjs,1,-1 do
 
         local v = txtobjs[k]
-        v:sety(v:gety()-lineHeight)
+        v:setY(v:getY()-lineHeight)
 
     end
 
@@ -93,7 +93,7 @@ local function puts(str, no_new_line)
     
     --[[
     --(3) 새로운 줄을 추가한다.
-    -- local txtobj = Text1(str,{color=color0}):addto(stdout) -- (0,0)에 자동으로 맞춰진다
+    -- local txtobj = Text1(str,{color=color0}):addTo(stdout) -- (0,0)에 자동으로 맞춰진다
     -- tIn(txtobjs, txtobj)
     -- numlines = numlines + 1
     --]]
@@ -102,7 +102,7 @@ local function puts(str, no_new_line)
     for k=1,#str,maxchar do
         if k>1 then newline() end
         local substr = str:sub(k,k+maxchar-1)
-        local txtobj = Text1(substr,{color=color0}):addto(stdout) -- (0,0)에 자동으로 맞춰진다
+        local txtobj = Text1(substr,{color=color0}):addTo(stdout) -- (0,0)에 자동으로 맞춰진다
         tIn(txtobjs, txtobj)
         numlines = numlines + 1
     end
@@ -137,7 +137,7 @@ end
 -- --[[
 local function onend_input(entry)
 
-    local str_in = entry:getstring()
+    local str_in = entry:getString()
     local str_hdr = entry.__hdr
     entry:remove()                  -- entry를 삭제한 후
     puts(str_hdr .. str_in, true)   -- 그자리에 문자열만 표시한다
@@ -149,7 +149,7 @@ function input(header, onenter)
 
     newline()
     stdout.__endin = onenter or nilfunc
-    local entry = Entry(header, onend_input):addto(stdout)
+    local entry = Entry(header, onend_input):addTo(stdout)
 
 end
 --]]
@@ -158,7 +158,7 @@ end
 --[[
 local function onend_input(entry)
 
-    local str_in = entry:getstring()
+    local str_in = entry:getString()
     local str_hdr = entry.__hdr
     entry:remove()                  -- entry를 삭제한 후
     puts(str_hdr .. str_in, true)   -- 그자리에 문자열만 표시한다
@@ -172,7 +172,7 @@ end
 input = setmetatable({},{__call = function(self, header) 
 
     newline()
-    Entry(header, onend_input):addto(stdout)
+    Entry(header, onend_input):addTo(stdout)
     return self
 
 end})

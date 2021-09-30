@@ -291,10 +291,10 @@ end
 -------------------------------------------------------------------------------
 -- 2021/05/09 폴리곤-폴리곤의 충돌판정 작성
 -- 2021/05/18 폴리곤-원/원-폴리곤/원-원 들의 충돌판정 작성
--- 2021/05/28 유형별로 메서드를 분리하고 ishit()메서드 내에서 자신을 오버라이딩
+-- 2021/05/28 유형별로 메서드를 분리하고 isHit()메서드 내에서 자신을 오버라이딩
 -------------------------------------------------------------------------------
 
--- self가 폴리곤(사각형포함)인 경우의 ishit()메서드
+-- self가 폴리곤(사각형포함)인 경우의 isHit()메서드
 local function ishit_pg(self, obj)
 
     if self.__nohit  then return end
@@ -307,7 +307,7 @@ local function ishit_pg(self, obj)
 end
 
 
--- self가 원인 경우의 ishit()메서드
+-- self가 원인 경우의 isHit()메서드
 local function ishit_cc(self, obj)
 
     if self.__nohit then return end
@@ -319,7 +319,7 @@ local function ishit_cc(self, obj)
 end
 
 
--- self가 점인 경우의 ishit()메서드
+-- self가 점인 경우의 isHit()메서드
 local function ishit_pt(self, obj)
 
     if self.__nohit then return end
@@ -330,21 +330,24 @@ local function ishit_pt(self, obj)
 
 end
 
+--------------------------------------------------------------------------------
+-- external user mehtods
+--------------------------------------------------------------------------------
+
 -- 2021/05/28 에 추가: 충돌판정 영역을 점으로 set한다
-function Disp:sethitpoint(x,y)
+function Disp:setHitPoint(x,y)
 
     self.__cpg, self.__ccc, self.__cln = nil, nil, nil
     self.__cpt = {x=x or 0, y=y or 0}
-    self.ishit = ishit_pt
+    self.isHit = ishit_pt
     return self
 
 end
-Disp.hitpoint = Disp.sethitpoint
 
 
 --2021/08/20:scale이 변할때마다 ccc.r, ccc.r2값은 변경시켜야 한다.
 -- 그래서 처음부터 ccc0 (원정보)는 보관해 두어야 한다.
-function Disp:sethitcircle(r, x, y)
+function Disp:setHitCircle(r, x, y)
 
     self.__cpg, self.__cpt, self.__cln = nil, nil, nil
     
@@ -352,30 +355,29 @@ function Disp:sethitcircle(r, x, y)
     -- r0는 원값이고 변하지 않는다. x/yscale이 변할 때 r값 재계산에 사용된다.
     self.__ccc = {r=r, x=x or 0, y=y or 0,r2=r*r, r0=r}
 
-    self.ishit = ishit_cc
+    self.isHit = ishit_cc
     return self
 
 end
-Disp.hitcircle = Disp.sethitcircle
 
 
-function Disp:ishit(obj)
+function Disp:isHit(obj)
     --[[
-    ishit()메서드를 이전에 한 번도 호출하지 않았다면 이것이 실행된다.
+    isHit()메서드를 이전에 한 번도 호출하지 않았다면 이것이 실행된다.
     하지만 한 번이라도 실행된 이후에는 ishit_pg/ishit_cc/ishit_pt 중 하나가 실행된다.
     이렇게 함으로써 Display.init() 생성자 내에서 사용을 안할 수도 있는
-     ishit()메서드를 매 객체마다 정의해 주는 것을 피할 수 있다.
-    (루아라서 ishit()메서드 내에서 자신을 오버라이딩할 수 있음)
+     isHit()메서드를 매 객체마다 정의해 주는 것을 피할 수 있다.
+    (루아라서 isHit()메서드 내에서 자신을 오버라이딩할 수 있음)
     --]]
 
     if self.__cpg then
 
-        self.ishit = ishit_pg -- ishit()메서드 overriding
+        self.isHit = ishit_pg -- isHit()메서드 overriding
         return ishit_pg(self, obj)
 
     elseif self.__ccc then
 
-        self.ishit = ishit_cc -- ishit()메서드 overriding
+        self.isHit = ishit_cc -- isHit()메서드 overriding
         return ishit_cc(self, obj)
 
     elseif self.__cpt then
@@ -392,9 +394,9 @@ function Disp:ishit(obj)
 end
 
 
---2021/08/24: 작성. tag가 붙은 모든 객체와 ishit()체크를 해서
+--2021/08/24: 작성. tag가 붙은 모든 객체와 isHit()체크를 해서
 --충돌판정난 것을 모아서 테이블로 반환
-function Disp:collecthit(tag)
+function Disp:collectHit(tag)
 
     if self.__nohit then return end
 
@@ -405,7 +407,7 @@ function Disp:collecthit(tag)
 
     for _, obj in _nxt, allt do
 
-        if self:ishit(obj) then -- ishit()메서드 내에서 __nohit 플래그를 검사한다
+        if self:isHit(obj) then -- isHit()메서드 내에서 __nohit 플래그를 검사한다
             tins(hit, obj)
         end
 
@@ -417,7 +419,7 @@ function Disp:collecthit(tag)
 end
 
 
-function Disp:nohit()
+function Disp:noHit()
 
     self.__nohit = true
     return self

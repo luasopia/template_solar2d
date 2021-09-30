@@ -27,17 +27,17 @@ function setpixelmode(mode)
     mode = mode or 5
     local scale = scales[mode]
 
-    luasp.scnlayer:setscale(scale)
+    luasp.scnlayer:setScale(scale)
 
     screen.width = int(screen.width0/scale)
     screen.height = int(screen.height0/scale)
 
-    screen.centerx = int(screen.width*0.5)
-    screen.centery = int(screen.height*0.5)
+    screen.centerX = int(screen.width*0.5)
+    screen.centerY = int(screen.height*0.5)
 
     -- 아래는 Display.init() 안에서 사용된다
-    luasp.centerx = screen.centerx
-    luasp.centery = screen.centery
+    luasp.centerX = screen.centerX
+    luasp.centerY = screen.centerY
 
     -- screen.__pxmode = mode
     -- screen.__pxscale = scale
@@ -61,11 +61,11 @@ function pixelmode() -- setpixelmode()
     -- local x0, y0 = 3*scale,30*scale --y0=56*scale이 정중앙임
     local x0, y0 = 3*scale,56*scale --y0=56*scale이 정중앙임
 
-    local frame = Rect(130*scale-8,130*scale-8,{strokewidth=3}):setanchor(0,0)
-    frame:setxy(x0-2,y0-3):empty()
+    local frame = Rect(130*scale-8,130*scale-8,{strokeWidth=3}):setAnchor(0,0)
+    frame:setXY(x0-2,y0-3):empty()
     luasp.loglayer:add(frame)
 
-    luasp.scnlayer:setscale(scale)
+    luasp.scnlayer:setScale(scale)
 
 
     if _Corona then
@@ -87,15 +87,15 @@ function pixelmode() -- setpixelmode()
     -- screen.width = int(screen.width0/scale)
     -- screen.height = int(screen.height0/scale)
 
-    -- screen.centerx = int(screen.width*0.5)
-    -- screen.centery = int(screen.height*0.5)
+    -- screen.centerX = int(screen.width*0.5)
+    -- screen.centerY = int(screen.height*0.5)
 
     screen.width, screen.height = 128, 128
-    screen.centerx, screen.centery = 64, 64
+    screen.centerX, screen.centerY = 64, 64
 
     -- 아래는 Display.init() 안에서 사용된다
-    luasp.centerx = screen.centerx
-    luasp.centery = screen.centery
+    luasp.centerX = screen.centerX
+    luasp.centerY = screen.centerY
 
     -- screen.__pxmode = mode
     -- screen.__pxscale = scale

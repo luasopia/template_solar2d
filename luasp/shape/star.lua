@@ -62,7 +62,7 @@ end
 
 
 --2020/06/23
-function Star:setradius(r)
+function Star:setRadius(r)
 
     self.__rds = r
     self.__ccc = r*(0.5+self.__irt*0.5) -- 2021/05/31 added
@@ -73,7 +73,7 @@ function Star:setradius(r)
 end
 
 
-function Star:setpoints(n)
+function Star:setPoints(n)
 
     self.__npts = n
 
@@ -83,7 +83,7 @@ function Star:setpoints(n)
 end
 
 
-function Star:setratio(rt)
+function Star:setRatio(rt)
 
     self.__irt = rt
     self.__ccc = self.__rds*(0.5+self.__irt*0.5) -- 2021/05/31 added
@@ -92,8 +92,3 @@ function Star:setratio(rt)
     return self:__redraw__()
 
 end
-
--- 2021/05/31 added
-Star.radius = Star.setradius
-Star.points = Star.setpoints
-Star.ratio = Star.setratio

@@ -48,7 +48,7 @@ if gideros then -- in the case of using Gideros
     
     local contentwidth = application:getContentWidth()
     local contentheight = application:getContentHeight()
-    local x0, y0, endx, endy = application:getDeviceSafeArea(true)
+    local x0, y0, endX, endY = application:getDeviceSafeArea(true)
     local fps = application:getFps()
     
     
@@ -56,18 +56,18 @@ if gideros then -- in the case of using Gideros
         width = contentwidth,
         height = contentheight,
         
-        centerx = contentwidth*0.5,
-        centery = contentheight*0.5,
+        centerX = contentwidth*0.5,
+        centerY = contentheight*0.5,
         
-        devicewidth = application:getDeviceWidth(),
-        deviceheight = application:getDeviceHeight(),
+        deviceWidth = application:getDeviceWidth(),
+        deviceHeight = application:getDeviceHeight(),
         -- 'portrait', 'portraitUpsideDown', 'landscapeLeft', 'landscapeRight'
         orientation = application:getOrientation(),
-        -- 디바이스에서 실제 표시되는 영역의 (x0,y0), (endx,endy) 좌표값들을 구한다.
+        -- 디바이스에서 실제 표시되는 영역의 (x0,y0), (endX,endY) 좌표값들을 구한다.
         x0 = x0,
         y0 = y0,
-        endx = endx-1,
-        endy = endy-1,
+        endX = endX-1,
+        endY = endY-1,
         
         fps = fps,
     }
@@ -86,7 +86,7 @@ if gideros then -- in the case of using Gideros
 
         if enableHide then
             
-            layer.isvisible = function(self) return self.__bd:isVisible() end
+            layer.isVisible = function(self) return self.__bd:isVisible() end
             layer.hide = function(self) self.__bd:setVisible(false); return self end
             layer.show = function(self) self.__bd:setVisible(true); return self end
         end
@@ -101,7 +101,7 @@ if gideros then -- in the case of using Gideros
     -- scene들을 놓기 위한 레이어
     -- pxmode로 진입할 때 scnlayer만 확대한다.
     _luasopia.scnlayer = _luasopia.newlayer()
-    _luasopia.scnlayer.setscale = function(self, s) self.__bd:setScale(s) end
+    _luasopia.scnlayer.setScale = function(self, s) self.__bd:setScale(s) end
 
     -- print(), printf()함수의 출력(standard output)이 표시되는 레이어
     _luasopia.stdoutlayer = _luasopia.newlayer(true)
@@ -154,10 +154,10 @@ elseif coronabaselib then -- in the case of using solar2d
     local contentheight = display.contentHeight
 
 	-- 디바이스에 실제로 표시되는 영역의 좌상점(x0,y0)과
-    -- 우하점(endx,endy)의 좌표값들을 구한다.
+    -- 우하점(endX,endY)의 좌표값들을 구한다.
 	local x0, y0 = display.screenOriginX, display.screenOriginY
-	local endx = display.actualContentWidth + x0 - 1
-	local endy = display.actualContentHeight + y0 - 1
+	local endX = display.actualContentWidth + x0 - 1
+	local endY = display.actualContentHeight + y0 - 1
 
 
     _luasopia = {
@@ -165,19 +165,19 @@ elseif coronabaselib then -- in the case of using solar2d
         width = contentwidth,
         height = contentheight,
         
-        centerx = contentwidth*0.5,
-        centery = contentheight*0.5,
+        centerX = contentwidth*0.5,
+        centerY = contentheight*0.5,
         
-        devicewidth = display.pixelWidth,
-        deviceheight = display.pixelHeight,
+        deviceWidth = display.pixelWidth,
+        deviceHeight = display.pixelHeight,
         
         -- 'portrait', 'portraitUpsideDown', 'landscapeLeft', 'landscapeRight'            
         orientation = system.orientation, -- system은 solar2d의 전역변수
         
         x0 = x0,
         y0 = y0,
-        endx = endx,
-        endy = endy,
+        endX = endX,
+        endY = endY,
         
         fps = display.fps,
     }
@@ -192,7 +192,7 @@ elseif coronabaselib then -- in the case of using solar2d
             add = function(self, child) return self.__bd:insert(child.__bd) end,
         }
         if enableHide then
-            layer.isvisible = function(self) return self.__bd.isVisible end
+            layer.isVisible = function(self) return self.__bd.isVisible end
             layer.hide = function(self) self.__bd.isVisible = false; return self end
             layer.show = function(self) self.__bd.isVisible = true; return self end
         end
@@ -205,9 +205,9 @@ elseif coronabaselib then -- in the case of using solar2d
     
     -- scene들을 놓기 위한 레이어
     _luasopia.scnlayer = _luasopia.newlayer()
-    --2021/08/17:setpixelmode()에서 사용할 setscale() 추가
+    --2021/08/17:setpixelmode()에서 사용할 setScale() 추가
     -- pxmode로 진입할 때 scnlayer만 확대한다.
-    _luasopia.scnlayer.setscale = function(self, s)
+    _luasopia.scnlayer.setScale = function(self, s)
         self.__bd.xScale,self.__bd.yScale = s,s
     end
         

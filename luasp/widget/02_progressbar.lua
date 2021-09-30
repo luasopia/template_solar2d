@@ -2,7 +2,7 @@
 -- 2020/08/27: created
 --------------------------------------------------------------------------------
 -- default values
-local hgtratio0 = 0.12 -- side margin == fontsize*marginratio0
+local hgtratio0 = 0.12 -- side margin == fontSize*marginratio0
 local strokecolor0 = Color.WHITE
 local bgcolor0 = Color.BLACK
 local gaugecolor0 = Color.RED
@@ -16,17 +16,17 @@ ProgressBar = class(Group)
     local btn = ProgressBar(width [, opt])
     opt = {
         height = n, -- in pixel, default:width*0.12
-        strokecolor = color, -- default: Color.WHITE
-        strokewidth = n, -- default: width/50
-        bgcolor = color, -- default: transparent color(Color(0,0,0,0))
-        gaugecolor = color, -- default: Color.RED
+        strokeColor = color, -- default: Color.WHITE
+        strokeWidth = n, -- default: width/50
+        bgColor = color, -- default: transparent color(Color(0,0,0,0))
+        gaugeColor = color, -- default: Color.RED
         min = n, -- default:0
         max = n, -- defulat:100
         
-        textlocation = 'left'/'right'/'top'/'bottom'
-        fontsize = n, -- default: height*1.35
-        textmargin = n, -- default: fontsize*0.5
-        fontcolor = color, -- default: Color.WHITE
+        textLocation = 'left'/'right'/'top'/'bottom'
+        fontSize = n, -- default: height*1.35
+        textMargin = n, -- default: fontSize*0.5
+        fontColor = color, -- default: Color.WHITE
     }
 --]]
 --------------------------------------------------------------------------------
@@ -35,28 +35,28 @@ function ProgressBar:init(width, opt)
     
     opt = opt or {}
     local height = opt.height or width*hgtratio0
-    local strokecolor = opt.bordercolor or strokecolor0
-    local strokewidth = max(2, opt.borderwidth or int(width/50) )
-    local gaugecolor = opt.gaugecolor or gaugecolor0
-    local bgcolor = opt.bgcolor or bgcolor0
+    local strokeColor = opt.bordercolor or strokecolor0
+    local strokeWidth = max(2, opt.borderwidth or int(width/50) )
+    local gaugeColor = opt.gaugeColor or gaugecolor0
+    local bgColor = opt.bgColor or bgcolor0
 
     self.__minv = opt.min or 0
     self.__maxv = opt.max or 100
     
-    self.__frame = Rect(width,height,{fill=bgcolor}):addto(self) -- framerect
-    self.__frame:strokecolor(strokecolor):strokewidth(strokewidth)
+    self.__frame = Rect(width,height,{fill=bgColor}):addTo(self) -- framerect
+    self.__frame:setStrokeColor(strokeColor):setStrokeWidth(strokeWidth)
     
-    self.__gage = Rect(width-strokewidth,height-strokewidth):fill(gaugecolor):addto(self)
-    self.__gage:anchor(0,0.5):x((strokewidth-width)*0.5)
+    self.__gage = Rect(width-strokeWidth,height-strokeWidth):fill(gaugeColor):addTo(self)
+    self.__gage:anchor(0,0.5):x((strokeWidth-width)*0.5)
     
-    if opt.textlocation then
+    if opt.textLocation then
 
-        self.__txtloc = opt.textlocation -- 'right' 'left', 'top', 'bottom'
-        self.__fontsize = opt.fontsize or height*1.35
-        self.__txtmrgn = opt.textmargin or self.__fontsize*0.5
+        self.__txtloc = opt.textLocation -- 'right' 'left', 'top', 'bottom'
+        self.__fontsize = opt.fontSize or height*1.35
+        self.__txtmrgn = opt.textMargin or self.__fontsize*0.5
 
-        self.__txt = Text("0"):addto(self)
-        self.__txt:fontsize(self.__fontsize)
+        self.__txt = Text("0"):addTo(self)
+        self.__txt:fontSize(self.__fontsize)
         if self.__txtloc == 'right' then
             self.__txt:anchor(0,0.5)
             self.__txt:x(width*0.5 + self.__txtmrgn)
@@ -74,12 +74,12 @@ function ProgressBar:init(width, opt)
     end
 
     self.__val = self.__minv
-    return self:value(self.__minv)
+    return self:setValue(self.__minv)
 
 end
 
 
-function ProgressBar:setvalue(val, txtformat)
+function ProgressBar:setValue(val, txtformat)
 
     -- 설정된 최대/최소값을 제한
     if val>self.__maxv then val = self.__maxv
@@ -100,7 +100,7 @@ function ProgressBar:setvalue(val, txtformat)
 end
 
 
-function ProgressBar:setminmax(minv, maxv)
+function ProgressBar:setMinMax(minv, maxv)
 
     self.__minv, self.__maxv = minv, maxv
     return self
@@ -108,7 +108,7 @@ function ProgressBar:setminmax(minv, maxv)
 end
 
 
-function ProgressBar:setgaugecolor(gc)
+function ProgressBar:setGaugeColor(gc)
 
     self.__gage:fill(gc)
     return self
@@ -116,15 +116,15 @@ function ProgressBar:setgaugecolor(gc)
 end
 
 
-function ProgressBar:setstrokecolor(gc)
+function ProgressBar:setStrokeColor(gc)
 
-    self.__frame:strokecolor(gc)
+    self.__frame:setStrokeColor(gc)
     return self
 
 end
 
 
-function ProgressBar:setbgcolor(gc)
+function ProgressBar:setBgColor(gc)
 
     self.__frame:fill(gc)
     return self
@@ -132,14 +132,14 @@ function ProgressBar:setbgcolor(gc)
 end
 
 
-function ProgressBar:setstrokewidth(w)
+function ProgressBar:setStrokeWidth(w)
 
-    self.__frame:strokewidth(w)
+    self.__frame:setStrokeWidth(w)
     return self
 
 end
 
-function ProgressBar:getvalue()
+function ProgressBar:getValue()
 
     return self.__val
 

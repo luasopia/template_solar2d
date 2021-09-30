@@ -19,7 +19,7 @@ return scene
 local Group = Group
 local time0 = 300
 local luasp = _luasopia
-local x0, y0, endx, endy = luasp.x0, luasp.y0, luasp.endx, luasp.endy
+local x0, y0, endX, endY = luasp.x0, luasp.y0, luasp.endX, luasp.endY
 local scnlayer = luasp.scnlayer
 
 --------------------------------------------------------------------------------
@@ -44,7 +44,7 @@ local function beforeshow(scn)
     -- 다시 (표준위치로 )원위치 시켜야 한다.
     stage:set{x=0,y=0,scale=1,rot=0,alpha=1}:show()
     
-    --stage:resumetouch()
+    --stage:resumeTouch()
     --2021/08/11:퇴장 효과(애니) 동안 커버 생성
     luasp.bantouch()
 
@@ -97,7 +97,7 @@ local inScene = nil -- current (or scheduled to enter) scene in the screen
 function Scene:init()
 
     -- scene은 scnlayer에 생성한다.
-    self.__stg = Group():addto(scnlayer):setxy(0,0)
+    self.__stg = Group():addTo(scnlayer):setXY(0,0)
     luasp.stage = self.__stg
 
 end    
@@ -138,73 +138,73 @@ function Scene.__goto0(url, effect, time)
 
     if effect == 'slideRight' then
         
-        inScene.__stg:setx(screen.endx+1)
+        inScene.__stg:setX(screen.endX+1)
         
         if outScene then 
-            outScene.__stg:shift{time=time, x=-screen.endx, onend = function()
+            outScene.__stg:shift{time=time, x=-screen.endX, onEnd = function()
                 afterhide(outScene)
             end}
         end
         
-        inScene.__stg:shift{time=time, x=0, onend = function()
+        inScene.__stg:shift{time=time, x=0, onEnd = function()
             aftershow(inScene)
         end}
 
     elseif effect == 'slideLeft' then
         
-        inScene.__stg:setx(-screen.endx)
+        inScene.__stg:setX(-screen.endX)
         
         if outScene then 
-            outScene.__stg:shift{time=time, x=screen.endx, onend = function()
+            outScene.__stg:shift{time=time, x=screen.endX, onEnd = function()
                 afterhide(outScene)
             end}
         end
         
-        inScene.__stg:shift{time=time, x=0, onend = function()
+        inScene.__stg:shift{time=time, x=0, onEnd = function()
             aftershow(inScene)
         end}
 
 -- --[[
     elseif effect == 'rotateRight' then
         
-        inScene.__stg:setrot(-90)
+        inScene.__stg:setRot(-90)
         
         if outScene then 
-            outScene.__stg:shift{time=time, rot=90, onend = function()
+            outScene.__stg:shift{time=time, rot=90, onEnd = function()
                 afterhide(outScene)
             end}
         end
         
-        inScene.__stg:shift{time=time, rot=0, onend = function()
+        inScene.__stg:shift{time=time, rot=0, onEnd = function()
             aftershow(inScene)
         end}
         
     elseif effect == 'rotateLeft' then
         
-        inScene.__stg:setrot(90)
+        inScene.__stg:setRot(90)
         
         if outScene then 
-            outScene.__stg:shift{time=time, rot=-90, onend = function()
+            outScene.__stg:shift{time=time, rot=-90, onEnd = function()
                 afterhide(outScene)
             end}
         end
         
-        inScene.__stg:shift{time=time, rot=0, onend = function()
+        inScene.__stg:shift{time=time, rot=0, onEnd = function()
             aftershow(inScene)
         end}
         
 -- --[[
     elseif effect == 'fade' then
         
-        inScene.__stg:setalpha(0)
+        inScene.__stg:setAlpha(0)
 
         if outScene then 
-            outScene.__stg:shift{time=time, alpha=0, onend = function()
+            outScene.__stg:shift{time=time, alpha=0, onEnd = function()
                 afterhide(outScene)
             end}
         end
         
-        inScene.__stg:shift{time=time, alpha=1, onend = function()
+        inScene.__stg:shift{time=time, alpha=1, onEnd = function()
             aftershow(inScene)
         end}
 

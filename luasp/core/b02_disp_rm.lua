@@ -12,106 +12,42 @@ local tdobj = Disp.__tdobj
 -- 아래는 pixelmode가 아닐 경우에 화면바깥으로 나갔다고 판단되는
 -- 경계값이다. 약간의 갭을 둔다
 local xgap, ygap = 100, 150
--- luasp.out_x0, luasp.out_y0 = luasp.x0-xgap, luasp.y0-ygap
--- luasp.out_endx, luasp.out_endy = luasp.endx+xgap, luasp.endy+ygap
 local out_x0, out_y0 = luasp.x0-xgap, luasp.y0-ygap
-local out_endx, out_endy = luasp.endx+xgap, luasp.endy+ygap
+local out_endx, out_endy = luasp.endX+xgap, luasp.endY+ygap
 
 -- pixelmode 일 경우 위의 값들을 다시 계산해야 한다.
 --------------------------------------------------------------------------------
 
 
---2020/06/26: refactoring removeafter() method
+--2020/06/26: refactoring removeAfter() method
 --2021/08/21: self.remove can be changed after rmafter() called
 local function rmnow(self) self:remove() end
-function Display:removeafter(ms)
+function Display:removeAfter(ms)
 
     -- rmafter()호출 이후 self.remove가 변경됬다면 아래는
-    -- self:addtimer(ms, self.remove) 
+    -- self:addTimer(ms, self.remove) 
     -- 변경되기 전의 self.remove가 호출되 버린다.
     -- 따라서 소멸해야 되는 시점의 remove()메서드를 호출하기 위해서
     -- 아래와 같이 수정
 
-    self:addtimer(ms, rmnow) -- Timer객체를 반환한다
+    self:addTimer(ms, rmnow) -- Timer객체를 반환한다
     return self
 
 end
 
---[[
+
 --2021/08/30:added 객체가 화면 밖으로 나갔는지를 체크한다.
 local function isout(self)
 
-    local x0, y0 = luasp.out_x0, luasp.out_y0
-    local endx, endy = luasp.out_endx, luasp.out_endy
-
-    if self.__cpg then
-
-        local cpg = self.__cpg
-
-        for k=1,#cpg,2 do
-
-            local x, y = self:__getgxy__(cpg[k], cpg[k+1])
-
-            if x0<=x and x<=endx and y0<=y and y<=endy then
-
-                return false
-                
-            end
-            
-        end
-        
-        return true
-
-    elseif self.__ccc then
-
-        -- 원주위의 네 점의 좌표가 하나로도 화면 안에 있다면 false반환
-        -- local ccc = self.__ccc
-        local x,y,r = self.__ccc.x, self.__ccc.y, self.__ccc.r
-        local offs = {-r,-r,  r,-r,  r,r,  -r,r}
-        for k=1,#offs,2 do
-
-            local gx, gy = self:__getgxy__(x+offs[k], y+offs[k+1])
-
-            if x0<=gx and gx<=endx and y0<=gy and gy<=endy then
-
-                return false
-                
-            end
-            
-        end
-        
-        return true
-
-
-    elseif self.__cpt then
-
-        local cpt=self.__cpt
-        local x, y = self:__getgxy__(cpt.x, cpt.y)
-
-        if x0<=x and x<=endx and y0<=y and y<=endy then
-
-            return false
-
-        end
-        
-        return true
-    
-    end
-
-end
---]]
-
-local function isout(self)
-
     local x0, y0 = out_x0, out_y0
-    local endx, endy = out_endx, out_endy
+    local endX, endY = out_endx, out_endY
     local cpg = self.__orct
 
     for k=1,#cpg,2 do
 
         local x, y = self:__getgxy__(cpg[k], cpg[k+1])
 
-        if x0<=x and x<=endx and y0<=y and y<=endy then
+        if x0<=x and x<=endX and y0<=y and y<=endY then
             return false -- 점들 중 하나라도 영역 안쪽이면 false반환
         end
         
@@ -131,11 +67,11 @@ end
 
 
 --2021/08/30: delay(ms) 이후부터 화면밖으로 나갔는지 체크한다
-function Disp:removeifout(delay)
+function Disp:removeIfOut(delay)
     
     if delay then -- delay가 있다면 그 시간 이후에 isout 등록
 
-        self:addtimer(delay, add_isout)
+        self:addTimer(delay, add_isout)
 
     else -- delay가 없다면 즉시 isout 등록
 
@@ -173,8 +109,8 @@ if _Gideros then
             end
         end
 
-        if self.__tch then self:stoptouch() end
-        if self.__tap then self:stoptap() end
+        if self.__tch then self:stopTouch() end
+        if self.__tap then self:stopTap() end
 
         self.__bd:removeFromParent()
         self.__bd = nil -- remove()가 호출되어 삭제되었음을 이것으로 확인
@@ -209,11 +145,11 @@ elseif _Corona then
 
         end
 
-        if self.__tch then self:stoptouch() end
-        if self.__tap then self:stoptap() end
+        if self.__tch then self:stopTouch() end
+        if self.__tap then self:stopTap() end
 
         self.__bd:removeSelf()
-        self.__bd = nil -- self:isremoved()에서 return self.__bd==nil 으로 이용됨
+        self.__bd = nil -- self:isRemoved()에서 return self.__bd==nil 으로 이용됨
         
         --2020/06/20 소멸자안에서 dobjs 테이블의 참조를 삭제한다
         dobjs[self] = nil
