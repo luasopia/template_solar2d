@@ -273,12 +273,7 @@ luasp.stage = luasp.scnlayer
 
 --------------------------------------------------------------------------------
 -- global constants -- 이 위치여야 한다.(위로 옮기면 안됨)
-math.randomseed(os.time())
-rand = math.random
 INF = -math.huge -- infinity constant (일부러 -를 앞에 붙임)
-luasp.isdebug = false
--- lib = {} -- 2020/03/07 added
--- ui = {} -- 2020/03/07 added
 --------------------------------------------------------------------------------
 -- 2021/05/12: luasp 프로젝트를 root폴더 안에서 작성하기로 변경함
 luasp.root = 'root'
@@ -415,7 +410,6 @@ end
 -- 대신 모든 사용자 전역변수는 global테이블에 만들어야 한다.
 -- 2021/09/11: banGlobal()함수를 만들었다.
 global = {} 
-
 local gmetatable = getmetatable(_G)
 
 function luasp.banGlobal()

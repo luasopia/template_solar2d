@@ -1,4 +1,4 @@
-local Disp = Display
+local Disp = _luasopia.Display
 local sqrt, atan2 = math.sqrt, math.atan2
 local _R2D = 180/math.pi -- radian to degree constant
 local tdobj = Disp.__tdobj

@@ -3,15 +3,17 @@
 -- 정해진 폰트(consolas), 정해진 앵커포인트(0,1)를 사용한다.
 -- gideros와 solar2d 모두에서 정확하게 같은 위치에 한 줄text가 표시된다.
 --------------------------------------------------------------------------------
+local luasp = _luasopia
 local Color = Color
-local Disp = Display
+local Disp = luasp.Display
 local strf = string.format
 local fonturl = 'luasp/ttf/consolas.ttf'
 local fontsize0 = 45			-- default font size (50)
 local fontcolor0 = Color.WHITE	--default font color
 --------------------------------------------------------------------------------
 
-Text1 = class(Disp)
+local Text1 = class(Disp)
+luasp.Text1 = Text1 -- hide Text1 into the luasp table
 
 --------------------------------------------------------------------------------
 

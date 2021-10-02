@@ -7,8 +7,9 @@ local fontColor = Color.WHITE
 local blinktm = 1000
 --------------------------------------------------------------------------------
 local luasp = _luasopia
-local Disp = Display
+local Disp = luasp.Display
 local Group = Group
+local Text1=luasp.Text1
 
 local shift = {
     ['space']={' ', ' '},

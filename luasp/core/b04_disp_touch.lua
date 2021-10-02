@@ -1,3 +1,5 @@
+local luasp = _luasopia
+local Disp = luasp.Display
 
 if _Gideros then
 
@@ -78,7 +80,7 @@ if _Gideros then
     end
 
 
-    function Display:__touchon() -- print('enable touch try')
+    function Disp:__touchon() -- print('enable touch try')
         
         if self.onTouch then --printf('%s touch enabled',self.name)
             self.__bd:addEventListener(Event.TOUCHES_BEGIN, tchBegin, self)
@@ -93,7 +95,7 @@ if _Gideros then
     end
     
 
-    function Display:stopTouch() --print('try dt')
+    function Disp:stopTouch() --print('try dt')
 
         if self.onTouch then --printf('%s touch disabled',self.name)
             -- 현재 begin된 터치가 있다면 end를 발생시키고 __tch를 비운다
@@ -189,7 +191,7 @@ elseif _Corona then
     end
   
 
-    function Display:__touchon() --print('tch on')
+    function Disp:__touchon() --print('tch on')
 
         if self.onTouch then
             self.__bd:addEventListener('touch', tch)
@@ -201,7 +203,7 @@ elseif _Corona then
     end
 
 
-    function Display:stopTouch() --print('try dt')
+    function Disp:stopTouch() --print('try dt')
 
         if self.onTouch then
             -- 현재 begin된 터치가 있다면 강제로 end를 발생
@@ -221,4 +223,4 @@ elseif _Corona then
   
 end
 
-Display.resumeTouch = Display.__touchon
+Disp.resumeTouch = Disp.__touchon

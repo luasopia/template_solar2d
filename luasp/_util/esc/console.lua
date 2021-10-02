@@ -1,9 +1,10 @@
 local luasp = _luasopia
 local esclayer = luasp.esclayer
-local Disp = Display
+local Disp = luasp.Display
 local infocolor = Color.LIGHT_PINK
 local fontsize0 = 40
-
+local Text1 = luasp.Text1
+local Line1 = luasp.Line1
 --------------------------------------------------------------------------------
 _require0('luasp._util.file')
 

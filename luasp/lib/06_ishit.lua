@@ -5,7 +5,7 @@
 -- 2021/08/24:ishit는 두 프레임에 한 번씩만(30fps로) 검사하기로
 --------------------------------------------------------------------------------
 local luasp = _luasopia
-local Disp = Display
+local Disp = luasp.Display
 local tins = table.insert
 local inf, sqrt, min = math.huge, math.sqrt, math.min
 local RED = Color.RED
@@ -400,7 +400,7 @@ function Disp:collectHit(tag)
 
     if self.__nohit then return end
 
-    local allt = Display.__tdobj[tag] -- Display Tagged OBJect
+    local allt = Disp.__tdobj[tag] -- Display Tagged OBJect
     if allt==nil then return end
 
     local hit = {}

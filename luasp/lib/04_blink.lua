@@ -11,6 +11,9 @@ dobj:blink{
     onEnd = function() .. end : call-back funtion when all the loops are done
 }
 ------------------------------------------------------------------------------]]
+local Disp = _luasopia.Display
+
+
 local function tmrfunc(self, e)
 
     if e.isfinal then
@@ -24,7 +27,7 @@ local function tmrfunc(self, e)
 end
 
 
-function Display:blink(opt)
+function Disp:blink(opt)
 
     local period, loops1, onEnd
     if type(opt)=='number' then
@@ -57,7 +60,7 @@ function Display:blink(opt)
 end
 
 
-function Display:stopblink()
+function Disp:stopblink()
 
     if self.__tmrblink and not self.__tmrblink:isRemoved() then
         self.__tmrblink:remove()

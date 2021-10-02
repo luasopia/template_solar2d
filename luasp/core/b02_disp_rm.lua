@@ -5,7 +5,7 @@
 local luasp = _luasopia
 local Timer = Timer
 local timers = Timer.__tmrs -- 2020/06/24:Disp:remove()함수 내에서 직접 접근
-local Disp = Display
+local Disp = luasp.Display
 local dobjs = Disp.__dobjs
 local tdobj = Disp.__tdobj
 
@@ -22,7 +22,7 @@ local out_endx, out_endy = luasp.endX+xgap, luasp.endY+ygap
 --2020/06/26: refactoring removeAfter() method
 --2021/08/21: self.remove can be changed after rmafter() called
 local function rmnow(self) self:remove() end
-function Display:removeAfter(ms)
+function Disp:removeAfter(ms)
 
     -- rmafter()호출 이후 self.remove가 변경됬다면 아래는
     -- self:addTimer(ms, self.remove) 
@@ -95,7 +95,7 @@ if _Gideros then
 
 
     -- gideros desctructor
-    function Display:remove()
+    function Disp:remove()
 
         if self.__bd == nil then return end -- 2021/09/24
 

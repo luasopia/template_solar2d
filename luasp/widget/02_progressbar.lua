@@ -89,7 +89,7 @@ function ProgressBar:setValue(val, txtformat)
 
     local ratio = (val-self.__minv)/(self.__maxv-self.__minv)
     if ratio == 0 then ratio = 0.000001 end -- for solar2d
-    self.__gage:xscale(ratio)
+    self.__gage:setScaleX(ratio)
 
     if self.__txt then
         self.__txt:string(textformat or "%d", val)

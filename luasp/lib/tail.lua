@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 local Rawshape = _luasopia.Rawshape
-local Disp = Display
+local Disp = _luasopia.Display
 local WHITE = Color.WHITE -- default stroke/fill color
 --------------------------------------------------------------------------------
 local tblin = table.insert

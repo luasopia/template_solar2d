@@ -1,6 +1,4 @@
--- if not_required then return end -- This prevents auto-loading in Gideros
---------------------------------------------------------------------------------
-local Disp = Display
+local Disp = _luasopia.Display
 Line = class(Disp)
 --------------------------------------------------------------------------------
 local WHITE = Color.WHITE

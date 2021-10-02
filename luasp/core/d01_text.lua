@@ -8,7 +8,7 @@ local fontname0 = ttfs[1] 		-- default font
 local fontsize0 = 40			-- default font size (50)
 local fontcolor0 = Color.WHITE	--default font color
 --------------------------------------------------------------------------------
-local Disp = Display
+local Disp = _luasopia.Display
 local strf = string.format
 
 

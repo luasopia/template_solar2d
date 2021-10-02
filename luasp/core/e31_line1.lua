@@ -2,8 +2,10 @@
 -- 사용자가 사용하는 것이 아니라 내부적으로 사용하는 (단순선)객체
 -- 그룹에 넣어서도 안된다
 --------------------------------------------------------------------------------
-local Disp = Display
-Line1 = class(Disp)
+local luasp = _luasopia
+local Disp = luasp.Display
+local Line1 = class(Disp)
+luasp.Line1 = Line1
 --------------------------------------------------------------------------------
 local RED = Color.RED
 local width0 = 3

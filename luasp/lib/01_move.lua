@@ -2,7 +2,7 @@
 -- 2021/08/11: modified to use internal update
 --------------------------------------------------------------------------------
 
-local Dp = Display
+local Disp = _luasopia.Display
 
 local function move(self)
     
@@ -17,13 +17,13 @@ local function move(self)
     if d.dscale then self:setScale(self:getScale() + d.dscale) end
     if d.dalpha then self:setAlpha(self:getAlpha() + d.dalpha) end
     
-    if d.dxscale then self:setScaleX(self:getScaleX() + d.dxscale) end
-    if d.dyscale then self:setScaleY(self:getScaleY() + d.dyscale) end
+    if d.dscaleX then self:setScaleX(self:getScaleX() + d.dscaleX) end
+    if d.dscaleY then self:setScaleY(self:getScaleY() + d.dscaleY) end
     
 end
 
 
-function Dp:pauseMove()
+function Disp:pauseMove()
 
     self.__iupds[move] = nil
     return self
@@ -31,7 +31,7 @@ function Dp:pauseMove()
 end
 
 
-function Dp:resumeMove()
+function Disp:resumeMove()
 
     self.__iupds[move] = move
     return self
@@ -39,7 +39,7 @@ function Dp:resumeMove()
 end
 
 
-function Dp:stopMove()
+function Disp:stopMove()
 
     self.__mv = nil
     self.__iupds[move] = nil
@@ -50,7 +50,7 @@ end
 --------------------------------------------------------------------------------
 -- 2020/02/18, 2021/04/27 : modified as follows
 --------------------------------------------------------------------------------
-function Dp:setDx(d)
+function Disp:setDx(d)
 
     self.__mv=self.__mv or {}
     self.__mv.dx = d
@@ -60,7 +60,7 @@ function Dp:setDx(d)
 end
 
 
-function Dp:setDy(d)
+function Disp:setDy(d)
 
     self.__mv=self.__mv or {}
     self.__mv.dy=d
@@ -70,7 +70,7 @@ function Dp:setDy(d)
 end
 
 
-function Dp:setDrot(d)
+function Disp:setDrot(d)
 
     self.__mv = self.__mv or {}
     self.__mv.drot = d
@@ -80,7 +80,7 @@ function Dp:setDrot(d)
 end
 
 
-function Dp:setDscale(d)
+function Disp:setDscale(d)
 
     self.__mv = self.__mv or {}
     self.__mv.dscale = d
@@ -90,7 +90,7 @@ function Dp:setDscale(d)
 end
 
 
-function Dp:setDalpha(d)
+function Disp:setDalpha(d)
 
     self.__mv = self.__mv or {}
     self.__mv.dalpha = d
@@ -100,27 +100,27 @@ function Dp:setDalpha(d)
 end
 
 
-function Dp:setdxscale(d)
+function Disp:setDscaleX(d)
 
     self.__mv=self.__mv or {}
-    self.__mv.dxscale = d
+    self.__mv.dscaleX = d
     self.__iupds[move] = move
     return self
 
 end
 
 
-function Dp:setdyscale(d)
+function Disp:setDscaleY(d)
 
     self.__mv=self.__mv or {}
-    self.__mv.dyscale = d
+    self.__mv.dscaleY = d
     self.__iupds[move] = move
     return self
 
 end
 
 
-function Dp:setDxDy(dx,dy)
+function Disp:setDxDy(dx,dy)
 
     self.__mv=self.__mv or {}
     self.__mv.dx, self.__mv.dy = dx, dy
@@ -132,15 +132,15 @@ end
 --------------------------------------------------------------------------------
 -- 2020/02/25 : add getd() methods
 --------------------------------------------------------------------------------
-function Dp:getDx() if self.__mv==nil then return 0 else return self.__mv.dx or 0 end end
-function Dp:getDy() if self.__mv==nil then return 0 else return self.__mv.dy or 0 end end
-function Dp:getDrot() if self.__mv==nil then return 0 else return self.__mv.drot or 0 end end
-function Dp:getDscale() if self.__mv==nil then return 0 else return self.__mv.dscale or 0 end end
-function Dp:getDalpha() if self.__mv==nil then return 0 else return self.__mv.dalpha or 0 end end
-function Dp:getDscaleX() if self.__mv==nil then return 0 else return self.__mv.dxscale or 0 end end
-function Dp:getDscaleY() if self.__mv==nil then return 0 else return self.__mv.dyscale or 0 end end
+function Disp:getDx() if self.__mv==nil then return 0 else return self.__mv.dx or 0 end end
+function Disp:getDy() if self.__mv==nil then return 0 else return self.__mv.dy or 0 end end
+function Disp:getDrot() if self.__mv==nil then return 0 else return self.__mv.drot or 0 end end
+function Disp:getDscale() if self.__mv==nil then return 0 else return self.__mv.dscale or 0 end end
+function Disp:getDalpha() if self.__mv==nil then return 0 else return self.__mv.dalpha or 0 end end
+function Disp:getDscaleX() if self.__mv==nil then return 0 else return self.__mv.dscaleX or 0 end end
+function Disp:getDscaleY() if self.__mv==nil then return 0 else return self.__mv.dscaleY or 0 end end
 
-function Dp:getDxDy()
+function Disp:getDxDy()
     if self.__mv==nil then return 0, 0
     else return (self.__mv.dx or 0), (self.__mv.dy or 0) end
 end

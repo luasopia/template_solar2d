@@ -1,3 +1,5 @@
+local luasp = _luasopia
+local Disp = luasp.Display
 
 if _Gideros then
 
@@ -22,7 +24,7 @@ if _Gideros then
 
     end
 
-    function Display:__tapon() --print('try tap')
+    function Disp:__tapon() --print('try tap')
         if self.onTap and not self.__tap then
             self.__bd:addEventListener(Event.TOUCHES_BEGIN, tapfn, self)
             self.__tap = true
@@ -31,7 +33,7 @@ if _Gideros then
     end
     
 ----[[
-    function Display:stopTap()
+    function Disp:stopTap()
         if self.onTap and self.__tap then
             self.__bd:removeEventListener(Event.TOUCHES_BEGIN, tapfn, self)
             self.__tap = false
@@ -39,7 +41,7 @@ if _Gideros then
         return self
     end
 
-    Display.resumeTap = Display.__tapon
+    Disp.resumeTap = Disp.__tapon
 --]]
 
 --------------------------------------------------------------------------------
@@ -76,7 +78,7 @@ elseif _Corona then
     -- 2020/02/17 누르는 순간에 tap이벤트를 발생시키기 위해서
     -- 코로나의 'tap'이벤트가 아니라 'touch'이벤트를 이용한다.
     
-    function Display:__tapon()
+    function Disp:__tapon()
 
         if self.onTap and not self.__tap then --print('enable tap')
             self.__bd:addEventListener('touch', tapfn)
@@ -88,7 +90,7 @@ elseif _Corona then
 ----[[
 
 
-    function Display:stopTap()
+    function Disp:stopTap()
 
         if self.onTap and self.__tap then 
             self.__bd:removeEventListener('touch', tapfn)
@@ -98,6 +100,6 @@ elseif _Corona then
 
     end
 
-    Display.resumeTap = Display.__tapon
+    Disp.resumeTap = Disp.__tapon
 --]]
 end

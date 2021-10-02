@@ -1,7 +1,7 @@
 
-local Disp = Display
-local Tmr = Timer
 local luasp = _luasopia
+local Disp = luasp.Display
+local Tmr = Timer
 
 
 --[[ 2021/09/16 update(e) 함수의 파라메터

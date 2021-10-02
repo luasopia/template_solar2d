@@ -1,7 +1,7 @@
 -------------------------------------------------------------------------------
 -- 2021/05/25 created
 -------------------------------------------------------------------------------
-local Disp = Display
+local Disp = _luasopia.Display
 local tins = table.insert
 local INF, abs, sqrt = math.huge, math.abs, math.sqrt
 local tdobj = Disp.__tdobj

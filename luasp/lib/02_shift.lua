@@ -5,13 +5,14 @@
 ----------------------------------------------------------------------------------
 local tmgapf = 1000/_luasopia.fps
 local int = math.floor
+local Disp = _luasopia.Display
 ----------------------------------------------------------------------------------
 -- shift테이블에 여러 지점을 등록할 수 있다.
 -- tr = {time=ms, x=n, y=n, rot=n,...
 --		loops(=1), -- 반복 회수, INF이면 무한반복
 --		onEnd = function(self) ... end, --모든 tr이 종료될 때 실행되는 함수
---		{time(필수), x, y, rot, xscale, yscale, scale, alpha},
---		{time(필수), x, y, rot, xscale, yscale, scale, alpha},
+--		{time(필수), x, y, rot, scaleX, scaleY, scale, alpha},
+--		{time(필수), x, y, rot, scaleX, scaleY, scale, alpha},
 --		...
 -- } 
 ----------------------------------------------------------------------------------
@@ -30,10 +31,10 @@ local function calcTr(self, sh)
     if sh.scale then tr.ds = (sh.scale-self:getScale())/fc end
     if sh.alpha then tr.da = (sh.alpha-self:getAlpha())/fc end
 
-    local xs = sh.xscale
+    local xs = sh.scaleX
     if xs then tr.dxs = (xs-self:getScaleX())/fc end
 
-    local ys = sh.yscale
+    local ys = sh.scaleY
     if ys then tr.dys = (ys-self:getScaleY())/fc end
 
     tr.dest = sh
@@ -127,7 +128,7 @@ end
 
 -- 외부 사용자 함수
 -- 2021/08/10:self.__tr 테이블을 생성 -> shift함수를 __iupds 테이블에 등록
-function Display:shift(sh)
+function Disp:shift(sh)
 
     self.__sh = sh
     self.__tr = makeTr(self, sh)
@@ -137,7 +138,7 @@ function Display:shift(sh)
 
 end
 
-function Display:stopShift()
+function Disp:stopShift()
 
     self.__sh = nil
     self.__tr=nil
@@ -147,7 +148,7 @@ function Display:stopShift()
 end
 
 
-function Display:pauseShift()
+function Disp:pauseShift()
 
     self.__iupds[shift] = nil --  self:__addupd__(shift)
     return self
@@ -155,7 +156,7 @@ function Display:pauseShift()
 end
 
 
-function Display:resumeShift()
+function Disp:resumeShift()
 
     self.__iupds[shift] = nil --  self:__addupd__(shift)
     return self

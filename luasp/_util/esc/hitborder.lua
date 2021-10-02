@@ -3,7 +3,8 @@
 --------------------------------------------------------------------------------
 local luasp = _luasopia
 local esclayer = luasp.esclayer
-local Disp = Display
+local Disp = luasp.Display
+local Line1 = luasp.Line1
 --------------------------------------------------------------------------------
 
 local function drawhitborder(self)

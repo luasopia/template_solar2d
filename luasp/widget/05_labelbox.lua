@@ -1,4 +1,6 @@
 -- 2021/09/12: created
+local luasp = _luasopia
+local Text1 = luasp.Text1
 
 Labelbox = class(Group)
 

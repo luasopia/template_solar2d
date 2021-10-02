@@ -15,7 +15,7 @@ The anchor point is initially located at the center of the shape.
 Group에 shape를 생성해서 집어넣는다. 이유는 shape를 runtime에서 변형가능하게 하고
 anchor point의 위치를 gideros와 solar2d 상에서 정확하게 일치시키기 위해서임.
 ------------------------------------------------------------------------------]]
-local Disp = Display
+local Disp = _luasopia.Display
 local WHITE = Color.WHITE -- default stroke/fill color
 local emptycolor = Color(0,0,0,0)
 local newgroup
@@ -418,8 +418,6 @@ end
 --------------------------------------------------------------------------------
 -- 2020/06/13 Rawshape 클래스는 lib.Tail 클래스에서 사용됨
 --------------------------------------------------------------------------------
-local Disp = Display
-
 _luasopia.Rawshape = class(Disp)
 
 function _luasopia.Rawshape:init(pts, opt)

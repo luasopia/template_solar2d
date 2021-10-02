@@ -20,7 +20,7 @@ local pkscl0 = 1.2 -- default peakScale
 --------------------------------------------------------------------------------
 local luasp = _luasopia
 local cos, _2PI = math.cos, 2*math.pi
-local Disp = Display
+local Disp = luasp.Display
 local nilfunc = luasp.nilfunc
 --------------------------------------------------------------------------------
 

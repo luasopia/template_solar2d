@@ -3,7 +3,7 @@
 -- x,y는 int()로 변환하여 설정해야 pixel모드에서도 위치가 정확해진다
 -- 2021/09/26: ImageSheet객체도 사용할 수 있도록 변경
 --------------------------------------------------------------------------------
-local Disp = Display
+local Disp = _luasopia.Display
 local rooturl = _luasopia.root .. '/' -- 2021/05/12
 local int = math.floor
 

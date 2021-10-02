@@ -127,7 +127,7 @@ function util.showg()
     'pcall', 'print', 'rawequal', 'rawget', 'rawset', 'require', 'select', 'setfenv',
     'setmetatable', 'string', 'table', 'tostring', 'tonumber', 'type', 'unpack', 'xpcall',
     -- extra keys --
-    '_Gideros',
+    '_Gideros', '_Corona',
     -- CoronaSDK는 아래 세 개는 전역변수로 있어야 정상동작한다.
     'system', 'Runtime', 'cloneArray',
     }
@@ -138,9 +138,13 @@ function util.showg()
         return true
     end
 
-    print('----------')
-    for k,v in pairs(_G) do if notin(k) then print(k) end end
-    print('----------')
+    io.write('----------\n')
+    for k,v in pairs(_G) do
+        if notin(k) then
+            io.write(k..', ')
+        end
+    end
+    io.write('\n----------')
     --]]
 end
 
@@ -181,6 +185,25 @@ end
 local liburl = _luasopia.root .. '.lib.'
 function import(libname)
     return _require0(liburl..libname..'.'..libname)
+end
+
+
+--2021/10/02: refactoring rand so that rand(a,b, c,d) is possible
+math.randomseed(os.time())
+local rnd = math.random
+-- 함수 내에서 arg와 ...가 혼용되면 뭔가 안되는 것 같다.
+function rand(...)
+
+    local args = {...}
+
+    if args[3]==nil then
+        return rnd(...)
+    elseif rnd(2)==1 then
+        return rnd(args[1],args[2])
+    else
+        return rnd(args[3],args[4])
+    end
+
 end
 
 

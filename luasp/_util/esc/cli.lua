@@ -17,6 +17,7 @@ local int = math.floor
 local strf = string.format
 local nilfunc = luasp.nilfunc
 local stdoutlayer = luasp.stdoutlayer
+local Text1 = luasp.Text1
 --------------------------------------------------------------------------------
 local clibg = Rect(screen.endX-screen.x0+1,screen.endY-screen.y0+1,
     {fill=Color(0,24,44,0.7)}  --Color(28,64,84) -- darker:Color(0,24,44)

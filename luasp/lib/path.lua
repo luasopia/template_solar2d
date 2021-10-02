@@ -2,7 +2,7 @@
 --------------------------------------------------------------------------------
 local sqrt, atan2 = math.sqrt, math.atan2
 local R2D = 180/math.pi
-local Disp = Display
+local Disp = _luasopia.Display
 --------------------------------------------------------------------------------
 
 local function upd(self)

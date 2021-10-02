@@ -19,8 +19,8 @@ local alien = Pixels{
 }
 --]]
 
-local Disp = Display
 local luasp = _luasopia
+local Disp = luasp.Display
 
 local floor, sin, abs = math.floor, math.sin, math.abs
 local D2R = math.pi/180
@@ -291,7 +291,7 @@ function Pixels:__setrs__()
     local r, xs, ys = self.__bdrr, self.__bdxs, self.__bdys
     local xsf, ysf = xs, ys
     
-    -- (xscale, yscale)벡터를 r만큼 회전시킨 후 그것의 x,y성분을 뽑아낸다 
+    -- (scaleX, scaleY)벡터를 r만큼 회전시킨 후 그것의 x,y성분을 뽑아낸다 
     if r~=0 then
         
         -- rotxsxy = (self.__bdxs-self.bdys)*abs(sin(r))
@@ -370,7 +370,7 @@ function Pixels:__setxs__(xs)
 
     self.__bdxs = xs
     self.__bds = (xs+self.__bdys)*0.5 -- scale값 갱신
-    self.__dxsys = xs - self.__bdys -- 2021/08/18: xscale-yscale
+    self.__dxsys = xs - self.__bdys -- 2021/08/18: scaleX - scaleY
     self.__rsupd = true
     return self
 
@@ -381,7 +381,7 @@ function Pixels:__setys__(ys)
 
     self.__bdys = ys
     self.__bds = (self.__bdxs+ys)*0.5 -- scale값도 갱신한다
-    self.__dxsys = self.__bdxs - ys -- 2021/08/18: xscale-yscale
+    self.__dxsys = self.__bdxs - ys -- 2021/08/18: scaleX - scaleY
     
     --return self:__setrs__()
     self.__rsupd = true
@@ -395,7 +395,7 @@ function Pixels:__setxys__(xs, ys)
 
     self.__bdxs, self.__bdys = xs, ys
     self.__bds = (xs+ys)*0.5 -- scale값도 갱신한다
-    self.__dxsys = xs - ys -- 2021/08/18: xscale-yscale
+    self.__dxsys = xs - ys -- 2021/08/18: scaleX - scaleY
     
     self.__rsupd = true
     return self

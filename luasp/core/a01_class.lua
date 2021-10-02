@@ -69,10 +69,11 @@ end
 --2021/09/21: redefining type() global function
 -- type(data) returns 'class' if data itself is a class
 -- type(data) returns 'object' if data is an class instance
-local _type0 = type
-local function type(data)
+_type0 = type
+local type0 = _type0
+function type(data)
 	
-	local datatype = _type0(data)
+	local datatype = type0(data)
 	
     if datatype =='table' and data.__clsid then
         if data.__index == data then
@@ -85,8 +86,6 @@ local function type(data)
     end
 	
 end
-_type0 = _type0 -- create global function _type0()
-type = type		-- create global function type()
 
 
 -- 어떤 객체가 클래스의 객체인지를 판단하는 (전역)함수
@@ -117,10 +116,11 @@ end
 
 
 --2021/09/21: redefining tostring() global function
-local _tostring0 = tostring
+_tostring0 = tostring
+local tostring0 = _tostring0
 function tostring(data)
 
-	local str = _tostring0(data)
+	local str = tostring0(data)
 	local datatype = type(data)
 
 	if datatype == 'class' then
@@ -134,4 +134,3 @@ function tostring(data)
 	end
 
 end
-_tostring0 = _tostring0
