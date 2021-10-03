@@ -16,7 +16,7 @@ local Disp = _luasopia.Display
 
 local function tmrfunc(self, e)
 
-    if e.isfinal then
+    if e.isFinal then
         self:setVisible(self.__wasv)
         self.__wasv = nil
         return

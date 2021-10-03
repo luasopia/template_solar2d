@@ -17,7 +17,7 @@ local luasp = _luasopia
 --
 -- 	arguments given to func call : event = {
 --	   	count = n, 	-- count of executing callback function
---     	isfinal (bool) -- it is true if it is a final call
+--     	isFinal (bool) -- it is true if it is a final call
 --     	time 		-- time elapsed
 -- 	}
 -- 	멤버변수 ------------------------------------------------------------------
@@ -49,11 +49,11 @@ function Timer.updateAll()
 			while  count > tmr.count do
 
 				tmr.count = tmr.count + 1
-				local isfinal = tmr.count == tmr.loops
+				local isFinal = tmr.count == tmr.loops
 
 				local event = { --callback 함수에 넘겨질 파라메터
 					count = tmr.count,
-					isfinal = isfinal,
+					isFinal = isFinal,
 					time = tmr.__tm, -- 2020/06/24 added
 				}
 
@@ -62,7 +62,7 @@ function Timer.updateAll()
 					local dobj = tmr.__dobj
 					tmr.__fn(dobj, event) --dobj를 (self로) 먼저 넘김
 
-					if isfinal and dobj.__bd ~=nil then
+					if isFinal and dobj.__bd ~=nil then
 
 						if tmr.__onend then
 							tmr.__onend(dobj, event) --dobj를 먼저 넘김
@@ -78,7 +78,7 @@ function Timer.updateAll()
 
 					tmr.__fn(event)
 
-					if isfinal then
+					if isFinal then
 
 						if tmr.__onend then
 							tmr.__onend(event)
