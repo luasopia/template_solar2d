@@ -18,6 +18,7 @@ local strf = string.format
 local nilfunc = luasp.nilfunc
 local stdoutlayer = luasp.stdoutlayer
 local Text1 = luasp.Text1
+local print0 = luasp.print0
 --------------------------------------------------------------------------------
 local clibg = Rect(screen.endX-screen.x0+1,screen.endY-screen.y0+1,
     {fill=Color(0,24,44,0.7)}  --Color(28,64,84) -- darker:Color(0,24,44)
@@ -43,7 +44,7 @@ local spaces={[0]='     ', '    ', '   ', '  ', ' '}
 local function get_print(...)
 	local str = ''
     local tab
-    -- _print0('#args:',#args)
+    -- print0('#args:',#args)
     
 	for k=1,arg.n do
 
@@ -111,7 +112,7 @@ local function print(...)
     
     local str = get_print(...)
     puts(str)
-    _print0(str)
+    print0(str)
     
     return cli
     
@@ -124,7 +125,7 @@ function printf(...)
     initcheck()
     local str = strf(...)
     puts(str)
-    _print0(str)
+    print0(str)
 
     return cli
 
@@ -192,7 +193,7 @@ function cli.print(...)
 
     local str = get_print(...)
     puts(str)
-    _print0(str)
+    print0(str)
 
 end
 
@@ -200,7 +201,7 @@ end
 -- show()메서드 오버라이드
 function cli:show()
 
-    _print0('cli.show()')
+    print0('cli.show()')
     if cli.isactive then return end
 
     clilayer:show()

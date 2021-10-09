@@ -1,11 +1,13 @@
 -- 2020/08/19 refactoring Heart class
 --------------------------------------------------------------------------------
-Heart = class(Shape)
---------------------------------------------------------------------------------
 local tins = table.insert
 local cos, sin = math.cos, math.sin
 local PI, _2PI =  math.pi, 2*math.pi
 local floor = math.floor
+local Shape = _luasopia.Shape
+--------------------------------------------------------------------------------
+Heart = class(Shape)
+--------------------------------------------------------------------------------
 
 -- 2020/07/02 점갯수를 구하는 더 간단한 알고리듬
 local function detpts(r)

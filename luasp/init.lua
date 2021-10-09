@@ -372,6 +372,8 @@ _require0 = require
 -- local rooturl = _luasopia.root .. '.'
 function require(url) return _require0(luasp.root ..'.'.. url) end
 --------------------------------------------------------------------------------
+local print0 = luasp.print0
+
 
 if luasp.env =='simulatorWin' or luasp.env =='simulatorMac' then
     
@@ -395,7 +397,7 @@ if luasp.env =='simulatorWin' or luasp.env =='simulatorMac' then
     _luasopia.clilayer = _luasopia.newlayer(true)
     _luasopia.clilayer:hide() -- 처음에는 숨겨놓는다.
 
-    _print0('resourceDir="'..luasp.resourceDir..'"')
+    print0('resourceDir="'..luasp.resourceDir..'"')
     
     
     luasp.allowEsc()

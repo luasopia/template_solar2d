@@ -1,4 +1,5 @@
 local luasp = _luasopia
+local print0 = luasp.print0
 
 
 local fileurls = {
@@ -70,11 +71,11 @@ if _Corona then
     function luasp.savefile(filename, contentStr)
 
         local path1 = system.pathForFile( filename, system.TemporaryDirectory )
-        --_print0(path1)
+        --print0(path1)
     
         local file, errormsg = io.open(path1,'w') -- 생성 혹은 덮어쓰기
         if not file then
-            _print0('File error:'..errmsg)
+            print0('File error:'..errmsg)
         
         else
             file:write(contentStr)
@@ -85,12 +86,12 @@ if _Corona then
         local path2 = system.pathForFile( "root\\main.lua", system.ResourceDirectory )
         path2 = string.gsub(path2,'main.lua','data\\')
     
-        -- _print0(path2)
+        -- print0(path2)
     
         local cmd = 'copy /y "'..path1.. '" "'..path2..'"'
-        --_print0( cmd )
+        -- print0( cmd )
         if 0 == os.execute(cmd) then
-            _print0(filename ..' is successfully created.')
+            print0(filename ..' is successfully created.')
         end
     
     end
@@ -123,7 +124,7 @@ local function getFileListR(path, cache, strtype)
 
     -- local sysPath = system.pathForFile(properPath, system.ResourceDirectory)
     local sysPath = luasp.resourceDir .. properPath
-    _print0(sysPath)
+    print0(sysPath)
 
     for entry in lfs.dir(sysPath) do
 

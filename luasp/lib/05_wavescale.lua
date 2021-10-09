@@ -164,7 +164,7 @@ local function wys_end(self)
 end
 
 
-function Disp:WaveScaleY(opt)
+function Disp:waveScaleY(opt)
 
     if self._ws_ytmr and not self._ws_ytmr:isRemoved() then
         self._ws_ytmr:remove()

@@ -1,6 +1,7 @@
 -- 2021/09/12: created
 local luasp = _luasopia
 local Text1 = luasp.Text1
+local print0 = luasp.print0
 
 Labelbox = class(Group)
 
@@ -48,7 +49,7 @@ end
 
 function Labelbox:setlabel(str)
 
-    _print0(str)
+    print0(str)
 
     self.label:setstr(str)
     return self

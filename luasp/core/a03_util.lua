@@ -110,7 +110,7 @@ function util.showt(node)
     table.insert(output,output_str)
     output_str = table.concat(output)
 
-    _print0(output_str)
+    print0(output_str)
 end
 
 --------------------------------------------------------------------------------
@@ -215,7 +215,7 @@ end
 local tcover
 function luasp.bantouch()
 
-    _print0('bantouch')
+    --print0('bantouch')
 
     tcover = Rect(screen.width,screen.height,{fill=Color(0,0,0,0.1)})
     tcover:setAlpha(0.1):addTo(luasp.stdoutlayer)

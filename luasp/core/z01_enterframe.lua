@@ -16,7 +16,7 @@ if _Gideros then
 	local isoddfrm = true
 	local upd = function(e) 
 		
-		-- _print0(e.time, e.deltaTime, e.frameCount)
+		-- print0(e.time, e.deltaTime, e.frameCount)
 
 		isoddfrm = not isoddfrm -- 2021/08/23
 		Tmr.updateAll(e)

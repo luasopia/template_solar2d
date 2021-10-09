@@ -2,6 +2,7 @@
 -- 2021/05/31 created
 --------------------------------------------------------------------------------
 local int, sqrt = math.floor, math.sqrt
+local Shape = _luasopia.Shape
 --------------------------------------------------------------------------------
 Arrow = class(Shape)
 --------------------------------------------------------------------------------
@@ -88,10 +89,28 @@ function Arrow:setTailHeight(h)
 
 end
 
-function Arrow:getWidth() return self.__wdt end
-function Arrow:getHeadHeight() return self.__hhgt end
-function Arrow:getTailWidth() return self.__twdt end
-function Arrow:getTailHeight() return self.__thgt end
 
-function Arrow:getWidth() return self.__wdt end
-function Arrow:getHeight() return self.__hhgt + self.__thgt end
+function Arrow:getWidth()
+    return self.__wdt
+end
+
+
+function Arrow:getHeight()
+    return self.__hhgt + self.__thgt
+end
+
+
+function Arrow:getHeadHeight()
+    return self.__hhgt
+end
+
+
+function Arrow:getTailWidth()
+    return self.__twdt
+end
+
+
+function Arrow:getTailHeight()
+    return self.__thgt
+end
+

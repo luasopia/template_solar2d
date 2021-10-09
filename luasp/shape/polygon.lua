@@ -1,6 +1,7 @@
 -- 2020/06/23 refactoring Polygon class 
 local tbins = table.insert
 local cos, sin, _2PI, sqrt = math.cos, math.sin, 2*math.pi, math.sqrt
+local Shape = _luasopia.Shape
 --------------------------------------------------------------------------------
 Polygon = class(Shape)
 --------------------------------------------------------------------------------
