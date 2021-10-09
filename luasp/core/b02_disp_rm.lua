@@ -40,7 +40,7 @@ end
 local function isout(self)
 
     local x0, y0 = out_x0, out_y0
-    local endX, endY = out_endx, out_endY
+    local endX, endY = out_endx, out_endy
     local cpg = self.__orct
 
     for k=1,#cpg,2 do
