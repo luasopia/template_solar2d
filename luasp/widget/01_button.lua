@@ -3,7 +3,7 @@
 -- modified : 2021/06/07, 2021/10/10
 --------------------------------------------------------------------------------
 --[[
-    local btn = Button('string' [ ,func [,opt]  ])
+    local btn = Button('string' [ ,onPressFunc [,opt]  ])
     
     1st and 2nd parameters of func() is button object itself(btn)
         and tap event argument (table)
@@ -16,7 +16,7 @@
         fill = color,       -- default: Color.GREEN
         strokeWidth = n,    -- in pixel, default:fontzise*0.15
         strokeColor = color,-- default: Color.LIGHT_GREEN
-        effect = string,    -- 'invertColor'(:default) / 'shrink' / 'expand'
+        effect = string,    -- 'invertColor'(:default) / 'shrink' / 'expand' / 'none'
         
         shape =             -- 'roundRect'(:default) / 'rect' / 'circle'
         width = n,
@@ -27,6 +27,10 @@
 
     Note: The sizes of the frame are not exactly the same.
     If the sizes are cirtical, set opt.width/opt.height or opt.radius as designed values.
+
+    onPress() and onRelease() method can be defined.
+
+    local btn=Button('OK')
 --]]
 --------------------------------------------------------------------------------
 -- default values
@@ -57,7 +61,7 @@ function Button:init(str, func, opt)
         opt = func
         func = nilfunc
     end
-    self.onPush = func or nilfunc
+    self.onPress = func or nilfunc
     opt = opt or {}
 
     local fillcolor = opt.fill or fillcolor0
@@ -129,40 +133,52 @@ function Button:init(str, func, opt)
     local parent = self
 
 
-    function self.__shpbd:onTap(e)
+    function self.__shpbd:onTouch(e)
 
-        if effect == 'invertColor' then
+        if e.phase == 'begin' then
 
-            parent.__shpbd:fill(parent.__sc)
-            parent.__shpbd:setStrokeColor(parent.__fc)
-            parent.__txtbd:setColor(Color.invert(parent.__tc))
-            parent:addTimer(effectTime, function(self)
+            self.__rscl0=parent.__bds
+
+            if effect == 'invertColor' then
+
+                parent.__shpbd:fill(parent.__sc)
+                parent.__shpbd:setStrokeColor(parent.__fc)
+                parent.__txtbd:setColor(Color.invert(parent.__tc))
+
+            elseif effect == 'shrink' then
+
+                parent:setScale(0.97*self.__rscl0) -- 0.97
+
+            elseif effect == 'expand' then
+                
+                parent:setScale(1.03*self.__rscl0) -- 0.97
+
+            end
+
+            -- btn:onPress(e) 가 정의되어 있을 경우
+            if parent.onPress then
+                parent:onPress(e)
+            end
+
+        elseif e.phase == 'end' or e.phase=='cancel' then
+
+            if effect == 'invertColor' then
+
                 parent.__shpbd:fill(parent.__fc)
                 parent.__shpbd:setStrokeColor(parent.__sc)
                 parent.__txtbd:setColor(parent.__tc)
-            end)
 
-        elseif effect == 'shrink' then
+            elseif effect == 'shrink'  or effect == 'expand' then
+                
+                parent:setScale(self.__rscl0)
 
-            local scale0 = parent.__bds
-            parent:setScale(0.97*scale0) -- 0.97
-            parent:addTimer(effectTime, function(self)
-                self:setScale(scale0)
-            end)
+            end
 
-        elseif effect == 'expand' then
-            
-            local scale0 = parent.__bds
-            parent:setScale(1.03*scale0) -- 0.97
-            parent:addTimer(effectTime, function(self)
-                self:setScale(scale0)
-            end)
+            -- btn:onRelease(e) 가 정의되어 있을 경우
+            if parent.onRelease then
+                parent:onRelease(e)
+            end
 
-        end
-
-        -- btn:onPush(e) 가 정의되어 있을 경우
-        if parent.onPush then
-            parent.onPush(parent, e)
         end
 
     end

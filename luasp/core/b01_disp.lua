@@ -42,10 +42,12 @@ Disp.updateAll = function(isoddfrm, e)
         -- 궂이 매프레임마다 호출할 필요가 없는 update함수는
         -- iupd1, iupd2 둘 중 하나를 임의로 선정해서 거기에 집어넣는다
         for _, fn in _nxt, obj.__iupd12[isoddfrm] do
+
             if fn(obj,e) then -- 만약 fn(self)==true 라면 곧바로 삭제하고 리턴
                 obj:remove()
                 break
             end
+            
         end
         
     end
@@ -89,15 +91,8 @@ end
 -- This function is called in every frames
 function Disp:__upd__(e)
     
-
-    if self.onTouch and self.__tch==nil then self:__touchon() end
-    if self.onTap and self.__tap==nil then self:__tapon() end
-
     if self.__noupd then return end -- self.__noupd==true이면 갱신 금지------------
 
-    -- if self.__mv then self:__playmv__() end  -- move{}
-    -- if self.__tr then self:__playtr__() end -- shift{}
-    
     -- 2020/02/16 call user-defined update() if exists
     if self.update and self:update(e) then
 
@@ -116,6 +111,11 @@ function Disp:__upd__(e)
         end
 
     end
+
+    if self.__isgrp then return end -- 2021/10/10:Group객체는 여기까지
+
+    if self.onTouch and self.__tch==nil then self:__touchon() end
+    if self.onTap and self.__tap==nil then self:__tapon() end
 
 end
 

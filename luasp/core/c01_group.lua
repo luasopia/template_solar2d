@@ -16,7 +16,7 @@ if _Gideros then
 
         self.__bd = Snew()
         self.__cpt = {x=0, y=0} -- 2021/08/30
-        -- self.__chld = {} -- 2021/09/24
+        self.__isgrp = true -- Disp.__upd__()에서 onTap, onTouch를 건너뛴다
         return Disp.init(self)
 
     end
@@ -148,6 +148,7 @@ elseif _Corona then
 
         self.__bd = Gnew()
         self.__cpt = {x=0, y=0} -- 2021/08/30
+        self.__isgrp = false -- 2021/10/10: Disp.__upd__()에서 onTap/onTouch를 건너뛴다
         return Disp.init(self) --return self:superInit()
 
     end
