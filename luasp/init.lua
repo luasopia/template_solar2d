@@ -327,6 +327,7 @@ require 'luasp.core.h05_pixels'      --2021/08/14
 
 require 'luasp.shape.rect'
 require 'luasp.shape.rectscreen' --2021/08/09:screen객체 생성 (Rect 뒤에 와야 함)
+require 'luasp.shape.roundrect' --2021/10/10
 require 'luasp.shape.polygon'
 require 'luasp.shape.circle'
 require 'luasp.shape.star'

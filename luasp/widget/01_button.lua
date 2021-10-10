@@ -1,28 +1,33 @@
+--------------------------------------------------------------------------------
+-- 2020/08/27: created
+-- modified : 2021/06/07, 2021/10/10
+--------------------------------------------------------------------------------
 --[[
     local btn = Button('string' [ ,func [,opt]  ])
     
     1st and 2nd parameters of func() is button object itself(btn)
-        and event argument (table)
+        and tap event argument (table)
 
     opt = {
+
         fontSize = n,       -- default:50
         textColor = color,  -- default: Color.WHITE
         margin = n,         -- in pixel, default:fontzise*0.5
         fill = color,       -- default: Color.GREEN
         strokeWidth = n,    -- in pixel, default:fontzise*0.15
         strokeColor = color,-- default: Color.LIGHT_GREEN
-        effect = bool,      -- default:true  'shrink', 'expand', 'invertcolor'
+        effect = string,    -- 'invertColor'(:default) / 'shrink' / 'expand'
         
+        shape =             -- 'roundRect'(:default) / 'rect' / 'circle'
         width = n,
         height = n,
-
-        shape = 'rect' or 'circle'
         radius = n,
+
     }
+
+    Note: The sizes of the frame are not exactly the same.
+    If the sizes are cirtical, set opt.width/opt.height or opt.radius as designed values.
 --]]
---------------------------------------------------------------------------------
--- 2020/08/27: created
--- modified : 2021/06/07
 --------------------------------------------------------------------------------
 -- default values
 local marginratio = 0.5 -- side margin == fontSize*marginratio0
@@ -33,9 +38,11 @@ local fillcolor0 = Color(4,85,138) --Color.GREEN
 
 local fontsize0 = 50 -- the same as Text class default value
 local textcolor0 = Color.WHITE
-local nilfunc = function() end
-local shape0 = 'rect'
+local nilfunc = _luasopia.nilfunc
+local shape0 = 'roundRect'
 local max = math.max
+
+local effectTime = 70 -- ms
 --------------------------------------------------------------------------------
 Button = class(Group)
 --------------------------------------------------------------------------------
@@ -58,39 +65,25 @@ function Button:init(str, func, opt)
     local fontSize = opt.fontSize or fontsize0
     local margin = opt.margin or fontSize*marginratio
     local strokeColor = opt.strokeColor or strokecolor0
-    local effect = true
     local strokeWidth = opt.strokeWidth or fontSize*strokewidthratio0
-    if opt.effect==false then effect = false end
+    local effect = opt.effect or 'invertColor'
     
     self.__shp = opt.shape or shape0
     self.__wdt0, self.__hgt0 = opt.width, opt.height
     self.__rds0 = opt.radius
+
+    self.__fc = fillcolor
+    self.__sc = strokeColor
+    self.__tc = textColor
     
-    -- (1) background rect must be firsly generated
-    if self.__shp == 'rect' then
-
-        self.__shpbd = Rect(3,3,{
-            fill = fillcolor,
-            strokeColor = strokeColor,
-            strokeWidth = strokeWidth
-        }):addTo(self)
-
-    elseif self.__shp == 'circle' then
-
-        self.__shpbd = Circle(3,{
-            fill = fillcolor,
-            strokeColor = strokeColor,
-            strokeWidth = strokeWidth
-        }):addTo(self)
-
-    end
-    -- self.__shpbd.__btn = self
-
-    -- (2) then, text object
+    -- 2021/10/10:(1) txtbd를 먼저 생성하여 wdt,hgt,rds 정보를 계산한 이후
+    -- (2) 그 값들로 배경도형(RoundRect/Rect/Circle)을 생성하여 self에 add한 하고
+    -- (3) 그 이후에 txtbd를 self에 add한다.(**)
+    -- self.__txtbd = Text(str,{
     self.__txtbd = Text(str,{
         fontSize=fontSize,
         color=textColor}
-    ):addTo(self)
+    )
     
     -- 2021/06/04 opt의 width/height가 사용자에게 주어졌다면 그것을 사용하고
     -- 아니라면 text의 폭과 높이값을 고려한 계산치를 사용한다.
@@ -99,30 +92,69 @@ function Button:init(str, func, opt)
     self.__wdt, self.__hgt = self.__wdt0 or wdt, self.__hgt0 or hgt
     self.__rds = self.__rds0 or max(self.__wdt, self.__hgt)*0.5
 
-    if self.__shp == 'rect' then
-        self.__shpbd:setWidth(self.__wdt):setHeight(self.__hgt)
+
+    local shpOpt= {
+        fill = fillcolor,
+        strokeColor = strokeColor,
+        strokeWidth = strokeWidth
+    }
+    if self.__shp == 'roundRect' then
+
+        self.__shpbd = RoundRect(self.__wdt, self.__hgt, shpOpt)
+        self.__shpbd:addTo(self)
+
+    elseif self.__shp == 'rect' then
+
+        self.__shpbd = Rect(self.__wdt, self.__hgt, shpOpt)
+        self.__shpbd:addTo(self)
+        
     elseif self.__shp == 'circle' then
-        self.__shpbd:setRadius(self.__rds)
+
+        self.__shpbd = Circle(self.__rds, shpOpt)
+        self.__shpbd:addTo(self)
+
+    end
+
+    self:add(self.__txtbd) --(**)
+    
+    --2021/10/10: gideros에서 text가 정중앙에 위치하도록 보정
+    if _Gideros then
+        local offs = fontSize*0.07
+        self.__txtbd:setXY(-offs,offs)
     end
     
     --(3) register tap() method
     self.__shpbd.onPush = func -- **rect의 필드**로 저장해야한다
 
-
     local parent = self
+
 
     function self.__shpbd:onTap(e)
 
-        if effect then
+        if effect == 'invertColor' then
 
-            -- self.__btn:setScale(0.97) -- 0.97
-            -- self.__btn:addTimer(100, function(self)
-            --     self:setScale(1)
-            -- end)
+            parent.__shpbd:fill(parent.__sc)
+            parent.__shpbd:setStrokeColor(parent.__fc)
+            parent.__txtbd:setColor(Color.invert(parent.__tc))
+            parent:addTimer(effectTime, function(self)
+                parent.__shpbd:fill(parent.__fc)
+                parent.__shpbd:setStrokeColor(parent.__sc)
+                parent.__txtbd:setColor(parent.__tc)
+            end)
+
+        elseif effect == 'shrink' then
 
             local scale0 = parent.__bds
             parent:setScale(0.97*scale0) -- 0.97
-            parent:addTimer(100, function(self)
+            parent:addTimer(effectTime, function(self)
+                self:setScale(scale0)
+            end)
+
+        elseif effect == 'expand' then
+            
+            local scale0 = parent.__bds
+            parent:setScale(1.03*scale0) -- 0.97
+            parent:addTimer(effectTime, function(self)
                 self:setScale(scale0)
             end)
 
@@ -136,11 +168,12 @@ function Button:init(str, func, opt)
     end
 
 
-    self.__apx, self.__apy=0.5, 0.5
+    self.__apx, self.__apy = 0.5, 0.5
 
 end
 
 
+--[[
 -- 2020/11/14: (text)string, fontsize가 변경되면 rect사이즈도 조절한다.
 local function resizerect(self)
 
@@ -152,34 +185,38 @@ local function resizerect(self)
     local wdt = self.__txtbd:getWidth()  + 2*margin
     local hgt = self.__txtbd:getHeight() + 2*margin
     self.__wdt, self.__hgt = self.__wdt0 or wdt, self.__hgt0 or hgt
+    self.__rds = self.__rds0 or max(self.__wdt, self.__hgt)*0.5
 
     --print(self.__wdt, self.__hgt)
-    self.__shpbd:width(self.__wdt)
-    self.__shpbd:height(self.__hgt)
+    self.__shpbd:setWidth(self.__wdt)
+    self.__shpbd:setHeight(self.__hgt)
     return self
 
 end
+--]]
 
 
 function Button:setFontSize(n)
 
     self.__txtbd:setFontSize(n)
-    return resizerect(self)
+    --return resizerect(self)
+    return self
 
 end
 
 
 function Button:setString(...)
 
-    self.__txtbd:string(...)
-    return resizerect(self)
+    self.__txtbd:setString(...)
+    --return resizerect(self)
+    return self
 
 end
 
 
 function Button:setStrokeWidth(n)
 
-    self.__shpbd:strokeWidth(n)
+    self.__shpbd:setStrokeWidth(n)
     return self
 
 end
@@ -211,24 +248,28 @@ function Button:setWidth(n)
     if self.__shp == 'circle' then return end
 
     self.__wdt0, self.__wdt = n, n
-    self.__shpbd:width(n)
+    self.__shpbd:setWidth(n)
     return self
 
 end
 
 function Button:setHeight(n)
 
-    if self.__shp == 'circle' then return end
+    if self.__shp == 'circle' then
+        return
+    end
 
     self.__hgt0, self.__hgt = n, n
-    self.__shpbd:height(n)
+    self.__shpbd:setHeight(n)
     return self
 
 end
 
 function Button:setRadius(r)
 
-    if self.__shp == 'rect' then return end
+    if self.__shp == 'rect' or self.__shp=='roundRect' then
+        return
+    end
 
     self.__rds0, self.__rds = r, r
     self.__shpbd:setRadius(r)
