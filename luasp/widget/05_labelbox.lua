@@ -3,9 +3,9 @@ local luasp = _luasopia
 local Text1 = luasp.Text1
 local print0 = luasp.print0
 
-Labelbox = class(Group)
+LabelBox = class(Group)
 
-function Labelbox:init(labeltext,width,height,opt)
+function LabelBox:init(labeltext,width,height,opt)
 
     self.__lbtxt = labeltext
     self.__wdt, self.__hgt= width, height
@@ -23,11 +23,14 @@ function Labelbox:init(labeltext,width,height,opt)
 end
 
 
-function Labelbox:__drawlb__()
+function LabelBox:__drawlb__()
 
     local opt = self.__lbopt
 
-    local box = Rect(self.__wdt, self.__hgt,{strokeWidth=opt.borderwidth, strokeColor=opt.bordercolor})
+    local box = RoundRect(self.__wdt, self.__hgt,{
+        strokeWidth=opt.borderwidth,
+        strokeColor=opt.bordercolor,
+    })
     box:empty():setAnchor(0,0):addTo(self)
     self.box = box
     
@@ -40,14 +43,14 @@ end
 
 -- Group:clear()메서드를 오버라이드한다.
 -- clear하더라도 label, box는 다시 그린다.
-function Labelbox:clear()
+function LabelBox:clear()
 
     Group.clear(self)
     return self:__drawlb__()
 
 end
 
-function Labelbox:setlabel(str)
+function LabelBox:setlabel(str)
 
     print0(str)
 

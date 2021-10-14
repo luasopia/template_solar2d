@@ -25,7 +25,7 @@ end
 
 
 
-local fileset = Labelbox('files',1070,200):setXY(10,150)
+local fileset = LabelBox('files',1070,200):setXY(10,150)
 
 
 function fileset:searchfiles()

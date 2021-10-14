@@ -31,6 +31,7 @@ ProgressBar = class(Group)
 --]]
 --------------------------------------------------------------------------------
 function ProgressBar:init(width, opt)
+    
     Group.init(self)
     
     opt = opt or {}

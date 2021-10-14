@@ -144,6 +144,7 @@ end
 function Timer:pause()
 
 	self.__alive = false
+	return self
 
 end
 
@@ -151,6 +152,7 @@ end
 function Timer:resume()
 
 	self.__alive = true
+	return self
 
 end
 

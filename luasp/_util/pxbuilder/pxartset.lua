@@ -11,7 +11,7 @@ local pxscale = 10
 
 --------------------------------------------------------------------------------
 
-local Pxart = class(Labelbox)
+local Pxart = class(LabelBox)
 
 function Pxart:init(pxsht, id)
 
@@ -23,7 +23,7 @@ function Pxart:init(pxsht, id)
     local w,h =pxsht.width, pxsht.height
     
     
-    Labelbox.init(self, tostring(id),w*pxscale,h*pxscale)
+    LabelBox.init(self, tostring(id),w*pxscale,h*pxscale)
     pxs:addTo(self)
     self.pxs = psx
     -- -- 외곽테두리
@@ -56,7 +56,7 @@ end
 
 --------------------------------------------------------------------------------
 
-local pxartset = Labelbox('',1070,300):setXY(xmargin, ymargin)
+local pxartset = LabelBox('',1070,300):setXY(xmargin, ymargin)
 
 function pxartset:setsheet(pxshts, showname)
     

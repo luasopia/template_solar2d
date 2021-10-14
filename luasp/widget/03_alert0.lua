@@ -60,38 +60,24 @@ function alert(str, onok, opt)
     local vertmargin = opt.verticalMargin or fontSize*0.7
     local sideMargin = opt.sideMargin or fontSize
     
-    
-    -- (2) then, text object
-    local txt = Text(str,{
-        fontSize=fontSize,
-        color=textColor,
-    })
-
-    local txtok = Text(oktext, {
-        fontSize = fontSize*0.7,
-        color = Color.POWDER_BLUE
-    }):setAnchor(1,1)
-
-    
-    -- 2021/06/04 opt의 width/height가 사용자에게 주어졌다면 그것을 사용하고
-    -- 아니라면 text의 폭과 높이값을 고려한 계산치를 사용한다.
-    local wdt = opt.width or (txt:getWidth()  + 2*sideMargin)
-    local hgt = opt.height or (vertmargin*4 + txt:getHeight() + fontSize)
-
     -- (1) background rect must be firsly generated
-    local frame = RoundRect(wdt,hgt,{
+    local frame = RoundRect(3,3,{
         fill = fillcolor,
         fill = fillcolor,
         strokeColor = strokeColor,
         strokeWidth = strokeWidth,
     }):addTo(wnd)
 
-    txt:addTo(wnd):setY(-fontSize)
-    txtok:addTo(wnd):setXY(wdt*0.5-fontSize*0.5,hgt*0.5-fontSize*0.5)
+    -- (2) then, text object
+    local txt = Text(str,{
+        fontSize=fontSize,
+        color=textColor,
+    }):addTo(wnd)
 
-    if popupTime>0 then
-        wnd:setScale(0.01):shift{time=popupTime,scale=1}
-    end
+    local txtok = Text(oktext, {
+        fontSize = fontSize*0.7,
+        color = Color.POWDER_BLUE
+    }):addTo(wnd):setAnchor(1,1)
 
 
     function frame:onTap(self)
@@ -115,6 +101,19 @@ function alert(str, onok, opt)
 
     end
     
+    -- 2021/06/04 opt의 width/height가 사용자에게 주어졌다면 그것을 사용하고
+    -- 아니라면 text의 폭과 높이값을 고려한 계산치를 사용한다.
+    local wdt = opt.width or (txt:getWidth()  + 2*sideMargin)
+    local hgt = opt.height or (vertmargin*4 + txt:getHeight() + fontSize)
+
+    frame:setWidth(wdt):setHeight(hgt)
+    txt:setY(-fontSize)
+    txtok:setXY(wdt*0.5-fontSize*0.5,hgt*0.5-fontSize*0.5)
+
+    if popupTime>0 then
+        wnd:setScale(0.01):shift{time=popupTime,scale=1}
+    end
+
     return wnd
 
 end
