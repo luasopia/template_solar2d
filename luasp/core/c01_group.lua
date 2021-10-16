@@ -21,13 +21,30 @@ if _Gideros then
 
     end
 
-
+    --[[
     function Group:add(child)
 
         child.__pr = self
         self.__bd:addChild(child.__bd)
         child:setXY(0,0) --2021/08/14:__bdx,__bdy를 갱신하기 위해서 이렇게 해야함
         -- self.__chld[child] = child -- 2021/09/24
+        return self
+
+    end
+    --]]
+
+    function Group:add(...)
+
+        local childs = {...}
+        
+        for _,child in ipairs(childs) do
+
+            child.__pr = self
+            self.__bd:addChild(child.__bd)
+            child:setXY(0,0) --2021/08/14:__bdx,__bdy를 갱신하기 위해서 이렇게 해야함
+
+        end
+        
         return self
 
     end
@@ -154,6 +171,7 @@ elseif _Corona then
     end
 
 
+    --[[
     function Group:add(child)
 
         child.__pr = self
@@ -162,7 +180,25 @@ elseif _Corona then
         return self
     
     end
+    --]]
+
+    --2021/10/17: add()메서드에 두 개 이상의 child를 지정할 수 있도록 수정
+    function Group:add(...)
+
+        local childs = {...}
+        
+        for _ , child in ipairs(childs) do
+
+            child.__pr = self
+            self.__bd:insert(child.__bd)
+            child:setXY(0,0) --2021/08/14:__bdx,__bdy를 갱신 하기 위해서 이렇게 해야함
+            
+        end
+
+        return self
     
+    end
+
 
     -- Disp 베이스클래스의 remove()를 오버로딩
     function Group:remove()
