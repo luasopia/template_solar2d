@@ -173,3 +173,10 @@ function Timer:isRemoved()
 	return timers[self] == nil
 
 end
+
+--2021/10/26:added
+function Timer:isPaused()
+
+	return not self.__alive
+
+end
