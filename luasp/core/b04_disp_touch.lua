@@ -71,7 +71,9 @@ if _Gideros then
         if self.__tch==nil or self.__tch[t.id]==nil then return end
   
         if self.__bd:hitTestPoint(t.x, t.y) then
-          self.__tch = {id=event.touch.id, phase='cancelled', x=event.touch.x, y=event.touch.y,dx=0,dy=0}
+            --self.__tch = {id=event.touch.id, phase='cancelled', x=event.touch.x, y=event.touch.y,dx=0,dy=0}
+            --2021/11/07: cancel이벤트인 경우에도 e.phase를 'end'로 표기한다.
+            self.__tch = {id=event.touch.id, phase='end', x=event.touch.x, y=event.touch.y,dx=0,dy=0}
             self:onTouch(self.__tch)
             self.__tch[t.id] = nil
             event:stopPropagation()
@@ -170,7 +172,9 @@ elseif _Corona then
                 return true
             end
         
-        elseif e.phase == 'ended' then --print('tch end')
+        --elseif e.phase == 'ended' then --print('tch end')
+        --2021/11/07: 'ended'와 'cancelled' 모두 'end'이벤트가 발생하도록 수정
+        elseif e.phase == 'ended' or e.phase=='cancelled' then
 
             _Corona.display.getCurrentStage():setFocus(nil)
             self.__bd.isFocus = false
@@ -178,6 +182,7 @@ elseif _Corona then
             self.__tch[e.id] = nil
             return true
   
+        --[[
         else -- if  event.phase =='cancelled' then
 
             _Corona.display.getCurrentStage():setFocus(nil)
@@ -185,7 +190,7 @@ elseif _Corona then
             self:onTouch{id=e.id, phase='cancel', x=e.x, y=e.y, dx=dx, dy=dy}
             self.__tch[e.id] = nil
             return true
-
+        --]]
         end
   
     end
