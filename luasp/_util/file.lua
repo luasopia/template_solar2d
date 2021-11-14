@@ -22,6 +22,8 @@ local fileurls = {
     ['warn.wav'] = 'https://raw.githubusercontent.com/luasopia/data/master/wav/warn.wav',
     ['zet.wav'] = 'https://raw.githubusercontent.com/luasopia/data/master/wav/zet.wav',
     ['clear.wav'] = 'https://raw.githubusercontent.com/luasopia/data/master/wav/clear.wav',
+
+    ['scene.lua'] = 'https://raw.githubusercontent.com/luasopia/data/master/scene.lua',
 }
 
 --------------------------------------------------------------------------------

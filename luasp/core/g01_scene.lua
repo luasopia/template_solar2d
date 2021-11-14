@@ -1,44 +1,21 @@
---[[ scene file template
-local scene = Scene() -- 맨 위에 있어야 함
-
--- codes in here is run only once
--- when this file required for the first time
-
-
-function scene:beforeshow(stage) ... end
-
-function scene:aftershow(stage) ... end
-
-function scene:beforehide(stage) ... end
-
-function scene:afterhide(stage) ... end
-
-return scene
---]]
+--------------------------------------------------------------------------------
+-- 2020/05/29 초기에 scene0를 생성
+-- 2021/08/11: scene끼리 교체할 때 화면의 터치를 금지
+-- 2021/09/14: create() method 삭제
 --------------------------------------------------------------------------------
 local Group = Group
 local time0 = 300
 local luasp = _luasopia
 local x0, y0, endX, endY = luasp.x0, luasp.y0, luasp.endX, luasp.endY
 local scnlayer = luasp.scnlayer
-
 --------------------------------------------------------------------------------
--- 2021/09/14: 이건 필요없을듯
---[[
-local function create(scn)
-
-    luasp.stage = scn.__stg
-    scn:create(scn.__stg)
-
-end
---]]
 
 local function beforeshow(scn)
 
     local stage = scn.__stg 
     
     luasp.stage = stage
-    scn:beforeshow(stage)
+    scn:beforeShow(stage)
 
     -- 이전에 hideout되면서 위치가 화면 밖이거나 투명일 수 있으므로
     -- 다시 (표준위치로 )원위치 시켜야 한다.
@@ -59,7 +36,7 @@ local function aftershow(scn)
     luasp.stage = stage
     stage:set{x=0,y=0,scale=1,rot=0,alpha=1}:show()
     
-    scn:aftershow(stage)
+    scn:afterShow(stage)
     
     --2021/08/11:입장효과가 다 끝나면 cover를 제거한다.
     luasp.allowtouch()
@@ -71,7 +48,7 @@ end
 local function beforehide(scn)
 
     luasp.stage = scn.__stg
-    scn:beforehide(scn.__stg)
+    scn:beforeHide(scn.__stg)
 
 end
 
@@ -83,7 +60,7 @@ local function afterhide(scn)
     stage:hide()
 
     luasp.stage = stage
-    scn:afterhide(stage)
+    scn:afterHide(stage)
 
 end
 --------------------------------------------------------------------------------
@@ -104,18 +81,17 @@ end
 
 
 -- The following methods can be optionally overridden.
---function Scene:create() end -- 최초에 딱 한 번만 호출됨
-function Scene:beforeshow() end -- called just before showing
-function Scene:aftershow() end -- called just after showing
-function Scene:beforehide() end -- called just before hiding
-function Scene:afterhide() end -- called just after hiding
--- function Scene:destroy() end
+function Scene:beforeShow() end -- called just before showing
+function Scene:afterShow() end -- called just after showing
+function Scene:beforeHide() end -- called just before hiding
+function Scene:afterHide() end -- called just after hiding
+-- function Scene:destroy() end -- 이게 필요한가?
 
 --------------------------------------------------------------------------------
 -- Scene.goto(url [,effect [,time] ])
--- effect = 'fade', 'slideRight'
+-- effect = 'fade', 'slideLeft', 'slideRight', 'rotateLeft', 'rotateRight'
 --------------------------------------------------------------------------------
-function Scene.__goto0(url, effect, time)
+function Scene.goto(url, effect, time)
 
     -- print('scene.goto')
 
@@ -128,7 +104,7 @@ function Scene.__goto0(url, effect, time)
     -- scenes테이블에 없다면 create를 이용하여 새로 생성하고 scenes에 저장
     inScene = scenes[url]
     if inScene == nil then
-        inScene = _require0(url) -- stage를 새로운 Scene 객체로 교체한다
+        inScene = require(url) -- stage를 새로운 Scene 객체로 교체한다
         scenes[url] = inScene
         -- create(inScene)
     end
@@ -220,7 +196,6 @@ end
 
 
 -- 2020/05/29 초기에 scene0를 생성한다
--- scnlayer에는 screen(Rect객체)과 scene.__stg 만을 집어넣는다
 luasp.scene0 = Scene()
 luasp.stage = luasp.scene0.__stg
 inScene = luasp.scene0
