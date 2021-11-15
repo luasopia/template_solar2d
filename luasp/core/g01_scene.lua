@@ -91,7 +91,7 @@ function Scene:afterHide() end -- called just after hiding
 -- Scene.goto(url [,effect [,time] ])
 -- effect = 'fade', 'slideLeft', 'slideRight', 'rotateLeft', 'rotateRight'
 --------------------------------------------------------------------------------
-function Scene.goto(url, effect, time)
+local function goto(url, effect, time)
 
     -- print('scene.goto')
 
@@ -192,6 +192,16 @@ function Scene.goto(url, effect, time)
 
     end
 
+end
+
+
+-- 2021/11/15: goto()를 호출할 때 한 프레임의 시차를 둔다
+-- 이렇게 하지 update()함수 안에서 바로 호출할 때 뭔가 오류가 발생한다.
+-- (이유를 모르겠음)
+function Scene.goto(url,effect,time)
+    Timer(20,function()
+        goto(url,effect,time)
+    end)
 end
 
 

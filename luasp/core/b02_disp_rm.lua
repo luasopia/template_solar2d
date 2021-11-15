@@ -133,7 +133,10 @@ elseif _Corona then
 
         if self.__bd == nil then return end -- 2021/09/24
 
-        if self.onremove then self:onremove() end -- 2021/08/30
+        -- 2021/11/15:added
+        self:stopMove()
+        self:stopShift()
+
 
         if self.__tmrs then -- 이 시점에서는 이미 죽은 timer도 있을 것
 
@@ -155,6 +158,9 @@ elseif _Corona then
         dobjs[self] = nil
         if self.__tag ~=nil then tdobj[self.__tag][self] = nil end
         -- self.__pr.__chld[self] = nil -- 2021/09/24:부모에서 삭제
+
+
+        if self.onRemove then self:onRemove() end -- 2021/08/30
         
     end
     
