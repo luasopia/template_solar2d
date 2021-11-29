@@ -167,3 +167,26 @@ elseif _Corona then
     
 
 end
+
+
+-- 2021/Nov/29: added
+function Disp:removeAll(tag)
+
+    if tag==nil then
+
+        luasp.stage:clear()
+
+    else
+
+        local tdobjs = Disp.__tdobj[tag]
+        if tdobjs ~=nil then
+            for key, dobj in pairs(tdobjs) do
+                dobj:remove()
+                tdobjs[key]=nil
+            end
+            Disp.__tdobj[tag] = nil
+        end
+
+    end
+
+end

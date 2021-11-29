@@ -14,8 +14,8 @@ local rand = rand
 -- 2020/02/06: 모든 set함수는 self를 반환하도록 수정됨
 -- 향후: 내부코드는 속도를 조금이라도 높이기 위해서 self.__bd객체를 직접 접근한다
 ----------------------------------------------------------------------------------
--- local Disp = class()
-local Disp = virtualClass()
+Display = virtualClass()
+local Disp = Display
 _luasopia.Display = Disp --2021/10/02 hide Disp into _luasopia
 --------------------------------------------------------------------------------
 -- static members of this class ------------------------------------------------

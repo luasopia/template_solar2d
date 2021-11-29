@@ -1,1 +1,1 @@
-print('hello luasopia(v1.0.18)')
+print('hello luasopia(v1.0.19)')
