@@ -5,7 +5,12 @@
 -- 2021/05/13 created
 -------------------------------------------------------------------------------
 
-
+-------------------------------------------------------------------------------
+-- 2022/08/20 From gideros ver 2022.1, Luau is adopted instead of LuaJIT
+-- Since there is no require() function in Luau, require() is defined in Gideros
+-- The below function is customized and overridden version of require() command
+-- to load .lua files of users' in the local folder.
+-------------------------------------------------------------------------------
 if gideros then
 
     function require(module)
@@ -36,7 +41,6 @@ if gideros then
 	end
 
 end
-
 
 require 'luasp.init'
 

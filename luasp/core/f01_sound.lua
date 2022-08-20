@@ -49,7 +49,9 @@ if _Gideros then
 
     function Sound:play(loops)
 
-        self.__loops = loops or 1
+        local loops = loops or 1
+        self.__loops = loops
+
         -- Sound:play(startTime, looping(=false), paused)
         -- startTime: (number, default = 0) The initial position in milliseconds at which playback should start.
         -- looping: (boolean, default = false)
@@ -66,12 +68,16 @@ if _Gideros then
 
             self.__cnt = 0
             self.__ch = self.__bd:play()
-            self.__ch:addEventListener(EFIN, count, self)
+            if self.__ch then
+                self.__ch:addEventListener(EFIN, count, self)
+            end
 
         end
 
         --if self.__vol < 1 then 
+        if self.__vol < 1 and self.__ch then
             self.__ch:setVolume(self.__vol)
+        end
         --end
 
         return self

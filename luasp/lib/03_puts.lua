@@ -36,13 +36,14 @@ local spaces={[0]='     ', '    ', '   ', '  ', ' '}
 
 local function get_print(...)
 
-    local str = ''
-    local tab
-
-    -- 2022/08/20: for Luau ------------------------
+    --------------------------------------------------------------------------
+    -- 2022/08/20: In Luau, there is no automatically generated arg parameter
 	local arg = arg or {...}
 	if not arg.n then arg.n = #arg end
-    ------------------------------------------------
+    --------------------------------------------------------------------------
+
+    local str = ''
+    local tab
 
 	for k=1,arg.n do
 
