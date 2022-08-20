@@ -110,7 +110,7 @@ function util.showt(node)
     table.insert(output,output_str)
     output_str = table.concat(output)
 
-    print0(output_str)
+    luasp.print0(output_str)
 end
 
 --------------------------------------------------------------------------------

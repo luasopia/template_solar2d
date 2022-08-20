@@ -15,8 +15,13 @@ local function moveg()
     'loadstring', 'math', 'module', 'newproxy', 'next', 'os', 'package', 'pairs',
     'pcall', 'print', 'rawequal', 'rawget', 'rawset', 'require', 'select', 'setfenv',
     'setmetatable', 'string', 'table', 'tostring', 'tonumber', 'type', 'unpack', 'xpcall',
-    -- CoronaSDK의 경우 아래 세 개는 전역변수로 남아있어야 정상동작한다.
+    
+    -- Solar2d의 경우 아래 세 개는 전역변수로 남아있어야 정상동작한다.
     'system', 'Runtime', 'cloneArray',
+
+    -- 2022/07/18: gideros는 2022.6버전부터 아래 전역변수가 남아있어야 한다
+    -- '__styleUpdates', --아닌것같다
+
     -- gideros와 solar2d 공통적으로 _G에 남겨야 하는 것
     '_luasopia',
     }

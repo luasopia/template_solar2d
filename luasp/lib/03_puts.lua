@@ -38,7 +38,12 @@ local function get_print(...)
 
     local str = ''
     local tab
-    
+
+    -- 2022/08/20: for Luau ------------------------
+	local arg = arg or {...}
+	if not arg.n then arg.n = #arg end
+    ------------------------------------------------
+
 	for k=1,arg.n do
 
         local v = arg[k]

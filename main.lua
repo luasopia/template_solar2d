@@ -4,6 +4,40 @@
 -------------------------------------------------------------------------------
 -- 2021/05/13 created
 -------------------------------------------------------------------------------
+
+
+if gideros then
+
+    function require(module)
+		
+		if package.loaded[module] then return package.loaded[module] end
+			
+		local m
+		if package.preload[module] then
+			
+			assert(type(package.preload[module])=="function","Module loader isn't a function")
+			m=package.preload[module](module) or true
+			
+		else
+			
+			if not m then
+				local fullpath = string.gsub(module, '%.','/') .. '.lua'
+				local luafile, _err = loadfile( fullpath )
+				if luafile and type(luafile)=="function" then 
+					m=luafile(module) or true
+				end		
+			end
+
+		end
+		assert(m,"Module "..module.." not found")
+		package.loaded[module]=m or true
+		
+		return m
+	end
+
+end
+
+
 require 'luasp.init'
 
 -- in this point, the (relative) root foler is replaced by '/root'
