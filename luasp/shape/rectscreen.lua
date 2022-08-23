@@ -186,7 +186,7 @@ if _Gideros then
         local k = keyt[e.keyCode] or (realt[e.realCode] or 'unknown')
         if k=='`' then
             
-            print0('cli')
+            print('cli')
 
             if luasp.cli == nil then
 
@@ -314,7 +314,7 @@ elseif _Corona then
 
             if k=='`' then
             
-                -- print0('cli')
+                -- print('cli')
 
                 if luasp.cli == nil then
 

@@ -14,7 +14,6 @@ local strf = string.format
 local nilfunc = luasp.nilfunc
 local stdoutlayer = luasp.stdoutlayer
 local Text1 = luasp.Text1
-local print0 = luasp.print0
 --------------------------------------------------------------------------------
 local stdout = Group():addTo(stdoutlayer)
 stdout:setXY(leftmargin, screen.height0-botmargin)
@@ -93,7 +92,7 @@ local function newline()
 end
 
 
-local function puts(str, no_new_line)
+local function putstr(str, no_new_line)
 
     if not no_new_line then
         newline()
@@ -118,26 +117,17 @@ local function puts(str, no_new_line)
 end
 
 
-luasp.print0 = print
-print0 = luasp.print0
+function puts(...)
 
-function print(...)
-
-    local str = get_print(...)
-    puts(str)
-    print0(str)
-
+    putstr(get_print(...))
     return stdout
 
 end
 
 
-function printf(...)
+function putsf(...)
 
-    local str = strf(...)
-    puts(str)
-    print0(str)
-
+    putstr(strf(...))
     return stdout
 
 end
@@ -149,7 +139,7 @@ local function onend_input(entry)
     local str_in = entry:getString()
     local str_hdr = entry.__hdr
     entry:remove()                  -- entry를 삭제한 후
-    puts(str_hdr .. str_in, true)   -- 그자리에 문자열만 표시한다
+    putstr(str_hdr .. str_in, true)   -- 그자리에 문자열만 표시한다
     stdout.__endin(str_in)
 
 end
@@ -170,7 +160,7 @@ local function onend_input(entry)
     local str_in = entry:getString()
     local str_hdr = entry.__hdr
     entry:remove()                  -- entry를 삭제한 후
-    puts(str_hdr .. str_in, true)   -- 그자리에 문자열만 표시한다
+    putstr(str_hdr .. str_in, true)   -- 그자리에 문자열만 표시한다
 
     local onenter = input.onenter or nilfunc
     input.onenter(str_in)

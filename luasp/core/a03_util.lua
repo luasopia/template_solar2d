@@ -6,17 +6,6 @@ luasp.util = {}
 local util = luasp.util
 
 --[[
--- this loads main.lua in 'luasopialib' folder
-function importlib(libname)
-    local url = string.format('luasopiaLib.%s.%s',libname, libname)
-    global.u = function(str) return string.format('luasopiaLib/%s/%s',libname,str) end
-    local lib = require(url)
-    global.u = nil
-    return lib
-end
---]]
-
---[[
 function runutil(utilname) -- runutil
     local url = string.format('luasopiaUtil.%s.main',utilname, utilname)
     global.u = function(str) return string.format('luasopiaUtil/%s/%s', utilname, str) end
@@ -110,7 +99,7 @@ function util.showt(node)
     table.insert(output,output_str)
     output_str = table.concat(output)
 
-    luasp.print0(output_str)
+    print(output_str)
 end
 
 --------------------------------------------------------------------------------
@@ -166,14 +155,14 @@ end
 -- 파일의 첫 줄에 local here = gethere(...) 라고 호출하면
 -- 현재폴더의 url을 구할 수 있다.(ex: 'root.lib.mod' -> 'lib/')
 local gmatch = string.gmatch
-function getdir(url)
+function getDir(url)
     local k, here, folder_1 = 1, ''
     for folder in gmatch(url, "[^%.]+") do -- dot('.')을 기준으로 분리
         if k>2 then here = here .. folder_1 ..'/'  end
         k = k+1
         folder_1 = folder
     end
-    --return here
+    -- 아래와 같이 함수를 반환하여 u'image.png' 같이 문자열의 접두어처럼 사용 가능
     return function(url) return here..url end
 end
 
@@ -192,6 +181,7 @@ end
 math.randomseed(os.time())
 local rnd = math.random
 -- 함수 내에서 arg와 ...가 혼용되면 뭔가 안되는 것 같다.
+-- 용례: rand(), rand(n1), rand(n1,n2), rand(n1,n2,m1,m2) 
 function rand(...)
 
     local args = {...}
@@ -215,7 +205,7 @@ end
 local tcover
 function luasp.bantouch()
 
-    --print0('bantouch')
+    --print('bantouch')
 
     tcover = Rect(screen.width,screen.height,{fill=Color(0,0,0,0.1)})
     tcover:setAlpha(0.1):addTo(luasp.stdoutlayer)

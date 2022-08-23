@@ -134,9 +134,9 @@ function luasp.console:show()
     luasp.stdout:setAlpha(0.4)
     esclayer:show()
     
-    local h = luasp.console.toolbar.height
     local tmshift=180
-    luasp.console.toolbar:setY(-h):shift{time=tmshift,y=0}
+    --local h = luasp.console.toolbar.height
+    --luasp.console.toolbar:setY(-h):shift{time=tmshift,y=0}
     luasp.console.infotxts:setAlpha(0):shift{time=tmshift,alpha=1}
     luasp.console.gridlines:setAlpha(0):shift{time=tmshift,alpha=1}
     
@@ -155,6 +155,6 @@ function luasp.console:hide()
 end
 --------------------------------------------------------------------------------
 
-local toolbar = _require0('luasp._util.esc.toolbar')
-luasp.console:add(toolbar)
-luasp.console.toolbar = toolbar
+--local toolbar = _require0('luasp._util.esc.toolbar')
+--luasp.console:add(toolbar)
+--luasp.console.toolbar = toolbar

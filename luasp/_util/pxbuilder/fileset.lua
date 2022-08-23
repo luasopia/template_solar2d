@@ -17,9 +17,9 @@ function File:init(rname)
     
     self.pxshts = _require0(rname)
 
-    print0(self.req0name)
-    print0(self.dispname)
-    print0(self.abspath)
+    print(self.req0name)
+    print(self.dispname)
+    print(self.abspath)
 
 end
 

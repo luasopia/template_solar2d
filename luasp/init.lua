@@ -321,11 +321,15 @@ require 'luasp.core.e31_line1' -- (내부용) 단순선
 
 require 'luasp.core.f01_sound'
 
-require 'luasp.core.h01_pxmode'      --2021/08/17
-require 'luasp.core.h02_dot'       --2021/08/14
-require 'luasp.core.h03_palette'   --2021/08/14
-require 'luasp.core.h04_getpixels'   --2021/08/14
-require 'luasp.core.h05_pixels'      --2021/08/14
+
+--[[
+-- 2022/08/23: pxmode는 일단 보류
+require 'luasp.core.wip.h01_pxmode'      --2021/08/17
+require 'luasp.core.wip.h02_dot'       --2021/08/14
+require 'luasp.core.wip.h03_palette'   --2021/08/14
+require 'luasp.core.wip.h04_getpixels'   --2021/08/14
+require 'luasp.core.wip.h05_pixels'      --2021/08/14
+--]]
 
 -------------------------------------------------------------------------------
 -- shapes
@@ -350,11 +354,11 @@ require 'luasp.lib.04_blink' -- 2020/07/01, 2021/05/14 lib로 분리됨
 require 'luasp.lib.05_wavescale' -- 2020/07/01, 2021/05/14 lib로 분리됨
 require 'luasp.lib.06_ishit'
 
--- require 'luasp.lib.push'
--- require 'luasp.lib.path'
--- require 'luasp.lib.track' -- 2021/05/14 lib로 분리됨
--- require 'luasp.lib.tail' -- 2020/06/18 added
--- require 'luasp.lib.maketile' -- 2020/06/24 added
+-- require 'luasp.lib.wip.push'
+-- require 'luasp.lib.wip.path'
+-- require 'luasp.lib.wip.track' -- 2021/05/14 lib로 분리됨
+-- require 'luasp.lib.wip.tail' -- 2020/06/18 added
+-- require 'luasp.lib.wip.maketile' -- 2020/06/24 added
 
 -------------------------------------------------------------------------------
 -- widget
@@ -378,7 +382,6 @@ _require0 = require
 -- local rooturl = _luasopia.root .. '.'
 function require(url) return _require0(luasp.root ..'.'.. url) end
 --------------------------------------------------------------------------------
-local print0 = luasp.print0
 
 
 if luasp.env =='simulatorWin' or luasp.env =='simulatorMac' then
@@ -403,7 +406,7 @@ if luasp.env =='simulatorWin' or luasp.env =='simulatorMac' then
     _luasopia.clilayer = _luasopia.newlayer(true)
     _luasopia.clilayer:hide() -- 처음에는 숨겨놓는다.
 
-    print0('resourceDir="'..luasp.resourceDir..'"')
+    print('resourceDir="'..luasp.resourceDir..'"')
     
     
     luasp.allowEsc()

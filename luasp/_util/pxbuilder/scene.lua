@@ -48,7 +48,7 @@ function btnSave:onPush()
         str = str .. string.format('      },\n',k)
     end
     str = str..'}'
-    print0(str)
+    print(str)
     luasp.savefile('test(pxs).lua',str)
 end
 --]]
