@@ -1,8 +1,3 @@
-puts('hello luasopia(v1.0.20)')
-local c=0
-Timer(100,function()
-    putsf("%d",c)
-    c=c+1
-end,INF)
+puts('hello luasopia(v1.0.21)')
 
-return require 'ex.test.boomlib'
+return require 'ex._main'

@@ -14,7 +14,7 @@
 -- dobj:stopWave()
 ------------------------------------------------------------------------------]]
 
-local tmgap = 25 -- 1000/screen.fps -- 매frame마다 갱신
+local tmgap = 25 -- 25 -- 1000/screen.fps -- 매frame마다 갱신
 local prd0 = 1000 -- ms default period
 local pkscl0 = 1.2 -- default peakScale
 --------------------------------------------------------------------------------
@@ -23,7 +23,7 @@ local cos, _2PI = math.cos, 2*math.pi
 local Disp = luasp.Display
 local nilfunc = luasp.nilfunc
 --------------------------------------------------------------------------------
-
+--[[
 local function getloops(self, opt)
 
     opt=opt or {}
@@ -34,7 +34,7 @@ local function getloops(self, opt)
     return (opt.loops or INF)*(self._ws_prd/tmgap) -- loops
 
 end
-
+--]]
 
 local function wstmr(self, e)
     
@@ -199,4 +199,4 @@ function Disp:stopWaveScaleY()
 end
 
 
-Disp.wavescale = Disp.waveScale -- must be depricated in 2022
+--Disp.wavescale = Disp.waveScale -- must be depricated in 2022

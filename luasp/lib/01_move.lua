@@ -130,7 +130,7 @@ function Disp:setDxDy(dx,dy)
 end
 
 --------------------------------------------------------------------------------
--- 2020/02/25 : add getd() methods
+-- 2020/02/25 : add getD() methods
 --------------------------------------------------------------------------------
 function Disp:getDx() if self.__mv==nil then return 0 else return self.__mv.dx or 0 end end
 function Disp:getDy() if self.__mv==nil then return 0 else return self.__mv.dy or 0 end end

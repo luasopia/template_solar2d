@@ -278,7 +278,8 @@ luasp.stage = luasp.scnlayer
 
 --------------------------------------------------------------------------------
 -- global constants -- 이 위치여야 한다.(위로 옮기면 안됨)
-INF = -math.huge -- infinity constant (일부러 -를 앞에 붙임)
+--INF = -math.huge -- infinity constant (일부러 -를 앞에 붙임)
+INF = math.huge -- infinity constant -- 2022/08/27 (-)를 뺐다.
 --------------------------------------------------------------------------------
 -- 2021/05/12: luasp 프로젝트를 root폴더 안에서 작성하기로 변경함
 luasp.root = 'root'
@@ -351,8 +352,10 @@ require 'luasp.lib.01_move'
 require 'luasp.lib.02_shift'
 require 'luasp.lib.03_puts'
 require 'luasp.lib.04_blink' -- 2020/07/01, 2021/05/14 lib로 분리됨
-require 'luasp.lib.05_wavescale' -- 2020/07/01, 2021/05/14 lib로 분리됨
+require 'luasp.lib.05_wave_xyr' -- 2022/08/27
+require 'luasp.lib.05_wave_sa' -- 2022/08/27
 require 'luasp.lib.06_ishit'
+require 'luasp.lib.07_hover' -- 2022/08/23
 
 -- require 'luasp.lib.wip.push'
 -- require 'luasp.lib.wip.path'
