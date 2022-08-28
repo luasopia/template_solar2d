@@ -24,11 +24,11 @@ function Disp:hover(opt)
     local pk = opt.peak or peak0
     local pr = opt.period or period0
 
-    self:waveX{peak=pk, period=pr}
-    self:waveY{peak=-pk, period=pr*0.5}
+    self:waveX{peak=pk, peak2=-pk, period=pr}
+    self:waveY{peak=-pk, peak2=pk, period=pr*0.5}
 
     if opt.rot then
-        self:waveRot{peak=opt.rot,period=pr}
+        self:waveRot{peak=opt.rot,peak2=-opt.rot, period=pr}
     end
 
     return self

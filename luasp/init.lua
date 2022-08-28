@@ -352,8 +352,7 @@ require 'luasp.lib.01_move'
 require 'luasp.lib.02_shift'
 require 'luasp.lib.03_puts'
 require 'luasp.lib.04_blink' -- 2020/07/01, 2021/05/14 lib로 분리됨
-require 'luasp.lib.05_wave_xyr' -- 2022/08/27
-require 'luasp.lib.05_wave_sa' -- 2022/08/27
+require 'luasp.lib.05_wave' -- 2022/08/27
 require 'luasp.lib.06_ishit'
 require 'luasp.lib.07_hover' -- 2022/08/23
 
