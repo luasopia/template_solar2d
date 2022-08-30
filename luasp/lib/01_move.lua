@@ -7,6 +7,7 @@ local Disp = _luasopia.Display
 local function move(self)
     
     local d = self.__mv
+    if d==nil then return end
     
     if d.dx then
         self:setX(self:getX() + d.dx)
@@ -25,7 +26,7 @@ end
 
 function Disp:pauseMove()
 
-    self.__iupds[move] = nil
+    self:__rmUpd__(move)
     return self
 
 end
@@ -33,7 +34,7 @@ end
 
 function Disp:resumeMove()
 
-    self.__iupds[move] = move
+    self:__addUpd__(move)
     return self
 
 end
@@ -42,7 +43,7 @@ end
 function Disp:stopMove()
 
     self.__mv = nil
-    self.__iupds[move] = nil
+    self:__rmUpd__(move)
     return self
 
 end
@@ -52,9 +53,9 @@ end
 --------------------------------------------------------------------------------
 function Disp:setDx(d)
 
-    self.__mv=self.__mv or {}
+    self.__mv = self.__mv or {}
     self.__mv.dx = d
-    self.__iupds[move] = move
+    self:__addUpd__(move)
     return self
 
 end
@@ -64,7 +65,7 @@ function Disp:setDy(d)
 
     self.__mv=self.__mv or {}
     self.__mv.dy=d
-    self.__iupds[move] = move
+    self:__addUpd__(move)
     return self
 
 end
@@ -74,7 +75,7 @@ function Disp:setDrot(d)
 
     self.__mv = self.__mv or {}
     self.__mv.drot = d
-    self.__iupds[move] = move
+    self:__addUpd__(move)
     return self
 
 end
@@ -84,7 +85,7 @@ function Disp:setDscale(d)
 
     self.__mv = self.__mv or {}
     self.__mv.dscale = d
-    self.__iupds[move] = move
+    self:__addUpd__(move)
     return self
 
 end
@@ -94,7 +95,7 @@ function Disp:setDalpha(d)
 
     self.__mv = self.__mv or {}
     self.__mv.dalpha = d
-    self.__iupds[move] = move
+    self:__addUpd__(move)
     return self
 
 end
@@ -104,7 +105,7 @@ function Disp:setDscaleX(d)
 
     self.__mv=self.__mv or {}
     self.__mv.dscaleX = d
-    self.__iupds[move] = move
+    self:__addUpd__(move)
     return self
 
 end
@@ -114,7 +115,7 @@ function Disp:setDscaleY(d)
 
     self.__mv=self.__mv or {}
     self.__mv.dscaleY = d
-    self.__iupds[move] = move
+    self:__addUpd__(move)
     return self
 
 end
@@ -124,7 +125,7 @@ function Disp:setDxDy(dx,dy)
 
     self.__mv=self.__mv or {}
     self.__mv.dx, self.__mv.dy = dx, dy
-    self.__iupds[move] = move
+    self:__addUpd__(move)
     return self
 
 end

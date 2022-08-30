@@ -7,6 +7,7 @@ local Timer = Timer
 local timers = Timer.__tmrs -- 2020/06/24:Disp:remove()함수 내에서 직접 접근
 local luasp = _luasopia
 local _nxt = next
+local tIn, tRm = table.insert, table.remove
 
 local int, min = math.floor, math.min
 local rand = rand
@@ -49,7 +50,32 @@ Disp.updateAll = function(isoddfrm, e)
             end
             
         end
-        
+
+        -- 2022/08/30: obj.__iupds테이블은 모든 upd()가 호출된 이후에 갱신되어야 한다.
+        -- 그렇지 않으면 오류가 발생함
+
+        local nUpdNew, nUpdRm = #obj.__updNew, #obj.__updRm
+
+        if nUpdRm>0 then
+            -- 반드시 제거를 먼저해야 한다.
+            for k = nUpdRm, 1, -1 do
+                local fn = obj.__updRm[k]
+                obj.__iupds[fn] = nil
+                tRm(obj.__updRm, k)
+            end
+
+        end
+
+        if nUpdNew>0 then
+
+            for k = nUpdNew, 1, -1 do
+                local fn = obj.__updNew[k]
+                obj.__iupds[fn] = fn
+                tRm(obj.__updNew, k)
+            end
+
+        end
+
     end
 
 end
@@ -74,6 +100,12 @@ function Disp:init()
     
     dobjs[self] = self
     self.__iupds = {} -- 내부 update함수들을 저장할 테이블(모든 frame에서 호출)
+
+    self.__updNew = {} -- 2022/08/30:__iupds에 새로 포함할 함수들의 테이블
+    self.__updRm = {}  -- 2022/08/30:__iupds에서 제거할 함수들의 테이블
+
+
+    -- 아래 기능들은 없앨지 생각해봐야 함
     self.__iupd12 = {
         [true]={},  -- 홀수frm(isoddfrm==true)에 호출될 update함수들을 저장할 테이블
         [false]={},  -- 짝수frm(isoddfrm==false)에 호출될 update함수들을 저장할 테이블
@@ -88,7 +120,7 @@ function Disp:init()
 end
 
 
--- This function is called in every frames
+-- This function is called in every frame
 function Disp:__upd__(e)
     
     if self.__noupd then return end -- self.__noupd==true이면 갱신 금지------------
@@ -102,6 +134,8 @@ function Disp:__upd__(e)
 
     --2020/07/01 내부갱신함수들이 있다면 호출
     -- self.__iupds가 nil인지를 check하는 것이 성능에 별로 효과가 없을 것 같다
+    -- 2022/08/30: fn() 내부에서 self.__iupds 요소를 변경(삭제)시키면
+    -- invalid key to 'next' 오류발생
     for _, fn in _nxt, self.__iupds do
 
         if fn(self, e) then -- 만약 fn(self)==true 라면 곧바로 삭제하고 리턴
@@ -113,6 +147,7 @@ function Disp:__upd__(e)
     end
 
     if self.__isgrp then return end -- 2021/10/10:Group객체는 여기까지
+    
 
     if self.onTouch and self.__tch==nil then self:__touchon() end
     if self.onTap and self.__tap==nil then self:__tapon() end
@@ -169,25 +204,25 @@ function Disp:getParent() return self.__pr end
 
 
 --2020/07/01 : handle Internal UPDateS (__iupds)
-function Disp:__addupd__( fn )
+--2022/08/30 : update중에 __iupds 테이블이 갱신되지 않도록 개선
+function Disp:__addUpd__(fn)
 
-    -- self.__iupds = self.__iupds or {}
-    self.__iupds[fn] = fn
+    --if fn ~= nil then
+        tIn(self.__updNew,fn)
+    --end
+
     return self
 
 end
 
 
+function Disp:__rmUpd__( fn )
 
---2021/08/09 : remove internal update function
-function Disp:__rmupd__( fn )
-
-    -- if self.__iupds == nil or fn==nil then return end
-    if fn==nil then return self end
-    self.__iupds[fn] = nil
-
-    -- if self.__iupds is empty then set that nil
-    -- if _nxt(self.__iupds) == nil then  self.__iupds = nil  end
+    -- if fn ~= nil then
+        if self.__iupds[fn] ~= nil then 
+            tIn(self.__updRm, fn)
+        end
+    -- end
 
     return self
 

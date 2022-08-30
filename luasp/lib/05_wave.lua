@@ -10,7 +10,7 @@ local tmgap = 1000/screen.fps -- 매frame마다 갱신
 --------------------------------------------------------------------------------
 local period0 = 1000 -- ms default period for all attributes
 local peak0 = 100 -- default peak for x, y, and rot
-local peakScale0 = 1.1 -- default peak for scale
+local peakScale0 = 1.2 -- default peak for scale
 --------------------------------------------------------------------------------
 --[[-----------------------------------------------------------------------------
 -- dobj:waveX(opt), waveY(opt), waveRot(opt)
@@ -67,8 +67,10 @@ end
 
 
 local function waveXupd(self)
-
+    
     local wvx = self.__wvx
+    if wvx == nil then return end
+
     wvx.time = wvx.time + tmgap
     local tt = wvx.tau*wvx.time
 
@@ -94,7 +96,8 @@ function Disp:waveX(opt)
     
     self:stopWaveX() -- 현재 실행중인 waveRot()(가 있다면) 중지
     self.__wvx = getInfo(self:getX(),opt)
-    self.__iupds[waveXupd] = waveXupd
+    -- upd()를 추가할 때는 반드시 self.__addUpd__()메서드로 해야한다.
+    self:__addUpd__(waveXupd)
     return self
 
 end
@@ -104,7 +107,7 @@ end
 -- stopWaveRot()로 호출되고 원래의 각도로 되돌아가지 않고 현재 각도를 유지
 function Disp:stopWaveX(isTo0)
 
-    self.__iupds[waveXupd] = nil
+    self:__rmUpd__(waveXupd)
     if isTo0 and self.__wvx then  self:setX(self.__wvx.attr0)  end
     self.__wvx = nil
     return self
@@ -117,8 +120,11 @@ end
 
 
 local function waveYupd(self)
+   
 
     local wvy = self.__wvy
+    if wvy==nil then return end
+
     wvy.time = wvy.time + tmgap
     local tt = wvy.tau*wvy.time
 
@@ -144,7 +150,7 @@ function Disp:waveY(opt)
     
     self:stopWaveY() -- 현재 실행중인 waveRot()(가 있다면) 중지
     self.__wvy = getInfo(self:getY(), opt)
-    self.__iupds[waveYupd] = waveYupd
+    self:__addUpd__(waveYupd)
     return self
 
 end
@@ -154,7 +160,7 @@ end
 -- stopWaveRot()로 호출되고 원래의 각도로 되돌아가지 않고 현재 각도를 유지
 function Disp:stopWaveY(isTo0)
 
-    self.__iupds[waveYupd] = nil
+    self:__rmUpd__(waveYupd)
     if isTo0 and self.__wvy then  self:setY(self.__wvy.attr0)  end
     self.__wvy = nil
     return self
@@ -168,8 +174,11 @@ end
 
 
 local function waveRupd(self)
-
+    
     local wvr = self.__wvr
+    if wvr==nil then return end
+
+
     wvr.time = wvr.time + tmgap
     local tt = wvr.tau*wvr.time
 
@@ -195,7 +204,7 @@ function Disp:waveRot(opt)
     
     self:stopWaveRot() -- 현재 실행중인 waveRot()(가 있다면) 중지
     self.__wvr = getInfo(self:getRot(), opt)
-    self.__iupds[waveRupd] = waveRupd
+    self:__addUpd__(waveRupd)
     return self
 
 end
@@ -205,7 +214,7 @@ end
 -- stopWaveRot()로 호출되고 원래의 각도로 되돌아가지 않고 현재 각도를 유지
 function Disp:stopWaveRot(isTo0)
 
-    self.__iupds[waveRupd] = nil
+    self:__rmUpd__(waveRupd)
     if isTo0 and self.__wvr then  self:setRot(self.__wvr.attr0)  end
     self.__wvr = nil
     return self
@@ -238,6 +247,9 @@ end
 local function waveSupd(self)
 
     local wvs = self.__wvs
+    if wvs == nil then return end
+
+
     wvs.time = wvs.time + tmgap
     local tt = wvs.tau*wvs.time
 
@@ -291,7 +303,7 @@ function Disp:waveScale(opt)
     }
     -- puts(wvs.cntr, wvs.ampl, wvs.endTime)
     self.__wvs = wvs
-    self.__iupds[waveSupd] = waveSupd
+    self:__addUpd__(waveSupd)
     return self
 
 end
@@ -301,7 +313,7 @@ end
 -- stopWaveRot()로 호출되고 원래의 각도로 되돌아가지 않고 현재 각도를 유지
 function Disp:stopWaveScale(isTo0)
 
-    self.__iupds[waveSupd] = nil
+    self:__rmUpd__(waveSupd)
     if isTo0 and self.__wvs then  self:setScale(self.__wvs.attr0)  end
     self.__wvs = nil
     return self
@@ -328,6 +340,8 @@ d:wave{peak=0.5}    a0 ~ 0.5  사이를 진동
 local function waveAupd(self)
 
     local wva = self.__wva
+    if wva == nil then return end
+
     wva.time = wva.time + tmgap
     local tt = wva.tau*wva.time
 
@@ -380,7 +394,7 @@ function Disp:waveAlpha(opt)
     }
     -- puts(wvs.cntr, wvs.ampl, wvs.endTime)
     self.__wva = wva
-    self.__iupds[waveAupd] = waveAupd
+    self:__addUpd__(waveAupd)
     return self
 
 end
@@ -390,7 +404,7 @@ end
 -- stopWaveRot()로 호출되고 원래의 각도로 되돌아가지 않고 현재 각도를 유지
 function Disp:stopWaveAlpha(isTo0)
 
-    self.__iupds[waveAupd] = nil
+    self:__rmUpd__(waveAupd)
     if isTo0 and self.__wva then  self:setAlpha(self.__wva.attr0)  end
     self.__wva = nil
     return self

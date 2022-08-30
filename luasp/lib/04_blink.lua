@@ -60,7 +60,7 @@ function Disp:blink(opt)
 end
 
 
-function Disp:stopblink()
+function Disp:stopBlink()
 
     if self.__tmrblink and not self.__tmrblink:isRemoved() then
         self.__tmrblink:remove()

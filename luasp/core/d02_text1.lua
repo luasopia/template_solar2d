@@ -7,7 +7,7 @@ local luasp = _luasopia
 local Color = Color
 local Disp = luasp.Display
 local strf = string.format
-local fonturl = 'luasp/ttf/consolas.ttf'
+local fonturl = 'luasp/core/ttf/consolas.ttf'
 local fontsize0 = 45			-- default font size (50)
 local fontcolor0 = Color.WHITE	--default font color
 --------------------------------------------------------------------------------

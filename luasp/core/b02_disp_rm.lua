@@ -60,7 +60,6 @@ end
 
 local function add_isout(self)
 
-    -- self.__iupds[isout] = isout
     self:__addupd12__(isout) -- 격프레임마다 체크한다.
 
 end
@@ -75,7 +74,6 @@ function Disp:removeIfOut(delay)
 
     else -- delay가 없다면 즉시 isout 등록
 
-        --self.__iupds[isout] = isout
         self:__addupd12__(isout) -- 격프레임마다 체크한다.
 
     end

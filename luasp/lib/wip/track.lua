@@ -31,6 +31,7 @@ local function upd(self)
     self._pdx, self._pdy = dxk, dyk
 end
 
+
 function Disp:follow(target,opt) -- oncotact
     self._trgt = target
     opt = opt or {}
@@ -39,8 +40,7 @@ function Disp:follow(target,opt) -- oncotact
     self._lspd = (opt.speed or 1)*20 -- 선속도 (따라가는 속도)
     self._rspd = opt.rotspeed or 0.9 -- 0.8<rs<1,(각속도) 작을수록 회전이 빠르다.
 
-    -- self:__addupd__(upd)
-    self.__iupds[upd] = upd
+    self.__addUpd__(upd)
 end
 
 --------------------------------------------------------------------------------
@@ -62,6 +62,7 @@ local function newtrgt(self)
 
     -- 따라서 self._trgt==nil 일 수도 있다.
 end
+
 
 local function updtag(self)
     if self._trgt==nil or self._trgt.__bd == nil then -- 타겟이 삭제되었다면

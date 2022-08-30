@@ -45,19 +45,30 @@ local function calcTr(self, sh)
 end
 
 
--- 2021/08/10: self.__iupds 테이블에 추가할 지역함수
-local function shift(self) -- tr == self.__trInfo
+local shift 
 
-    -- 2021/08/11:shift를 완전히 종료시키는 함수
-    local endshift = function()
-        self.__tr = nil
-        self.__iupds[shift] = nil --return self:__rmupd__(shift)
-        -- onEnd()함수가 있다면 그것을 실행시키고 종료
-        -- onEnd()가 혹시 nil이 아니더라도 확실하게 nil을 반환
-        return self.__sh.onEnd and (self.__sh.onEnd(self) and nil) --(1)
+
+-- 2021/08/11:shift를 완전히 종료시키는 함수
+-- 2022/08/30: shift()함수 밖으로 빼냄
+local function endShift(self)
+
+    self.__tr = nil
+    self:__rmUpd__(shift)
+    -- onEnd()함수가 있다면 그것을 실행시키고 종료
+    -- return self.__sh.onEnd and (self.__sh.onEnd(self) and nil) --(1)
+    if self.__sh.onEnd then
+        self.__sh.onEnd(self)
     end
 
+end
+
+
+-- 2021/08/10: 내부업데이트 테이블에 추가할 지역함수
+shift = function(self) -- tr == self.__trInfo
+
     local tr = self.__tr
+    if tr==nil then return end
+
     tr.framecnt = tr.framecnt + 1
     if tr.framecnt == tr.endcnt then
 
@@ -68,7 +79,7 @@ local function shift(self) -- tr == self.__trInfo
             -- loops에 저장된 횟수만큼 반복이 끝나면 tr 종료
             self.__trloopcnt = self.__trloopcnt + 1
             if self.__sh.loops == self.__trloopcnt then
-                return endshift()
+                return endShift(self)
             end
 
             -- 그렇지 않다면 처음부터 다시 반복
@@ -80,7 +91,7 @@ local function shift(self) -- tr == self.__trInfo
 
         else -- 단독테이블인 경우
 
-            return endshift()
+            return endShift(self)
 
         end
     
@@ -127,12 +138,12 @@ end
 
 
 -- 외부 사용자 함수
--- 2021/08/10:self.__tr 테이블을 생성 -> shift함수를 __iupds 테이블에 등록
+-- 2021/08/10:self.__tr 테이블을 생성 -> shift함수를 내부업데이트 테이블에 등록
 function Disp:shift(sh)
 
     self.__sh = sh
     self.__tr = makeTr(self, sh)
-    self.__iupds[shift] = shift --  self:__addupd__(shift)
+    self:__addUpd__(shift)
 
     return self
 
@@ -142,7 +153,7 @@ function Disp:stopShift()
 
     self.__sh = nil
     self.__tr=nil
-    self.__iupds[shift] = nil --  self:__addupd__(shift)
+    self.__rmUpd__(shift)
     return self
     
 end
@@ -150,7 +161,7 @@ end
 
 function Disp:pauseShift()
 
-    self.__iupds[shift] = nil --  self:__addupd__(shift)
+    self.__rmUpd__(shift)
     return self
     
 end
@@ -158,7 +169,7 @@ end
 
 function Disp:resumeShift()
 
-    self.__iupds[shift] = nil --  self:__addupd__(shift)
+    self:__addUpd__(shift)
     return self
     
 end

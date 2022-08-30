@@ -44,7 +44,7 @@ local function get_print(...)
     local str = ''
     local tab
 
-	for k=1,arg.n do
+	for k = 1, arg.n do
 
         local v = arg[k]
         
@@ -98,13 +98,6 @@ local function putstr(str, no_new_line)
         newline()
     end
     
-    --[[
-    --(3) 새로운 줄을 추가한다.
-    -- local txtobj = Text1(str,{color=color0}):addTo(stdout) -- (0,0)에 자동으로 맞춰진다
-    -- tIn(txtobjs, txtobj)
-    -- numlines = numlines + 1
-    --]]
-
     --2021/09/19:여러 줄에 걸쳐서 출력하도록 수정
     for k=1,#str,maxchar do
         if k>1 then newline() end
@@ -117,6 +110,7 @@ local function putstr(str, no_new_line)
 end
 
 
+-- 전역함수 puts() 정의
 function puts(...)
 
     putstr(get_print(...))
@@ -125,6 +119,7 @@ function puts(...)
 end
 
 
+--전역함수 putsf() 정의
 function putsf(...)
 
     putstr(strf(...))
@@ -134,21 +129,22 @@ end
 
 
 -- --[[
-local function onend_input(entry)
+local function onEndInput(entry)
 
     local str_in = entry:getString()
     local str_hdr = entry.__hdr
-    entry:remove()                  -- entry를 삭제한 후
-    putstr(str_hdr .. str_in, true)   -- 그자리에 문자열만 표시한다
+    entry:remove()                      -- entry를 삭제한 후
+    putstr(str_hdr .. str_in, true)     -- 그자리에 문자열만 표시한다
     stdout.__endin(str_in)
 
 end
 
-function input(header, onenter)
+
+function input(header, onEnter)
 
     newline()
-    stdout.__endin = onenter or nilfunc
-    local entry = Entry(header, onend_input):addTo(stdout)
+    stdout.__endin = onEnter or nilfunc
+    local entry = Entry(header, onEndInput):addTo(stdout)
 
 end
 --]]

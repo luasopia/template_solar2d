@@ -3,7 +3,7 @@ local Color = Color
 -- 2020/02/15:아래테이블은 !luasophia/ttf 폴더의 public domain ttf 리스트
 -- 첫 번째 폰트가 defualt 폰트로 지정됨
 local ttfs = {'opensans', 'typed', 'cabin', 'cruft', 'consolas'}
-local ttfurl = 'luasp/ttf/%s.ttf'
+local ttfurl = 'luasp/core/ttf/%s.ttf'
 local fontname0 = ttfs[1] 		-- default font 
 local fontsize0 = 40			-- default font size (50)
 local fontcolor0 = Color.WHITE	--default font color
