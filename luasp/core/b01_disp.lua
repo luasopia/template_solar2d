@@ -32,24 +32,14 @@ Disp.__tdobj = tdobj
 -------------------------------------------------------------------------------
 --2020/06/20 dobj[self]=self로 저장하기 때문에 self:remove()안에서 바로 삭제 가능
 -- 따라서 updateAll()함수의 구조가 (위의 함수와 비교해서) 매우 간단해 진다
-Disp.updateAll = function(isoddfrm, e)
+-- Disp.updateAll = function(isoddfrm, e)
+Disp.updateAll = function(e) -- 2022/08/31 isoddfrm 파라메터제거
 
     -- for _, obj in pairs(dobjs) do --for k = #dobjs,1,-1 do local obj = dobjs[k]
     for _, obj in _nxt, dobjs do
 
         obj:__upd__(e)
 
-        -- 2021/09/03: 홀수프레임과 짝수 프레임에서만 호출할 upd함수들 실행
-        -- 궂이 매프레임마다 호출할 필요가 없는 update함수는
-        -- iupd1, iupd2 둘 중 하나를 임의로 선정해서 거기에 집어넣는다
-        for _, fn in _nxt, obj.__iupd12[isoddfrm] do
-
-            if fn(obj,e) then -- 만약 fn(self)==true 라면 곧바로 삭제하고 리턴
-                obj:remove()
-                break
-            end
-            
-        end
 
         -- 2022/08/30: obj.__iupds테이블은 모든 upd()가 호출된 이후에 갱신되어야 한다.
         -- 그렇지 않으면 오류가 발생함
@@ -75,6 +65,21 @@ Disp.updateAll = function(isoddfrm, e)
             end
 
         end
+
+        --[[
+        -- 2021/09/03: 홀수프레임과 짝수 프레임에서만 호출할 upd함수들 실행
+        -- 궂이 매프레임마다 호출할 필요가 없는 update함수는
+        -- iupd1, iupd2 둘 중 하나를 임의로 선정해서 거기에 집어넣는다
+        for _, fn in _nxt, obj.__iupd12[isoddfrm] do
+
+            if fn(obj,e) then -- 만약 fn(self)==true 라면 곧바로 삭제하고 리턴
+                obj:remove()
+                break
+            end
+            
+        end
+        --]]
+
 
     end
 
@@ -106,11 +111,13 @@ function Disp:init()
 
 
     -- 아래 기능들은 없앨지 생각해봐야 함
+    --[[
     self.__iupd12 = {
         [true]={},  -- 홀수frm(isoddfrm==true)에 호출될 update함수들을 저장할 테이블
         [false]={},  -- 짝수frm(isoddfrm==false)에 호출될 update함수들을 저장할 테이블
     }
-    
+    --]]
+
     --2021/08/14:pixel모드에서 xy값을 정위치에 놓기위해
     -- __bdx,__bdy 저장된 (실수)값을 int()변환하여 설정한다.
     self.__bda = 1  -- alpha of the body
@@ -228,6 +235,7 @@ function Disp:__rmUpd__( fn )
 
 end
 
+--[[
 --2021/09/03 : 격프레임마다 호출되는 함수 등록
 -- 홀수프레임, 짝수프레임 어느 쪽일지는 성능 분산을 위해서 임의로 정한다
 function Disp:__addupd12__( fn )
@@ -247,6 +255,7 @@ function Disp:__rmupd12__(fn)
     return self
 
 end
+--]]
 
 
 --2020/08/27: added

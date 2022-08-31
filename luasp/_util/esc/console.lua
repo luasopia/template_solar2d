@@ -112,6 +112,8 @@ etctxt3:setstrf("orientation:'%s', fps:%d", screen.orientation, screen.fps)
 
 local updInfo = function(self, e)
 
+    if e.isNotFrm5 then return end -- 2022/08/31 매5프레임마다 갱신
+
     local txtmem = getTxtMem()
     local mem = collectgarbage('count')
     memtxt:setstrf('memory:%d kb, texture memory:%d kb', mem, txtmem)
@@ -121,7 +123,7 @@ local updInfo = function(self, e)
         
 end
 
-screen:__addupd12__(updInfo)
+screen:__addUpd__(updInfo)
 -- updateInfo()
 -- local tmrInfo = Timer(200, updateInfo, INF)
 -- tmrInfo.__nocnt = true
@@ -141,7 +143,7 @@ function luasp.console:show()
     luasp.console.gridlines:setAlpha(0):shift{time=tmshift,alpha=1}
     
     luasp.console.isactive = true
-    screen:__addupd12__(updInfo)
+    screen:__addUpd__(updInfo)
 
 end
         
@@ -149,7 +151,7 @@ function luasp.console:hide()
 
     luasp.stdout:setAlpha(1)
     esclayer:hide()
-    screen:__rmupd12__(updInfo)
+    screen:__rmUpd__(updInfo)
     luasp.console.isactive = false
 
 end

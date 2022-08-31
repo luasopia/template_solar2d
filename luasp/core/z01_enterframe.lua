@@ -13,14 +13,19 @@ local Tmr = Timer
 
 if _Gideros then
 
-	local isoddfrm = true
 	local upd = function(e) 
 		
 		-- print(e.time, e.deltaTime, e.frameCount)
 
-		isoddfrm = not isoddfrm -- 2021/08/23
+		--2022/08/31 추가. update()함수 안에서 골라쓰면 된다.
+		local frmCnt = e.frameCount
+		e.isNotFrm2 = frmCnt%2~=0
+		e.isNotFrm5 = frmCnt%5~=0
+		e.isNotFrm10 = frmCnt%10~=0
+		
+
 		Tmr.updateAll(e)
-		Disp.updateAll(isoddfrm, e)
+		Disp.updateAll(e)
 		
 	end
 
@@ -32,7 +37,6 @@ elseif _Corona then
 
     local systimer = system.getTimer
 	local updarg = {deltaTime = 0, time=0, frameCount=1}
-	local isoddfrm = true
 
 
 	local upd = function() 
@@ -43,9 +47,14 @@ elseif _Corona then
 		e.time = sec
 		e.frameCount  = e.frameCount  + 1
 	
-		isoddfrm = not isoddfrm -- 2021/08/23
+		--2022/08/31 추가. update()함수 안에서 골라쓰면 된다.
+		local frmCnt = e.frameCount
+		e.isNotFrm2 = frmCnt%2~=0
+		e.isNotFrm5 = frmCnt%5~=0
+		e.isNotFrm10 = frmCnt%10~=0
+
 		Tmr.updateAll(e)
-		Disp.updateAll(isoddfrm, e)
+		Disp.updateAll(e)
 		
 	end
 
