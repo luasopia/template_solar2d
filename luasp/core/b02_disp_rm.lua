@@ -69,11 +69,6 @@ end
 --2021/08/30: delay(ms) 이후부터 화면밖으로 나갔는지 체크한다
 function Disp:removeIfOut(delay)
 
-    -- 외각사각형의 대각선의 길이를 미리 계산하여 저장한다.
-    local cpg = self.__orct
-    local dx, dy = cpg[1]-cpg[3], cpg[2]-cpg[4]
-    self.__lenDg2 = dx^2+dy^2
-
     if delay then -- delay가 있다면 그 시간 이후에 isOut 등록
         self:addTimer(delay, add_isOut)
     else -- delay가 없다면 즉시 isOut 등록
@@ -92,7 +87,6 @@ end
 
 
 if _Gideros then
-
 
     -- gideros desctructor
     function Disp:remove()

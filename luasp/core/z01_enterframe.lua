@@ -19,9 +19,9 @@ if _Gideros then
 
 		--2022/08/31 추가. update()함수 안에서 골라쓰면 된다.
 		local frmCnt = e.frameCount
-		e.isNotFrm2 = frmCnt%2~=0
+		e.isNotFrm2 = frmCnt%2~=0 
 		e.isNotFrm5 = frmCnt%5~=0
-		e.isNotFrm10 = frmCnt%10~=0
+		e.isNotFrm10 = frmCnt%10~=0 -- 10프레임마다 한번씩 false가 된다
 		
 
 		Tmr.updateAll(e)
