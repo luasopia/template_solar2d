@@ -94,7 +94,7 @@ end
 function Disp:waveX(opt)
     
     self:stopWaveX() -- 현재 실행중인 waveRot()(가 있다면) 중지
-    self.__wvx = getInfo(self:getX(),opt)
+    self.__wvx = getInfo(self.__bdx,opt)
     -- upd()를 추가할 때는 반드시 self.__addUpd__()메서드로 해야한다.
     self:__addUpd__(waveXupd)
     return self
@@ -148,7 +148,7 @@ end
 function Disp:waveY(opt)
     
     self:stopWaveY() -- 현재 실행중인 waveRot()(가 있다면) 중지
-    self.__wvy = getInfo(self:getY(), opt)
+    self.__wvy = getInfo(self.__bdy, opt)
     self:__addUpd__(waveYupd)
     return self
 
@@ -202,7 +202,7 @@ end
 function Disp:waveRot(opt)
     
     self:stopWaveRot() -- 현재 실행중인 waveRot()(가 있다면) 중지
-    self.__wvr = getInfo(self:getRot(), opt)
+    self.__wvr = getInfo(self.__bdrd, opt)
     self:__addUpd__(waveRupd)
     return self
 
@@ -270,7 +270,7 @@ function Disp:waveAlpha(opt)
     
     self:stopWaveAlpha() -- 현재 실행중인 waveRot()(가 있다면) 중지
     
-    local attr0 = self:getAlpha()
+    local attr0 = self.__bda
 
     local period = opt.period or period0
     local peak1 = attr0 -- top peak value
@@ -366,6 +366,9 @@ local function getWVS(attr0,opt)
 
 end
 
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+
 
 local function waveSupd(self)
 
@@ -401,7 +404,7 @@ end
 function Disp:waveScale(opt)
     
     self:stopWaveScale() -- 현재 실행중인 waveRot()(가 있다면) 중지
-    self.__wvs = getWVS(self:getScale(),opt)
+    self.__wvs = getWVS(self.__bds,opt)
     self:__addUpd__(waveSupd)
     return self
 
@@ -459,7 +462,7 @@ end
 function Disp:waveScaleX(opt)
     
     self:stopWaveScaleX() -- 현재 실행중인 waveRot()(가 있다면) 중지
-    self.__wvsx = getWVS(self:getScaleX(),opt)
+    self.__wvsx = getWVS(self.__bdxs,opt)
     self:__addUpd__(waveSXupd)
     return self
 
@@ -515,7 +518,7 @@ end
 function Disp:waveScaleY(opt)
     
     self:stopWaveScaleY() -- 현재 실행중인 waveRot()(가 있다면) 중지
-    self.__wvsy = getWVS(self:getScaleY(),opt)    
+    self.__wvsy = getWVS(self.__bdys, opt)    
     self:__addUpd__(waveSYupd)
     return self
 

@@ -25,21 +25,19 @@ local function calcTr(self, sh)
     local fc = int(sh.time/tmgapf)+1
     tr.endcnt = fc -- final count
     tr.framecnt = 0
-    if sh.x then tr.dx = (sh.x-self:getX())/fc end
-    if sh.y then tr.dy = (sh.y-self:getY())/fc end
-    if sh.rot then tr.dr = (sh.rot-self:getRot())/fc end
-    if sh.scale then tr.ds = (sh.scale-self:getScale())/fc end
-    if sh.alpha then tr.da = (sh.alpha-self:getAlpha())/fc end
 
-    local xs = sh.scaleX
-    if xs then tr.dxs = (xs-self:getScaleX())/fc end
-
-    local ys = sh.scaleY
-    if ys then tr.dys = (ys-self:getScaleY())/fc end
+    if sh.x then       tr.dx  = (sh.x      - self.__bdx)/fc end
+    if sh.y then       tr.dy  = (sh.y      - self.__bdy)/fc end
+    if sh.rot then     tr.dr  = (sh.rot    - self.__bdrd)/fc end
+    if sh.scale then   tr.ds  = (sh.scale  - self.__bds)/fc end
+    if sh.alpha then   tr.da  = (sh.alpha  - self.__bda)/fc end
+    if sh.scaleX then  tr.dxs = (sh.scaleX - self.__bdxs)/fc end
+    if sh.scaleY then  tr.dys = (sh.scaleY - self.__bdys)/fc end
 
     tr.dest = sh
     tr.__to = sh.__to
     tr.__to1 = sh.__to1
+
     return tr
 
 end
@@ -97,13 +95,13 @@ shift = function(self) -- tr == self.__trInfo
     
     else
 
-        if tr.dx then self:setX(self:getX()+tr.dx) end
-        if tr.dy then self:setY(self:getY()+tr.dy) end
-        if tr.dr then self:setRot(self:getRot()+tr.dr) end
-        if tr.ds then self:setScale(self:getScale()+tr.ds) end
-        if tr.dxs then self:setScaleX(self:getScaleX()+tr.dxs) end
-        if tr.dys then self:setScaleY(self:getScaleY()+tr.dys) end
-        if tr.da then self:setAlpha(self:getAlpha()+tr.da) end
+        if tr.dx  then self:setX(     self.__bdx  + tr.dx) end
+        if tr.dy  then self:setY(     self.__bdy  + tr.dy) end
+        if tr.dr  then self:setRot(   self.__bdrd + tr.dr) end
+        if tr.ds  then self:setScale( self.__bds  + tr.ds) end
+        if tr.dxs then self:setScaleX(self.__bdxs + tr.dxs) end
+        if tr.dys then self:setScaleY(self.__bdys + tr.dys) end
+        if tr.da  then self:setAlpha( self.__bda  + tr.da) end
     
     end
 

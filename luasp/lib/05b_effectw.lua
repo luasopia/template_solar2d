@@ -53,12 +53,6 @@ end
 --[[ special moving examples
 
 --(1)
-local g1 = Group():hover():setDrot(1)
-local s = Circle(20,{fill=Color.RED}):addTo(g1):waveX{peak=150,peak2=-150,period=700}
-local c= Circle(50):addTo(g1)
-Timer(175, function()
-    local s2 = Circle(20,{fill=Color.ORANGE}):addTo(g1):waveY{peak=100,peak2=-100,period=700}
-end)
 
 
 --(2)

@@ -9,17 +9,13 @@ local function move(self)
     local d = self.__mv
     if d==nil then return end
     
-    if d.dx then
-        self:setX(self:getX() + d.dx)
-    end
-    
-    if d.dy then self:setY(self:getY() + d.dy) end
-    if d.drot then self:setRot(self:getRot() +  d.drot) end
-    if d.dscale then self:setScale(self:getScale() + d.dscale) end
-    if d.dalpha then self:setAlpha(self:getAlpha() + d.dalpha) end
-    
-    if d.dscaleX then self:setScaleX(self:getScaleX() + d.dscaleX) end
-    if d.dscaleY then self:setScaleY(self:getScaleY() + d.dscaleY) end
+    if d.dx then  self:setX(self.__bdx + d.dx)  end
+    if d.dy then self:setY(self.__bdy + d.dy) end
+    if d.drot then self:setRot(self.__bdrd +  d.drot) end
+    if d.dalpha then self:setAlpha(self.__bda + d.dalpha) end
+    if d.dscale then self:setScale(self.__bds + d.dscale) end
+    if d.dscaleX then self:setScaleX(self.__bdxs + d.dscaleX) end
+    if d.dscaleY then self:setScaleY(self.__bdys + d.dscaleY) end
     
 end
 

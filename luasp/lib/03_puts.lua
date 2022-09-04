@@ -8,12 +8,12 @@ local leftmargin = 5
 local color0 = Color.SILVER --DARK_GRAY
 --------------------------------------------------------------------------------
 local luasp = _luasopia
-local tIn, tRm = table.insert, table.remove
-local int = math.floor
-local strf = string.format
 local nilfunc = luasp.nilfunc
 local stdoutlayer = luasp.stdoutlayer
 local Text1 = luasp.Text1
+local tIn, tRm = table.insert, table.remove
+local int = math.floor
+local strf = string.format
 --------------------------------------------------------------------------------
 local stdout = Group():addTo(stdoutlayer)
 stdout:setXY(leftmargin, screen.height0-botmargin)
@@ -147,30 +147,6 @@ function input(header, onEnter)
     local entry = Entry(header, onEndInput):addTo(stdout)
 
 end
---]]
-
-
---[[
-local function onend_input(entry)
-
-    local str_in = entry:getString()
-    local str_hdr = entry.__hdr
-    entry:remove()                  -- entry를 삭제한 후
-    putstr(str_hdr .. str_in, true)   -- 그자리에 문자열만 표시한다
-
-    local onenter = input.onenter or nilfunc
-    input.onenter(str_in)
-
-end
-
-
-input = setmetatable({},{__call = function(self, header) 
-
-    newline()
-    Entry(header, onend_input):addTo(stdout)
-    return self
-
-end})
 --]]
 
 luasp.stdout = stdout
