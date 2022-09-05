@@ -1,73 +1,82 @@
---[[----------------------------------------------------------------------------
--- 2021/08/29: refactored
+--------------------------------------------------------------------------------
+-- 2022/09/05 refactored
+--------------------------------------------------------------------------------
 
-dobj:blink( period_in_ms )
-
-or
-
-dobj:blink{
-    period = ms : peroid time in ms (default: 1000 ms)
-    loops = n : number of repeatition (deafult:INF)
-    onEnd = function() .. end : call-back funtion when all the loops are done
-}
-------------------------------------------------------------------------------]]
 local Disp = _luasopia.Display
+local prd0 = 1000
+local RED, ORIGIN = Color.RED, Color.WHITE
+local HIDE = Color(255,255,255,0)
+
+--------------------------------------------------------------------------------
 
 
-local function tmrfunc(self, e)
+local function tmrFlash(self, e)
+
+    local f = self.__flsh
+    -- if f == nil then return end (궂이 필요할까?)
 
     if e.isFinal then
-        self:setVisible(self.__wasv)
-        self.__wasv = nil
-        return
+        self.__flsh = nil        
     end
     
-    return self:setVisible(not self:isVisible())
+    if f.flashed then
+        f.flashed = false
+        return self:tint(ORIGIN)
+    else
+        f.flashed = true
+        return self:tint(f.color)
+    end
 
 end
+
+
+function Disp:flash(opt)
+
+    self:stopFlash() -- 이미 실행되고 있는 것은 멈춘다
+    
+    opt = opt or {}
+    local f = {
+        color = opt.color or RED,
+        flashed = true
+    }
+
+    local prd = opt.period or prd0
+    local loops = opt.loops==nil and INF or (opt.loops*2+1)
+    
+    self:tint(f.color)
+    f.tmr = self:addTimer(prd*0.5, tmrFlash, loops, opt.onEnd)
+    self.__flsh = f
+    return self
+
+end
+
+
+function Disp:stopFlash()
+
+    if self.__flsh == nil then return self end -- 이미 flash가 끝났다면(없다면) 그냥 리턴
+    
+    if not self.__flsh.tmr:isRemoved() then
+        self.__flsh.tmr:remove()
+    end
+
+    self:tint(ORIGIN) -- 원래의 tint로 복구
+    self.__flsh = nil
+
+    return self
+
+end
+
+
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 
 function Disp:blink(opt)
 
-    local period, loops1, onEnd
-    if type(opt)=='number' then
-
-        period = opt
-        loops1 = INF
-        onEnd = nil
-
-    else
-
-        opt = opt or {}
-        period = opt.period or 1000
-        loops1 = opt.loops==nil and INF or (opt.loops*2+1)
-        onEnd = opt.onEnd
-
-    end
-    -- print('loops1:'..loops1)
-
-    if self.__tmrblink and not self.__tmrblink:isRemoved() then
-        self.__tmrblink:remove()
-        self:setVisible(self.__wasv)
-    end
-
-    self.__wasv = self:isVisible() -- wasSeen
-    --self:setVisible(not self.__wasv)
-
-    self.__tmrblink = self:addTimer(period*0.5, tmrfunc, loops1, onEnd)
-    return self
-
+    opt = opt or {}
+    opt.color = HIDE
+    return self:flash(opt)
+    
 end
 
-
-function Disp:stopBlink()
-
-    if self.__tmrblink and not self.__tmrblink:isRemoved() then
-        self.__tmrblink:remove()
-    end
-
-    self:setVisible(self.__wasv) -- 원래의 visibility로 복구
-    self.__wasv = nil
-    return self
-
-end
+Disp.stopBlink = stopFlash

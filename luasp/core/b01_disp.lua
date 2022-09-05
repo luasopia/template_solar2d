@@ -587,9 +587,13 @@ if _Gideros then -- gideros
     function Disp:show() self.__bd:setVisible(true); return self end
     function Disp:setVisible(v) self.__bd:setVisible(v); return self end
 
-    function Disp:tint(r,g,b)
+    function Disp:tint(r,g,b,a)
 
-        self.__bd:setColorTransform(r, g ,b)
+        if isObject(r, Color) then
+            self.__bd:setFillColor(r.r, r.g, r.b, r.a)
+        else
+            self.__bd:setColorTransform(r, g ,b, a or 1)
+        end
         return self
 
     end
@@ -772,9 +776,13 @@ elseif _Corona then -- if coronaSDK
     end
 
 
-    function Disp:tint(r,g,b)
+    function Disp:tint(r,g,b,a)
 
-        self.__bd:setFillColor(r,g,b)
+        if isObject(r, Color) then
+            self.__bd:setFillColor(r.r, r.g, r.b, r.a)
+        else
+            self.__bd:setFillColor(r, g, b, a or 1)
+        end
         return self
         
     end

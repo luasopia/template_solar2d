@@ -19,6 +19,7 @@ local peak0 = 100 -- default peak for x, y, and rot
         period (in ms, default:1000 ms) 주기
         loops (default:INF)             반복횟수
         onEnd
+        phase (in ms)
 }
 -- dobj:stopWaveX(true/false) : 인수가 true이면 원래 각도를 회복
 -- dobj:stopWaveY(true/false) : 인수가 true이면 원래 각도를 회복
@@ -48,7 +49,7 @@ local function getInfo(attr0,opt)
 
     return {
         attr0 = attr0,
-        time = 0, -- 시작시간
+        time = opt.phase or 0, -- 시작시간
         period= period,
         tau = tau,  -- time constant
         ampl = ampl, -- amplitude of sine wave
@@ -323,6 +324,7 @@ end
         period (in ms, default:1000 ms) 주기
         loops (default:INF)             반복횟수
         onEnd (function)
+        phase
 }
 -- dobj:stopWaveScale(true/false) : 인수가 true이면 원래 각도를 회복
 
@@ -333,7 +335,7 @@ end
     d:waveScale{peak=0,5, peak2=1,2} s0*(0.5~1.2)사이를 진동, 0.5으로 먼저 간다
 ------------------------------------------------------------------------------]]
 
-local peakScale0 = 1.2 -- default peak for scale
+local peakScale0 = 1.1 -- default peak for scale
 
 --------------------------------------------------------------------------------
 
@@ -351,7 +353,7 @@ local function getWVS(attr0,opt)
 
     local wvs = {
         attr0 = attr0, -- original attribute
-        time = 0,                -- 시작시간
+        time = opt.phase or 0,                -- 시작시간
         period= period,          -- 주기
         tau = tau,               -- time constant
         ampl = ampl,            -- amplitude of sine wave
@@ -534,5 +536,4 @@ function Disp:stopWaveScaleY(isTo0)
     self.__wvsy = nil
     return self
 
-end    
-
+end

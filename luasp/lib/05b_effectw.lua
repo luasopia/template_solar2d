@@ -92,11 +92,16 @@ function Disp:foam(opt)
     local rot = opt.rot or rot0foam
 
     self:waveScaleX{peak=pk, period=pr}
-    self:waveRot{peak=rot,peak2=-rot, period=pr*0.85}
+
+    --(1) 이게 더 나은듯
     self:addTimer(pr*0.5, function(self)
         self:waveScaleY{peak=pk, period=pr}
     end)
-
+    
+    --(2)  (1)대신 이렇게도 할 수 있다.
+    --self:waveScaleY{peak=pk, period=pr, phase=pr*0.5}
+    
+    self:waveRot{peak=rot,peak2=-rot, period=pr*0.85}
     self.__foamRot = opt.rot
     return self
 

@@ -3,26 +3,32 @@ local inv255 = 1/255
 --------------------------------------------------------------------------------
 Color = class() --:is'Color'
 --------------------------------------------------------------------------------
+-- Color(r,g,b[,a])
 -- r,g,b are integers between 0~255, alpha is real number between 0~1
 -- 2020/03/02 : considering the fisrt argument of constructor is a Color obj
+
+-- 2022/09/05 : __r, __g,__b 필드는 정수(0~255),  r,g,b필드는 실수(0~1)
 --------------------------------------------------------------------------------
 if _Gideros then
+
 
     function Color:init(r, g, b, a)
         if isObject(r, Color) then
             self.__r, self.__g, self.__b = r.__r, r.__g, r.__b
-            self.hex = r.hex
+            self.r, self.g, self.b = r.r, r.g, r.b
             self.a = g or r.a or 1 -- in this case, 2nd argument is an alpha
+            self.hex = r.hex
         else
             self.__r, self.__g, self.__b = r, g, b
-            self.hex = r*65536 + g*256 + b
+            self.r, self.g, self.b = r*inv255, g*inv255, b*inv255
             self.a = a or 1
+            self.hex = r*65536 + g*256 + b
         end
     end
 
-    
 
 elseif _Corona then
+
     
     function Color:init(r, g, b, a)
 

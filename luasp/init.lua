@@ -355,6 +355,7 @@ require 'luasp.lib.04_blink' -- 2020/07/01, 2021/05/14 lib로 분리됨
 require 'luasp.lib.05_wave' -- 2022/08/27
 require 'luasp.lib.05b_effectw' -- 2022/08/23
 require 'luasp.lib.06_ishit'
+require 'luasp.lib.07_tile'
 
 -- require 'luasp.lib.wip.push'
 -- require 'luasp.lib.wip.path'
