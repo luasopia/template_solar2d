@@ -60,7 +60,7 @@ if _Gideros then
     function Image:__getgxy__(x,y)
 
         -- x,y는 꼭지점의 좌표가 들어오므로 nil은 확실히 아니다.
-        x, y = x+self.__x0, y+self.__y0
+        x, y = (x or 0)+self.__x0, (y or 0)+self.__y0
         return self.__bd:localToGlobal(x,y)
 
     end

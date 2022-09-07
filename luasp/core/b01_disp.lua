@@ -22,7 +22,9 @@ _luasopia.Display = Disp --2021/10/02 hide Disp into _luasopia
 -- static members of this class ------------------------------------------------
 --------------------------------------------------------------------------------
 local dobjs = {} -- Disp OBJectS
+local dobjs2rm = {}
 Disp.__dobjs = dobjs
+Disp.__dobjs2rm = dobjs2rm
 
 -- tagged display object (tdobj) 들의 객체를 저장하는 테이블
 local tdobj = {}  -- Disp Tagged OBJect
@@ -35,52 +37,36 @@ Disp.__tdobj = tdobj
 -- Disp.updateAll = function(isoddfrm, e)
 Disp.updateAll = function(e) -- 2022/08/31 isoddfrm 파라메터제거
 
-    -- for _, obj in pairs(dobjs) do --for k = #dobjs,1,-1 do local obj = dobjs[k]
+    -- 2022/09/07:이 반복문 안에서 dobjs의 요소가 삭제되면 안된다.
     for _, obj in _nxt, dobjs do
 
-        obj:__upd__(e)
+        if obj:__upd__(e) ~=true then -- remove 되지 않았다면
 
-
-        -- 2022/08/30: obj.__iupds테이블은 모든 upd()가 호출된 이후에 갱신되어야 한다.
-        -- 그렇지 않으면 오류가 발생함
-
-        local nUpdNew, nUpdRm = #obj.__updNew, #obj.__updRm
-
-        if nUpdRm>0 then
-            -- 반드시 제거를 먼저해야 한다.
-            for k = nUpdRm, 1, -1 do
-                local fn = obj.__updRm[k]
-                obj.__iupds[fn] = nil
-                tRm(obj.__updRm, k)
+            -- 2022/09/07 추가/제거 대상으로 등록된 upd함수들을 처리한다
+            -- local nUpdRm = #obj.__updRm
+            local rmFn = tRm(obj.__updRm)
+            while rmFn ~=nil do
+                obj.__iupds[rmFn] = nil
+                rmFn = tRm(obj.__updRm)
             end
 
-        end
-
-        if nUpdNew>0 then
-
-            for k = nUpdNew, 1, -1 do
-                local fn = obj.__updNew[k]
-                obj.__iupds[fn] = fn
-                tRm(obj.__updNew, k)
+            -- local nUpdNew =  #obj.__updNew
+            local newFn = tRm(obj.__updNew)
+            while newFn ~=nil do
+                obj.__iupds[newFn] = newFn
+                newFn = tRm(obj.__updNew)
             end
-
+        
         end
 
-        --[[
-        -- 2021/09/03: 홀수프레임과 짝수 프레임에서만 호출할 upd함수들 실행
-        -- 궂이 매프레임마다 호출할 필요가 없는 update함수는
-        -- iupd1, iupd2 둘 중 하나를 임의로 선정해서 거기에 집어넣는다
-        for _, fn in _nxt, obj.__iupd12[isoddfrm] do
+    end
 
-            if fn(obj,e) then -- 만약 fn(self)==true 라면 곧바로 삭제하고 리턴
-                obj:remove()
-                break
-            end
-            
-        end
-        --]]
-
-
+    -- 삭제할 객체들로 등록된 것들을 삭제한다.
+    -- local n = #dobjs2rm;puts(n)
+    local obj = tRm(dobjs2rm) --맨 마지막요소를 제거하고 그걸 반환
+    while obj~=nil do -- obj==nil이라면 빈테이블이라는 의미이다.
+        dobjs[obj] = nil
+        obj = tRm(dobjs2rm)
     end
 
 end
@@ -109,15 +95,6 @@ function Disp:init()
     self.__updNew = {} -- 2022/08/30:__iupds에 새로 포함할 함수들의 테이블
     self.__updRm = {}  -- 2022/08/30:__iupds에서 제거할 함수들의 테이블
 
-
-    -- 아래 기능들은 없앨지 생각해봐야 함
-    --[[
-    self.__iupd12 = {
-        [true]={},  -- 홀수frm(isoddfrm==true)에 호출될 update함수들을 저장할 테이블
-        [false]={},  -- 짝수frm(isoddfrm==false)에 호출될 update함수들을 저장할 테이블
-    }
-    --]]
-
     --2021/08/14:pixel모드에서 xy값을 정위치에 놓기위해
     -- __bdx,__bdy 저장된 (실수)값을 int()변환하여 설정한다.
     self.__bda = 1  -- alpha of the body
@@ -139,6 +116,11 @@ function Disp:__upd__(e)
 
     end
 
+    -- remove를 원한다면 update()함수에서 true를 반환하면 된다.
+    -- 만약 사용자가 실수로 update()함수 내에서 직접 self:remove()를 호출했더라도
+    -- 여기서 바로 리턴해서 내부업뎃함수들이 실행되는 것을 막는다.
+    if self.__bd == nil then return true end
+
     --2020/07/01 내부갱신함수들이 있다면 호출
     -- self.__iupds가 nil인지를 check하는 것이 성능에 별로 효과가 없을 것 같다
     -- 2022/08/30: fn() 내부에서 self.__iupds 요소를 변경(삭제)시키면
@@ -146,15 +128,12 @@ function Disp:__upd__(e)
     for _, fn in _nxt, self.__iupds do
 
         if fn(self, e) then -- 만약 fn(self)==true 라면 곧바로 삭제하고 리턴
-
             return self:remove()
-            
         end
 
     end
 
     if self.__isgrp then return end -- 2021/10/10:Group객체는 여기까지
-    
 
     if self.onTouch and self.__tch==nil then self:__touchon() end
     if self.onTap and self.__tap==nil then self:__tapon() end
@@ -590,7 +569,7 @@ if _Gideros then -- gideros
     function Disp:tint(r,g,b,a)
 
         if isObject(r, Color) then
-            self.__bd:setFillColor(r.r, r.g, r.b, r.a)
+            self.__bd:setColorTransform(r.r, r.g, r.b, r.a)
         else
             self.__bd:setColorTransform(r, g ,b, a or 1)
         end

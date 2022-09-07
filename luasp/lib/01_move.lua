@@ -38,6 +38,7 @@ end
 
 function Disp:stopMove()
 
+    if self.__mv == nil then return self end
     self.__mv = nil
     self:__rmUpd__(move)
     return self

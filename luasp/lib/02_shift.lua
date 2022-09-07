@@ -149,9 +149,11 @@ end
 
 function Disp:stopShift()
 
+    if self.__tr == nil then return self end
+    
     self.__sh = nil
     self.__tr=nil
-    self.__rmUpd__(shift)
+    self:__rmUpd__(shift)
     return self
     
 end
@@ -159,7 +161,7 @@ end
 
 function Disp:pauseShift()
 
-    self.__rmUpd__(shift)
+    self:__rmUpd__(shift)
     return self
     
 end

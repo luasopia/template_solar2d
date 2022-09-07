@@ -8,7 +8,8 @@ local timers = Timer.__tmrs -- 2020/06/24:Disp:remove()함수 내에서 직접 �
 local Disp = luasp.Display
 local dobjs = Disp.__dobjs
 local tdobj = Disp.__tdobj
-
+local dobjs2rm = Disp.__dobjs2rm
+local tIn, tRm = table.insert, table.remove
 --------------------------------------------------------------------------------
 
 
@@ -106,11 +107,16 @@ if _Gideros then
 
         self.__bd:removeFromParent()
         self.__bd = nil -- remove()가 호출되어 삭제되었음을 이것으로 확인
-        
-        --2020/06/20 dobj[self]=self로 저장하기 때문에 삭제가 아래에서 바로 가능해짐
-        dobjs[self] = nil
+
+
         if self.__tag ~=nil then tdobj[self.__tag][self] = nil end
         if self.onRemove then self:onRemove() end -- 2021/08/30
+
+        --2022/09/07 소멸자안에서 dobjs 테이블의 참조를 직접 삭제하면 안된다
+        --dobjs[self] = nil -- <- 따라서 이렇게 하면 안된다.
+        tIn(dobjs2rm, self)
+
+        return true
 
     end
         
@@ -139,12 +145,18 @@ elseif _Corona then
         self.__bd:removeSelf()
         self.__bd = nil -- self:isRemoved()에서 return self.__bd==nil 으로 이용됨
         
-        --2020/06/20 소멸자안에서 dobjs 테이블의 참조를 삭제한다
-        dobjs[self] = nil
         if self.__tag ~=nil then tdobj[self.__tag][self] = nil end
         if self.onRemove then self:onRemove() end -- 2021/08/30
         
+
+        --2022/09/07 소멸자안에서 dobjs 테이블의 참조를 직접 삭제하면 안된다
+        --dobjs[self] = nil -- <- 즉, 이렇게 하면 안된다.
+        tIn(dobjs2rm, self)
+
+        return true
+
     end
+
 end
 
 
