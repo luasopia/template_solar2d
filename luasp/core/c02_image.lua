@@ -3,10 +3,11 @@
 -- x,y는 int()로 변환하여 설정해야 pixel모드에서도 위치가 정확해진다
 -- 2021/09/26: ImageSheet객체도 사용할 수 있도록 변경
 --------------------------------------------------------------------------------
-local Disp = _luasopia.Display
-local rooturl = _luasopia.root .. '/' -- 2021/05/12
+local luasp = _luasopia
+local Disp = luasp.Display
+local rooturl = luasp.root .. '/' -- 2021/05/12
 local int = math.floor
-
+local type0 = luasp.type0
 --------------------------------------------------------------------------------
 local newImageFile, newImageFrame
 --------------------------------------------------------------------------------
@@ -123,13 +124,13 @@ elseif _Corona then
     
 end -- if _Gideros elseif _Corona
 --------------------------------------------------------------------------------
-local _type0 = _type0
+
 
 
 function Image:init(url, idFrame)
 
     local w, h
-    if _type0(url) == 'string' then
+    if type0(url) == 'string' then
 
         w, h = newImageFile(self, rooturl..url)
 

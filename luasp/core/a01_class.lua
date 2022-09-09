@@ -1,8 +1,9 @@
 --------------------------------------------------------------------------------
 -- magic methods : init(), remove()
 --------------------------------------------------------------------------------
-_luasopia.nilfunc = function() end
-local nilfunc = _luasopia.nilfunc
+local luasp = _luasopia
+luasp.nilfunc = function() end
+local nilfunc = luasp.nilfunc
 local setmetatable = setmetatable
 local getmetatable = getmetatable
 --------------------------------------------------------------------------------
@@ -69,7 +70,9 @@ end
 -- 2021/10/06: 객체를 생성하지 못하고 상속만 가능한 virtualClass 추가
 -- virtualClass의 생성자. 에러를 발생시킨다.
 local function banConstruct()
-	error('Virtual class cannot make object.')
+
+	error('Virtual class cannot construct an object.')
+
 end
 
 
@@ -88,8 +91,10 @@ end
 --2021/09/21: redefining type() global function
 -- type(data) returns 'class' if data itself is a class
 -- type(data) returns 'object' if data is an class instance
-_type0 = type
-local type0 = _type0
+-- _type0 = type; local type0 = _type0
+luasp.type0 = type
+local type0 = type
+
 function type(data)
 	
 	local datatype = type0(data)

@@ -10,6 +10,7 @@ local dobjs = Disp.__dobjs
 local tdobj = Disp.__tdobj
 local dobjs2rm = Disp.__dobjs2rm
 local tIn, tRm = table.insert, table.remove
+local _nxt = next
 --------------------------------------------------------------------------------
 
 
@@ -96,7 +97,8 @@ if _Gideros then
 
         if self.__tmrs then -- 이 시점에서는 이미 죽은 timer도 있을 것
 
-            for _, tmr in pairs(self.__tmrs) do
+            --for _, tmr in pairs(self.__tmrs) do
+            for _, tmr in _nxt, self.__tmrs do
                 timers[tmr] = nil --tmr:remove() 
             end
 
@@ -116,8 +118,6 @@ if _Gideros then
         --dobjs[self] = nil -- <- 따라서 이렇게 하면 안된다.
         tIn(dobjs2rm, self)
 
-        return true
-
     end
         
     
@@ -133,7 +133,8 @@ elseif _Corona then
 
         if self.__tmrs then -- 이 시점에서는 이미 죽은 timer도 있을 것
 
-            for _, tmr in pairs(self.__tmrs) do
+            --for _, tmr in pairs(self.__tmrs) do
+            for _, tmr in _nxt, self.__tmrs do
                 timers[tmr] = nil -- tmr:remove()
             end
 
@@ -150,10 +151,9 @@ elseif _Corona then
         
 
         --2022/09/07 소멸자안에서 dobjs 테이블의 참조를 직접 삭제하면 안된다
+        --(객체의 upd함수에서 remove()가 호출되거나 true가 반환되었을 수 있기 때문)
         --dobjs[self] = nil -- <- 즉, 이렇게 하면 안된다.
         tIn(dobjs2rm, self)
-
-        return true
 
     end
 

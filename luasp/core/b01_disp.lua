@@ -8,15 +8,15 @@ local timers = Timer.__tmrs -- 2020/06/24:Disp:remove()함수 내에서 직접 �
 local luasp = _luasopia
 local _nxt = next
 local tIn, tRm = table.insert, table.remove
-
-local int, min = math.floor, math.min
-local rand = rand
+local int = math.floor
+local cx, cy = luasp.centerX, luasp.centerY
 --------------------------------------------------------------------------------
 -- 2020/02/06: 모든 set함수는 self를 반환하도록 수정됨
 -- 향후: 내부코드는 속도를 조금이라도 높이기 위해서 self.__bd객체를 직접 접근한다
 ----------------------------------------------------------------------------------
-Display = virtualClass()
-local Disp = Display
+-- Display = virtualClass()
+-- local Disp = Display
+local Disp = virtualClass()
 _luasopia.Display = Disp --2021/10/02 hide Disp into _luasopia
 --------------------------------------------------------------------------------
 -- static members of this class ------------------------------------------------
@@ -27,8 +27,9 @@ Disp.__dobjs = dobjs
 Disp.__dobjs2rm = dobjs2rm
 
 -- tagged display object (tdobj) 들의 객체를 저장하는 테이블
-local tdobj = {}  -- Disp Tagged OBJect
+local tdobj = {}  -- Tagged Display OBJect
 Disp.__tdobj = tdobj
+
 -------------------------------------------------------------------------------
 -- static public method
 -------------------------------------------------------------------------------
@@ -39,34 +40,17 @@ Disp.updateAll = function(e) -- 2022/08/31 isoddfrm 파라메터제거
 
     -- 2022/09/07:이 반복문 안에서 dobjs의 요소가 삭제되면 안된다.
     for _, obj in _nxt, dobjs do
-
-        if obj:__upd__(e) ~=true then -- remove 되지 않았다면
-
-            -- 2022/09/07 추가/제거 대상으로 등록된 upd함수들을 처리한다
-            -- local nUpdRm = #obj.__updRm
-            local rmFn = tRm(obj.__updRm)
-            while rmFn ~=nil do
-                obj.__iupds[rmFn] = nil
-                rmFn = tRm(obj.__updRm)
-            end
-
-            -- local nUpdNew =  #obj.__updNew
-            local newFn = tRm(obj.__updNew)
-            while newFn ~=nil do
-                obj.__iupds[newFn] = newFn
-                newFn = tRm(obj.__updNew)
-            end
-        
-        end
-
+        obj:__upd__(e)
     end
 
     -- 삭제할 객체들로 등록된 것들을 삭제한다.
-    -- local n = #dobjs2rm;puts(n)
-    local obj = tRm(dobjs2rm) --맨 마지막요소를 제거하고 그걸 반환
-    while obj~=nil do -- obj==nil이라면 빈테이블이라는 의미이다.
-        dobjs[obj] = nil
-        obj = tRm(dobjs2rm)
+
+    if #dobjs2rm ~= 0 then
+        local obj = tRm(dobjs2rm)
+        repeat
+            dobjs[obj] = nil
+            obj = tRm(dobjs2rm)
+        until obj==nil
     end
 
 end
@@ -85,27 +69,30 @@ function Disp:init()
 
     --2021/08/15:pixelmode에서 cx,cy값이 변하므로 luasp.centerX/Y값을 직접 읽어야 한다
     -- xy()메서드 안에서 self.__bdx, self.__bdy가 생성된다.
-    self:setXY(luasp.centerX, luasp.centerY)
+    -- self:setXY(luasp.centerX, luasp.centerY)
+    -- 2022/09/09: pixelmode는 포기
+    self:setXY(cx,cy)
 
     self.__bd.__obj = self -- body에 원객체를 등록 (_Grp의 __del함수에서 사용)
     
-    dobjs[self] = self
     self.__iupds = {} -- 내부 update함수들을 저장할 테이블(모든 frame에서 호출)
-
     self.__updNew = {} -- 2022/08/30:__iupds에 새로 포함할 함수들의 테이블
     self.__updRm = {}  -- 2022/08/30:__iupds에서 제거할 함수들의 테이블
-
+    
     --2021/08/14:pixel모드에서 xy값을 정위치에 놓기위해
     -- __bdx,__bdy 저장된 (실수)값을 int()변환하여 설정한다.
     self.__bda = 1  -- alpha of the body
     self.__bdrd = 0 -- rotational angle in deg of the body
     self.__bds, self.__bdxs, self.__bdys = 1, 1, 1 -- scale, scaleX, scaleY
+    
+    dobjs[self] = self
 
 end
 
 
 -- This function is called in every frame
 function Disp:__upd__(e)
+
     
     if self.__noupd then return end -- self.__noupd==true이면 갱신 금지------------
 
@@ -115,26 +102,46 @@ function Disp:__upd__(e)
         return self:remove() -- 꼬리호출로 즉시 종료
 
     end
-
+    
     -- remove를 원한다면 update()함수에서 true를 반환하면 된다.
     -- 만약 사용자가 실수로 update()함수 내에서 직접 self:remove()를 호출했더라도
     -- 여기서 바로 리턴해서 내부업뎃함수들이 실행되는 것을 막는다.
     if self.__bd == nil then return true end
-
+    
     --2020/07/01 내부갱신함수들이 있다면 호출
     -- self.__iupds가 nil인지를 check하는 것이 성능에 별로 효과가 없을 것 같다
     -- 2022/08/30: fn() 내부에서 self.__iupds 요소를 변경(삭제)시키면
     -- invalid key to 'next' 오류발생
     for _, fn in _nxt, self.__iupds do
-
+        
         if fn(self, e) then -- 만약 fn(self)==true 라면 곧바로 삭제하고 리턴
             return self:remove()
         end
-
+        
     end
-
-    if self.__isgrp then return end -- 2021/10/10:Group객체는 여기까지
-
+    
+    ----------------------------------------------------------------------------
+    -- 2022/09/07 추가/제거 대상으로 등록된 upd함수들을 처리한다
+    -- #self.__updRm 가 0일 확률이 훨씬 크기 때문에 아래와 같이 조건문으로 처리해서
+    -- 꼭 필요한 경우만 반복문이 실행되도록 한다.
+    if #self.__updRm ~= 0 then 
+        local rmFn = tRm(self.__updRm)
+        repeat
+            self.__iupds[rmFn] = nil
+            rmFn = tRm(self.__updRm)
+        until rmFn==nil
+    end
+    
+    if #self.__updNew ~= 0 then
+        local newFn = tRm(self.__updNew)
+        repeat
+            self.__iupds[newFn] = newFn
+            newFn = tRm(self.__updNew)
+        until newFn==nil
+    end
+    ----------------------------------------------------------------------------
+        
+    if self.__isgrp then return end -- 2021/10//10:Group객체는 여기까지
     if self.onTouch and self.__tch==nil then self:__touchon() end
     if self.onTap and self.__tap==nil then self:__tapon() end
 
@@ -205,36 +212,14 @@ end
 function Disp:__rmUpd__( fn )
 
     -- if fn ~= nil then
-        if self.__iupds[fn] ~= nil then 
+        --if self.__iupds[fn] ~= nil then 
             tIn(self.__updRm, fn)
-        end
+        --end
     -- end
 
     return self
 
 end
-
---[[
---2021/09/03 : 격프레임마다 호출되는 함수 등록
--- 홀수프레임, 짝수프레임 어느 쪽일지는 성능 분산을 위해서 임의로 정한다
-function Disp:__addupd12__( fn )
-
-    self.__iupd12[rand(2)==1][fn] = fn -- rand(2)는 1과 2중 하나만 발생
-    return self
-
-end
-
---2021/09/07
-function Disp:__rmupd12__(fn)
-
-    if fn==nil then return self end
-    -- 어느 쪽일지 모르므로 둘 다 삭제한다
-    self.__iupd12[true][fn] = nil
-    self.__iupd12[false][fn] = nil
-    return self
-
-end
---]]
 
 
 --2020/08/27: added
@@ -483,16 +468,6 @@ if _Gideros then -- gideros
 
         self.__bds, self.__bdxs, self.__bdys = (xs+ys)*0.5, xs, ys
         self.__bd:setScale(xs, ys)
-
-        -- -- setScale()메서드가 호출되었을 때만 hit.r을 재조정한다.
-        -- -- xscale과 yscale가 다를 경우에는 작은 값을 기준으로 한다.
-        -- if self.__ccc then -- 2021/08/21:added
-        --     local mins = min(xs, ys)
-        --     local r = self.__ccc.r0*mins
-        --     self.__ccc.r = r
-        --     self.__ccc.r2 = r, r*r
-        -- end
-
         return self
 
     end
@@ -505,16 +480,6 @@ if _Gideros then -- gideros
         self.__bdxs = xs
         self.__bds = (xs+self.__bdys)*0.5 --2021/08/17
         self.__bd:setScaleX(xs)
-
-        -- -- setScale()메서드가 호출되었을 때만 hit.r을 재조정한다.
-        -- -- xscale과 yscale가 다를 경우에는 작은 값을 기준으로 한다.
-        -- if self.__ccc then -- 2021/08/21:added
-        --     local mins = min(xs, self.__bdys)
-        --     local r = self.__ccc.r0*mins
-        --     self.__ccc.r = r
-        --     self.__ccc.r2 = r, r*r
-        -- end
-
         return self
 
     end
@@ -524,32 +489,10 @@ if _Gideros then -- gideros
         self.__bdys = ys
         self.__bds = (self.__bdxs+ys)*0.5 --2021/08/17
         self.__bd:setScaleY(ys)
-
-        -- -- setScale()메서드가 호출되었을 때만 hit.r을 재조정한다.
-        -- -- xscale과 yscale가 다를 경우에는 작은 값을 기준으로 한다.
-        -- if self.__ccc then -- 2021/08/21:added
-        --     local mins = min(self.__bdxs, ys)
-        --     local r = self.__ccc.r0*mins
-        --     self.__ccc.r = r
-        --     self.__ccc.r2 = r, r*r
-        -- end
-
         return self
 
     end
     
-
-    --[[
-    function Disp:setxyrot(x,y,deg)
-
-        self.__bdx, self.__bdy, self.__bdrd = x,y,deg
-        self.__bd:setPosition(x,y)
-        self.__bd:setRotation(deg)
-        return self
-
-    end
-    --]]
-
 
     -- setAnchor()는 각각의 클래스에서 별도로 오버로딩된다
     function Disp:setAnchor(ax, ay)
@@ -653,17 +596,6 @@ elseif _Corona then -- if coronaSDK
 
         self.__bds, self.__bdxs, self.__bdys = (xs+ys)*0.5, xs, ys
         self.__bd.xScale, self.__bd.yScale = xs, ys
-
-        -- -- setScale()메서드가 호출되었을 때만 hit.r을 재조정한다.
-        -- -- xscale과 yscale가 다를 경우에는 작은 값을 기준으로 한다.
-        -- if self.__ccc then -- 2021/08/21:added
-        --     local mins = min(xs, ys)
-        --     local r = self.__ccc.r0*mins
-        --     self.__ccc.r = r
-        --     self.__ccc.r2 = r, r*r
-        -- end
-
-
         return self
 
     end
@@ -683,17 +615,6 @@ elseif _Corona then -- if coronaSDK
         self.__bdxs = xs
         self.__bds = (xs+self.__bdys)*0.5 --2021/08/17
         self.__bd.xScale = xs
-
-        -- -- setScale()메서드가 호출되었을 때만 hit.r을 재조정한다.
-        -- -- xscale과 yscale가 다를 경우에는 작은 값을 기준으로 한다.
-        -- if self.__ccc then -- 2021/08/21:added
-        --     local mins = min(xs, self.__bdys)
-        --     local r = self.__ccc.r0*mins
-        --     self.__ccc.r = r
-        --     self.__ccc.r2 = r, r*r
-        -- end
-
-
         return self
 
     end
@@ -704,31 +625,9 @@ elseif _Corona then -- if coronaSDK
         self.__bdys = ys
         self.__bds = (self.__bdxs+ys)*0.5 --2021/08/17
         self.__bd.yScale = ys
-
-        -- -- setScale()메서드가 호출되었을 때만 hit.r을 재조정한다.
-        -- -- xscale과 yscale가 다를 경우에는 작은 값을 기준으로 한다.
-        -- if self.__ccc then -- 2021/08/21:added
-        --     local mins = min(self.__bdxs, ys)
-        --     local r = self.__ccc.r0*mins
-        --     self.__ccc.r = r
-        --     self.__ccc.r2 = r, r*r
-        -- end
-
         return self
 
     end
-
-
-    --[[ will be deprecated
-    function Disp:setxyrot(x,y,deg)
-
-        self.__bdx, self.__bdy, self.__bdrd = x,y,deg
-        self.__bd.x, self.__bd.y = x, y
-        self.__bd.rotation = deg
-        return self
-
-    end
-    --]]
 
     
     -- 추상메서드:차일드에서 각자 구현해야한다
@@ -768,5 +667,3 @@ elseif _Corona then -- if coronaSDK
 
 
 end -- elseif _Corona then
-
-Disp.setxy = Disp.setXY -- will be removed
