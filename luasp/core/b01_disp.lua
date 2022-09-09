@@ -22,9 +22,8 @@ _luasopia.Display = Disp --2021/10/02 hide Disp into _luasopia
 -- static members of this class ------------------------------------------------
 --------------------------------------------------------------------------------
 local dobjs = {} -- Disp OBJectS
-local dobjs2rm = {}
 Disp.__dobjs = dobjs
-Disp.__dobjs2rm = dobjs2rm
+--local dobjs2rm = {}; Disp.__dobjs2rm = dobjs2rm
 
 -- tagged display object (tdobj) 들의 객체를 저장하는 테이블
 local tdobj = {}  -- Tagged Display OBJect
@@ -38,19 +37,11 @@ Disp.__tdobj = tdobj
 -- Disp.updateAll = function(isoddfrm, e)
 Disp.updateAll = function(e) -- 2022/08/31 isoddfrm 파라메터제거
 
-    -- 2022/09/07:이 반복문 안에서 dobjs의 요소가 삭제되면 안된다.
-    for _, obj in _nxt, dobjs do
-        obj:__upd__(e)
-    end
-
-    -- 삭제할 객체들로 등록된 것들을 삭제한다.
-
-    if #dobjs2rm ~= 0 then
-        local obj = tRm(dobjs2rm)
-        repeat
-            dobjs[obj] = nil
-            obj = tRm(dobjs2rm)
-        until obj==nil
+    -- 2022/09/09:dobjs를 indexed table로 운영한다
+    for k = #dobjs,1,-1 do
+        if dobjs[k]:__upd__(e) then -- true를 반환하면 제거
+            tRm(dobjs,k)
+        end
     end
 
 end
@@ -85,7 +76,9 @@ function Disp:init()
     self.__bdrd = 0 -- rotational angle in deg of the body
     self.__bds, self.__bdxs, self.__bdys = 1, 1, 1 -- scale, scaleX, scaleY
     
-    dobjs[self] = self
+    --2022/09/09
+    --dobjs[self] = self
+    tIn(dobjs, self)
 
 end
 
@@ -93,18 +86,15 @@ end
 -- This function is called in every frame
 function Disp:__upd__(e)
 
-    
     if self.__noupd then return end -- self.__noupd==true이면 갱신 금지------------
 
     -- 2020/02/16 call user-defined update() if exists
     if self.update and self:update(e) then
-
         return self:remove() -- 꼬리호출로 즉시 종료
-
     end
     
     -- remove를 원한다면 update()함수에서 true를 반환하면 된다.
-    -- 만약 사용자가 실수로 update()함수 내에서 직접 self:remove()를 호출했더라도
+    -- 만약 사용자가 (고의로) update()함수 내에서 직접 self:remove()를 호출했더라도
     -- 여기서 바로 리턴해서 내부업뎃함수들이 실행되는 것을 막는다.
     if self.__bd == nil then return true end
     
@@ -113,11 +103,11 @@ function Disp:__upd__(e)
     -- 2022/08/30: fn() 내부에서 self.__iupds 요소를 변경(삭제)시키면
     -- invalid key to 'next' 오류발생
     for _, fn in _nxt, self.__iupds do
-        
+
         if fn(self, e) then -- 만약 fn(self)==true 라면 곧바로 삭제하고 리턴
             return self:remove()
         end
-        
+
     end
     
     ----------------------------------------------------------------------------

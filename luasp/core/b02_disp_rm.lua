@@ -8,7 +8,6 @@ local timers = Timer.__tmrs -- 2020/06/24:Disp:remove()함수 내에서 직접 �
 local Disp = luasp.Display
 local dobjs = Disp.__dobjs
 local tdobj = Disp.__tdobj
-local dobjs2rm = Disp.__dobjs2rm
 local tIn, tRm = table.insert, table.remove
 local _nxt = next
 --------------------------------------------------------------------------------
@@ -116,7 +115,8 @@ if _Gideros then
 
         --2022/09/07 소멸자안에서 dobjs 테이블의 참조를 직접 삭제하면 안된다
         --dobjs[self] = nil -- <- 따라서 이렇게 하면 안된다.
-        tIn(dobjs2rm, self)
+        -- tIn(dobjs2rm, self)
+        return true
 
     end
         
@@ -153,7 +153,8 @@ elseif _Corona then
         --2022/09/07 소멸자안에서 dobjs 테이블의 참조를 직접 삭제하면 안된다
         --(객체의 upd함수에서 remove()가 호출되거나 true가 반환되었을 수 있기 때문)
         --dobjs[self] = nil -- <- 즉, 이렇게 하면 안된다.
-        tIn(dobjs2rm, self)
+        --tIn(dobjs2rm, self)
+        return true
 
     end
 
