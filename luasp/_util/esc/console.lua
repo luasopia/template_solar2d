@@ -6,7 +6,7 @@ local fontsize0 = 40
 local Text1 = luasp.Text1
 local Line1 = luasp.Line1
 --------------------------------------------------------------------------------
-_require0('luasp._util.file')
+luasp.require0('luasp._util.file')
 
 luasp.console = Group():addTo(esclayer):setXY(0,0)
 
@@ -157,6 +157,6 @@ function luasp.console:hide()
 end
 --------------------------------------------------------------------------------
 
---local toolbar = _require0('luasp._util.esc.toolbar')
+--local toolbar = luasp.require0('luasp._util.esc.toolbar')
 --luasp.console:add(toolbar)
 --luasp.console.toolbar = toolbar

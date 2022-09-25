@@ -3,9 +3,9 @@
 -- self.__bds, self.__bdxs, self.__bdys를 둔다
 -- setScaleX(xs) 나 setYscale(ys)은 scale값도 (xs+ys)/2값으로 갱신한다.
 --------------------------------------------------------------------------------
+local luasp = _luasopia
 local Timer = Timer
 local timers = Timer.__tmrs -- 2020/06/24:Disp:remove()함수 내에서 직접 접근
-local luasp = _luasopia
 local _nxt = next
 local tIn, tRm = table.insert, table.remove
 local int = math.floor
@@ -13,17 +13,17 @@ local cx, cy = luasp.centerX, luasp.centerY
 --------------------------------------------------------------------------------
 -- 2020/02/06: 모든 set함수는 self를 반환하도록 수정됨
 -- 향후: 내부코드는 속도를 조금이라도 높이기 위해서 self.__bd객체를 직접 접근한다
-----------------------------------------------------------------------------------
--- Display = virtualClass()
--- local Disp = Display
+--------------------------------------------------------------------------------
+
 local Disp = virtualClass()
-_luasopia.Display = Disp --2021/10/02 hide Disp into _luasopia
+luasp.Display = Disp --2021/10/02 hide Disp into _luasopia
+
 --------------------------------------------------------------------------------
 -- static members of this class ------------------------------------------------
 --------------------------------------------------------------------------------
+
 local dobjs = {} -- Disp OBJectS
 Disp.__dobjs = dobjs
---local dobjs2rm = {}; Disp.__dobjs2rm = dobjs2rm
 
 -- tagged display object (tdobj) 들의 객체를 저장하는 테이블
 local tdobj = {}  -- Tagged Display OBJect
@@ -63,6 +63,7 @@ function Disp:init()
     -- self:setXY(luasp.centerX, luasp.centerY)
     -- 2022/09/09: pixelmode는 포기
     self:setXY(cx,cy)
+    self.__x0, self.__y0 = 0, 0 -- 앵커점이(0,0)일때 객체(이미지)의 중심점 좌표
 
     self.__bd.__obj = self -- body에 원객체를 등록 (_Grp의 __del함수에서 사용)
     
@@ -86,6 +87,7 @@ end
 -- This function is called in every frame
 function Disp:__upd__(e)
 
+    if self.__bd==nil then return true end -- 2022/09/09
     if self.__noupd then return end -- self.__noupd==true이면 갱신 금지------------
 
     -- 2020/02/16 call user-defined update() if exists
@@ -511,7 +513,7 @@ if _Gideros then -- gideros
     end
     
 
-    -- 2020/06/08 : 추가 
+    -- 2020/06/08 : 추가 (gideros)
     function Disp:getGlobalXY(x,y)
 
         return self.__bd:localToGlobal(x or 0,y or 0)
@@ -636,7 +638,7 @@ elseif _Corona then -- if coronaSDK
     function Disp:setVisible(v) self.__bd.isVisible = v;return self end
     
 
-    -- 2020/06/08 : 추가 
+    -- 2020/06/08 : 추가 (solar2d)
     function Disp:getGlobalXY(x,y)
 
         return self.__bd:localToContent(x or 0,y or 0)

@@ -2,14 +2,15 @@
 --2021/08/31: Group객체 안에 Text1객체들을 넣는 것을 리팩토링함
 --2021/09/08: luasp.stdoutlayer를 추가해서 여기에 출력결과를 표시
 --------------------------------------------------------------------------------
+local luasp = _luasopia
+
 local linespace = 1.15 -- 줄간격을 0.3으로 설정(너무 붙으면 가독성이 떨어짐)
 local botmargin = 20 -- gap from bottom and last line
 local leftmargin = 10 
 local color0 = Color.LIGHT_GREEN --DARK_GRAY
 --------------------------------------------------------------------------------
-_require0('luasp._util.file')
+luasp.require0('luasp._util.file')
 
-local luasp = _luasopia
 local clilayer = luasp.clilayer
 
 local tIn, tRm = table.insert, table.remove

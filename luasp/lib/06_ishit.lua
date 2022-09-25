@@ -2,18 +2,23 @@
 -- 2021/05/08: created
 -- 2021/05/09 분리축이론(SAT)를 이용한 충돌판정 구현
 -- 2021/08/23:점간 거리를 실시간으로 계산하기로. (cpg에서 거리정보는 뺀다)
--- 2021/08/24:ishit는 두 프레임에 한 번씩만(30fps로) 검사하기로
+
+-- 2022/09/13 노트: __getgxy__()함수는 Group객체는 원점의 전역좌표를,
+-- Image/Sprite/Shape는 anchor와 상관없이 그 *중심점*의 전역좌표를 반환한다.
+-- isHit()함수에서 사용하는 것은 __getgxy__()이고 getGlobalXY()가 아니다.
+-- __ccc={r=20,x=10,y=10}라면 *중심점*에서 (10,10) 떨어진 점이 중점, 반지름 20인 영역이다.
+-- (getGlobalXY()는 anchor점의 전역좌표를 반환한다)
 --------------------------------------------------------------------------------
 local luasp = _luasopia
 local Disp = luasp.Display
 local tins = table.insert
-local inf, sqrt, min = math.huge, math.sqrt, math.min
+local inf, sqrt, min = INF, math.sqrt, math.min
 local RED = Color.RED
 local _nxt = next
 --------------------------------------------------------------------------------
 -- 객체의 모양은 다음과 같은 내부필드로 구분한다.
 -- polygon  : __cpg = {x1,y1,  x2,y2,  x3,y3, ...} 꼭지점들의 좌표
--- circle   : __ccc = {x, y, r, r2, r0} -- (x,y)중심점 좌표, r2=r^2
+-- circle   : __ccc = {x, y, r, r2, r0} -- (x,y)중심점 좌표, r2=r^2, 
 -- point    : __cpt = {x, y}
 
 -- line     : __cln = {x1,y1, x2,y2, len}, len은 선분의 길이
@@ -266,7 +271,7 @@ end
 
 local function proj_cc2cc(circ1, circ2)
 
-    local cc1, cc2 = circ1.__ccc, circ2.__ccc -- {r,x,y} circle table
+    local cc1, cc2 = circ1.__ccc, circ2.__ccc -- {r,x,y,r2,r0} circle table
 
     local r12 = cc1.r + cc2.r
     local gcx1, gcy1 = circ1:__getgxy__(cc1.x,cc1.y)
@@ -279,7 +284,7 @@ end
 
 local function proj_cc2pt(circ, point)
 
-    local ccc = circ.__ccc -- {r,x,y} circle table
+    local ccc = circ.__ccc -- {r,x,y,r2,r0} circle table
     local cpt = point.__cpt -- {x,y} point table
     local gcx1, gcy1 = circ:__getgxy__(ccc.x, ccc.y)
     local gcx2, gcy2 = point:__getgxy__(cpt.x, cpt.y)
@@ -316,6 +321,7 @@ local function ishit_cc(self, obj)
     elseif obj.__cpg then return proj_pg2cc(obj, self)
     elseif obj.__cpt then return proj_cc2pt(self, obj)
     end
+    
 end
 
 
@@ -351,9 +357,9 @@ function Disp:setHitCircle(r, x, y)
 
     self.__cpg, self.__cpt, self.__cln = nil, nil, nil
     
-    -- r2는 점과 원의 충돌판정할 때 사용된다.
-    -- r0는 원값이고 변하지 않는다. x/yscale이 변할 때 r값 재계산에 사용된다.
-    self.__ccc = {r=r, x=x or 0, y=y or 0,r2=r*r, r0=r}
+    -- r2는 점-원 간 충돌판정할 때 사용된다.
+    -- r0는 원값이고 변하지 않는다. scale이 변할 때 r값 재계산에 사용된다.
+    self.__ccc = {r=r, x=x or 0, y=y or 0, r2=r*r, r0=r}
 
     self.isHit = ishit_cc
     return self
@@ -382,7 +388,7 @@ function Disp:isHit(obj)
 
     elseif self.__cpt then
 
-        self.inshit = ishit_pt
+        self.isHit = ishit_pt
         return ishit_pt(self, obj)
 
     else

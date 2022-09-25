@@ -55,7 +55,7 @@ local function isOut(self, e)
         
     end
     
-    return true -- 점들이 다 영역 밖이면 true반환 -> remove된다
+    return true -- 점들이 다 영역 밖이면 true반환 ->  remove된다
 
 end
 
@@ -115,8 +115,7 @@ if _Gideros then
 
         --2022/09/07 소멸자안에서 dobjs 테이블의 참조를 직접 삭제하면 안된다
         --dobjs[self] = nil -- <- 따라서 이렇게 하면 안된다.
-        -- tIn(dobjs2rm, self)
-        return true
+        return true  -- 2022/9/9:true반환 -> dojbs테이블에서 바로 remove된다
 
     end
         
@@ -149,12 +148,10 @@ elseif _Corona then
         if self.__tag ~=nil then tdobj[self.__tag][self] = nil end
         if self.onRemove then self:onRemove() end -- 2021/08/30
         
-
         --2022/09/07 소멸자안에서 dobjs 테이블의 참조를 직접 삭제하면 안된다
         --(객체의 upd함수에서 remove()가 호출되거나 true가 반환되었을 수 있기 때문)
         --dobjs[self] = nil -- <- 즉, 이렇게 하면 안된다.
-        --tIn(dobjs2rm, self)
-        return true
+        return true -- 2022/9/9:true반환 -> dojbs테이블에서 바로 remove된다
 
     end
 

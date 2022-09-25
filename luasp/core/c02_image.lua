@@ -56,8 +56,6 @@ if _Gideros then
     -- gideros는 localtoGlobal(0,0)은 anchor점의 전역좌표를 반환한다
     -- 아래함수는 앵커점의 위치와 상관없이 img의 중심을 원점으로 한 좌표를 반환
     -- 즉 __getgxy__(0,0)은 image의 중심점의 전역좌표값을 반환한다.
-    --Image.__getgxy__ = Disp.getGlobalXY
-    -- --[[
     function Image:__getgxy__(x,y)
 
         -- x,y는 꼭지점의 좌표가 들어오므로 nil은 확실히 아니다.
@@ -103,20 +101,23 @@ elseif _Corona then
 
     end
 
-    -- 2021/08/22:solar2d는 image의 anchor point가 바뀌더라도
-    -- localToContent()는 항상 image의 중심을 원점으로 한다.
+    -- 2021/08/22: SOLAR2D 는 
+    -- anchor point와 상관없이 localToContent()는 image의 중심점을 원점으로 한다.
     -- (반면 gideros는 앵커점이 원점이 된다. <-이게 정상임 )
-    -- 따라서 getGlobalXY()를 앵커점을 원점으로 삼도록 수정해야 한다.
+    -- 따라서 getGlobalXY()를 아래와 같이 앵커점을 원점으로 삼도록 수정해야 한다.
+    -- 즉, 아래에서 getGlobalXY(0,0)는 앵커점의 전역좌표를 반환한다.
+    -- --[[
     function Image:getGlobalXY(x,y)
-
+        puts('Image:ggxy')
         local x,y = (x or 0)-self.__x0, (y or 0)-self.__y0
-        return self.__bd:localToContent(x or 0,y or 0)
+        return self.__bd:localToContent(x,y)
 
     end
-
+    --]]
     
-    -- ishit()함수에서 사용하는 전역xy를 구하는 함수
-    -- solar2d는 Disp.getglobalxy를 그대로 사용하면 된다.
+    -- ishit()함수에서 사용하는 전역xy를 구하는 함수로서
+    -- 앵커점의 위치와 상관없이 Image의 중심점을 원점으로 하는 전역좌표를 반환해야 한다
+    -- 따라서 solar2d는 Disp.getglobalxy를 그대로 사용하면 된다.
     Image.__getgxy__ = Disp.getGlobalXY
     
 --]]
@@ -147,7 +148,7 @@ function Image:init(url, idFrame)
     ------------------------------------------------------------
     self.__apx, self.__apy = 0.5, 0.5
     self.__wdt, self.__hgt = w, h
-    self.__x0, self.__y0 = 0,0
+    -- self.__x0, self.__y0 = 0,0 --> to Disp.init()
 
     return Disp.init(self)
 

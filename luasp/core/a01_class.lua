@@ -140,8 +140,8 @@ end
 
 
 --2021/09/21: redefining tostring() global function
-_tostring0 = tostring
-local tostring0 = _tostring0
+luasp.tostring0 = tostring
+local tostring0 = tostring
 function tostring(data)
 
 	local str = tostring0(data)

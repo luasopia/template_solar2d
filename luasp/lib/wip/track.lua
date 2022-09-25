@@ -33,6 +33,7 @@ end
 
 
 function Disp:follow(target,opt) -- oncotact
+
     self._trgt = target
     opt = opt or {}
     self._pdx = opt.initdx or 0
@@ -41,6 +42,7 @@ function Disp:follow(target,opt) -- oncotact
     self._rspd = opt.rotspeed or 0.9 -- 0.8<rs<1,(각속도) 작을수록 회전이 빠르다.
 
     self.__addUpd__(upd)
+    
 end
 
 --------------------------------------------------------------------------------
@@ -65,14 +67,17 @@ end
 
 
 local function updtag(self)
+
     if self._trgt==nil or self._trgt.__bd == nil then -- 타겟이 삭제되었다면
         newtrgt(self)
     end
     upd(self)
+
 end
 
 
 function Disp:followtag(name, opt) -- oncotact
+
     self._ttag = name -- target tag
     newtrgt(self)
 
@@ -83,4 +88,5 @@ function Disp:followtag(name, opt) -- oncotact
     self._rspd = opt.rotspeed or 0.9 -- 0.8<rs<1,(각속도) 작을수록 회전이 빠르다.
 
     self:__addupd__(updtag)
+
 end

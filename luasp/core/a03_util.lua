@@ -5,6 +5,7 @@ local luasp=_luasopia
 luasp.util = {}
 local util = luasp.util
 
+
 --[[
 function runutil(utilname) -- runutil
     local url = string.format('luasopiaUtil.%s.main',utilname, utilname)
@@ -172,8 +173,9 @@ end
 -- 예를 들어 root/lib/blink/blink.lua 파일이 있다고 가정하면
 -- import 'blink' 라고 하면 된다
 local liburl = _luasopia.root .. '.lib.'
+local require0 = luasp.require0
 function import(libname)
-    return _require0(liburl..libname..'.'..libname)
+    return require0(liburl..libname..'.'..libname)
 end
 
 

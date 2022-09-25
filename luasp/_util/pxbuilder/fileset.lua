@@ -15,7 +15,7 @@ function File:init(rname)
     self.abspath = luasp.resourceDir .. rnamelua
 
     
-    self.pxshts = _require0(rname)
+    self.pxshts = luasp.require0(rname)
 
     print(self.req0name)
     print(self.dispname)

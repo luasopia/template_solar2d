@@ -21,17 +21,6 @@ if _Gideros then
 
     end
 
-    --[[
-    function Group:add(child)
-
-        child.__pr = self
-        self.__bd:addChild(child.__bd)
-        child:setXY(0,0) --2021/08/14:__bdx,__bdy를 갱신하기 위해서 이렇게 해야함
-        -- self.__chld[child] = child -- 2021/09/24
-        return self
-
-    end
-    --]]
 
     function Group:add(...)
 
@@ -314,3 +303,5 @@ elseif _Corona then
     --]]
 
 end
+
+Group.__getgxy__ = Disp.getGlobalXY -- 2022/09/13 추가

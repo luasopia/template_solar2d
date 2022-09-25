@@ -288,7 +288,10 @@ luasp.root = 'root'
 luasp.dtmfrm = 1000/luasp.fps
 -- print('dtmfrm:'.._luasopia.dtmfrm)
 --------------------------------------------------------------------------------
-
+-- 2021/05/13: require함수를 치환 (_req는 lua의 original require함수)
+_luasopia.require0 = require
+local _require0 = require
+--------------------------------------------------------------------------------
 -- load luasp core files
 
 require 'luasp.core.a01_class'
@@ -356,6 +359,7 @@ require 'luasp.lib.05_wave' -- 2022/08/27
 require 'luasp.lib.05b_effectw' -- 2022/08/23
 require 'luasp.lib.06_ishit'
 require 'luasp.lib.07_tile'
+require 'luasp.lib.08_chase'
 
 -- require 'luasp.lib.wip.push'
 -- require 'luasp.lib.wip.path'
@@ -380,8 +384,6 @@ require 'luasp.core.z01_enterframe' -- 맨 마지막에 로딩해야 한다
 -------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 
--- 2021/05/13: require함수를 치환 (_req는 lua의 original require함수)
-_require0 = require
 -- local rooturl = _luasopia.root .. '.'
 function require(url) return _require0(luasp.root ..'.'.. url) end
 --------------------------------------------------------------------------------

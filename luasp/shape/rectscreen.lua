@@ -160,7 +160,7 @@ if _Gideros then
                 
                 if luasp.console==nil then
 
-                    _require0('luasp._util.esc.console')
+                    luasp.require0('luasp._util.esc.console')
                     luasp.console:show()
 
                 else
@@ -190,7 +190,7 @@ if _Gideros then
 
             if luasp.cli == nil then
 
-                _require0('luasp._util.esc.cli')
+                luasp.require0('luasp._util.esc.cli')
                 
             end
 
@@ -281,7 +281,7 @@ elseif _Corona then
 
                     if luasp.console==nil then
 
-                        _require0('luasp._util.esc.console')
+                        luasp.require0('luasp._util.esc.console')
                         luasp.console:show()
 
                     else
@@ -318,7 +318,7 @@ elseif _Corona then
 
                 if luasp.cli == nil then
 
-                    _require0('luasp._util.esc.cli')
+                    luasp.require0('luasp._util.esc.cli')
                     
                 end
 
