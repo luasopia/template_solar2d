@@ -16,8 +16,9 @@ local function moveg()
     'pcall', 'print', 'rawequal', 'rawget', 'rawset', 'require', 'select', 'setfenv',
     'setmetatable', 'string', 'table', 'tostring', 'tonumber', 'type', 'unpack', 'xpcall',
     
-    -- Solar2d의 경우 아래 세 개는 전역변수로 남아있어야 정상동작한다.
+    -- Solar2d의 경우 아래 네 개는 전역변수로 남아있어야 정상동작한다.
     'system', 'Runtime', 'cloneArray',
+    'display', -- 2023년08월24일: display객체도 전역변수로 남아있어야 한다.
 
     -- 2022/07/18: gideros는 2022.6버전부터 아래 전역변수가 남아있어야 한다
     -- '__styleUpdates', --아닌것같다
@@ -227,6 +228,7 @@ elseif coronabaselib then -- in the case of using solar2d
     --]]
         
     _Corona = moveg()
+    _Corona.display = display -- 2023년8월23일 추가:display객체는 전역에도, _Corona객체에도 있어야함
 
     -- 2021/09/07: simulator가 실행되는 환경을 검색
     -- system.getInfo('environment') returns the environment that the app is running in.

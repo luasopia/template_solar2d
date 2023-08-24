@@ -49,4 +49,5 @@ require 'luasp.init'
 -- The original 'require()' function has been changed its name into '_req()'
 
 -- The '/root/main.lua' file is firstly executed.
+
 return require 'main' -- root/main.lua 파일로 점프(goto)

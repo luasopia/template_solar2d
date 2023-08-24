@@ -8,9 +8,9 @@ settings =
 	orientation =
 	{
 		-- Supported values for orientation:
-		-- 'portrait', 'portraitUpsideDown', 'landscapeLeft', 'landscapeRight'
-		default = 'portrait',
-		supported = {'portrait',},
+		-- portrait, portraitUpsideDown, landscapeLeft, landscapeRight
+		default = "portrait",
+		supported = { "portrait", },
 	},
 
 	--
@@ -42,7 +42,7 @@ settings =
 	--
 	plugins =
 	{
-		
+
 	},
 
 	--
@@ -54,26 +54,4 @@ settings =
 		all = { "Icon.png", "Icon-*dpi.png", "Images.xcassets", },
 		android = { "LaunchScreen.storyboardc", },
 	},
-
-	-- 2020/12/06: splash screen control added
-	splashScreen =
-    {
-        ios = {
-			-- disable splash screen
-			enable = false,
-            
-			-- set custom splash screen image
-			--enable = true,
-            --image = "mySplashScreen_iOS.png"
-        },
-        android = {
-
-			-- disable splash screen
-			enable = false,
-
-			-- set custom splash screen image
-            --enable = true,
-            --image = "mySplashScreen_Android.png"
-        }
-    },
 }
